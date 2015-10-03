@@ -342,7 +342,12 @@ class MyParser extends parser
 		 	m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
 			sto = new ErrorSTO(strID);
 		}
-
+		else if (m_symtab.accessGlobal(strID) == null) 
+		{	
+			m_nNumErrors++;
+			m_errors.print(Formatter.toString(ErrorMsg.error0g_Scope, strID));	
+			sto = new ErrorSTO(strID);
+		}
 		return sto;
 	}
 

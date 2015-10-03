@@ -1,4 +1,6 @@
-function : int main() {
-  int x = 04A;
-  return 0;
+int myX;
+function : void foo() {
+	int x;
+	int i = 5 + ::x;
+	int j = 5 + ::myX;
 }
