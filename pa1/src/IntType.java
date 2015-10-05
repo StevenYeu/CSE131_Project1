@@ -5,8 +5,8 @@
 
 
 class IntType extends NumericType {
-    public IntType(String strName, int size){
-        super(strName, size);
+    public IntType(String strName){
+        super(strName);
     }
 
     public boolean isInt() { return true; }

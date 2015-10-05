@@ -4,11 +4,10 @@
 
 
 class ArrayType extends CompositeType{
-    //int dimension;
+
     Type element;
     public ArrayType(String strName, int size, Type elmt){
         super(strName, size);
-        //dimension = dim;
         element = elmt;
     }
 

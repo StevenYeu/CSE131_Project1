@@ -227,7 +227,7 @@ GlobalDecl ::=      ExternDecl
 
 ExternDecl ::=      T_EXTERN DecoratedBasicType:_2 T_ID:_3 OptArrayList:_4
                     {:
-                        ((MyParser) parser).DoExternDecl (_3);
+                        ((MyParser) parser).DoExternDecl (_3,_2); // Changed
                     :}
                     T_SEMI
     ;
@@ -235,17 +235,17 @@ ExternDecl ::=      T_EXTERN DecoratedBasicType:_2 T_ID:_3 OptArrayList:_4
 
 VarDecl ::=         OptStatic:_1 DecoratedType:_2 T_ID:_3 OptArrayList:_4 OptInit:_5
                     {:
-                        ((MyParser) parser).DoVarDecl (_3);
+                        ((MyParser) parser).DoVarDecl (_3,_2); //changed
                     :}
                     T_SEMI
-    |               OptStatic:_1 T_AUTO T_ID:_3 T_ASSIGN Expr:_5
+    |               OptStatic:_1 T_AUTO T_ID:_3 T_ASSIGN Expr:_5 
                     {:
-                        ((MyParser) parser).DoVarDecl (_3);
+                        ((MyParser) parser).DoVarDecl (_3,_5.getType()); // changed
                     :}
                     T_SEMI
     |               OptStatic:_1 StructType:_2 T_ID:_3 OptArrayList:_4 OptCtorCall:_5
                     {:
-                        ((MyParser) parser).DoVarDecl (_3);
+                        ((MyParser) parser).DoVarDecl (_3,_2); // changed
                     :}
                     T_SEMI
     ;
@@ -253,12 +253,12 @@ VarDecl ::=         OptStatic:_1 DecoratedType:_2 T_ID:_3 OptArrayList:_4 OptIni
 
 ConstDecl ::=       OptStatic:_1 T_CONST BasicType:_2 T_ID:_3 T_ASSIGN ConstExpr:_5
                     {:
-                        ((MyParser) parser).DoConstDecl (_3);
+                        ((MyParser) parser).DoConstDecl (_3,_2); // changed
                     :}
                     T_SEMI
     |               OptStatic:_1 T_CONST T_AUTO T_ID:_3 T_ASSIGN ConstExpr:_5
                     {:
-                        ((MyParser) parser).DoConstDecl (_3);
+                        ((MyParser) parser).DoConstDecl (_3,(Type)_5); // changed
                     :}
                     T_SEMI
     ;
@@ -412,17 +412,17 @@ DecoratedBasicType ::= BasicType:_1 OptPointerList:_2
     ;
 
 
-BasicType ::=       T_INT
+BasicType ::=       T_INT:_1
                     {:
-                        RESULT = null;  // gotta do something here!
+                        RESULT = new IntType((String)_1);  // gotta do something here! Done 
                     :}
-    |               T_FLOAT
+    |               T_FLOAT:_1
                     {:
-                        RESULT = null;  // gotta do something here!
+                        RESULT = new FloatType((String)_1);  // gotta do something here! Done
                     :}
-    |               T_BOOL
+    |               T_BOOL:_1
                     {:
-                        RESULT = null;  // gotta do something here!
+                        RESULT = new BoolType((String)_1);  // gotta do something here! Done
                     :}
     ;
 
@@ -560,7 +560,7 @@ WhileStmt ::=       T_WHILE Expr CodeBlock
 ForeachStmt ::=     T_FOREACH T_LPAREN Type OptRef T_ID:_3 T_COLON Expr T_RPAREN
                     {:
                         ((MyParser) parser).DoBlockOpen();
-                        ((MyParser) parser).DoVarDecl (_3);
+                        ((MyParser) parser).DoVarDecl (_3, null); //changed ?????????????????
                     :}
                     CodeBlock
                     {:
@@ -709,10 +709,11 @@ Expr6 ::=           Expr6:_1 Relation Expr7
 
 Expr7 ::=           Expr7:_1 AddOp:_2 Expr8:_3
                     {:
-                        RESULT = _1;
+                        RESULT = ((MyParser) parser).DoBinaryExpr (_1,new ArithmetricOp(_1,_3, _2),_3);
+
                     :}
     |               Expr8:_1
-                    {:
+                   {:
                         RESULT = _1;
                     :}
     ;
@@ -851,11 +852,11 @@ Designator3 ::=     T_LPAREN Expr:_2 T_RPAREN
                     :}
     |               T_INT_LITERAL:_1
                     {:
-                        RESULT = new ConstSTO (_1, null, 0);    // fix me!
+                        RESULT = new ConstSTO (_1, new IntType(_1), Integer.parseInt(_1));    // fix me! Done
                     :}
     |               T_FLOAT_LITERAL:_1
                     {:
-                        RESULT = new ConstSTO (_1, null, 0.00);  // fix me!
+                        RESULT = new ConstSTO (_1, new FloatType(_1), Float.parseFloat(_1));  // fix me! Done ask about size of float??
                     :}
     |               T_STR_LITERAL:_1
                     {:
@@ -863,11 +864,11 @@ Designator3 ::=     T_LPAREN Expr:_2 T_RPAREN
                     :}
     |               T_TRUE
                     {:
-                        RESULT = new ConstSTO ("true", null, 1);    // fix me!
+                        RESULT = new ConstSTO ("true", new BoolType("bool"), 1);    // fix me! Done
                     :}
     |               T_FALSE
                     {:
-                        RESULT = new ConstSTO ("false", null, 0);   // fix me!
+                        RESULT = new ConstSTO ("false", new BoolType("bool"), 0);   // fix me! Done
                     :}
     |               T_NULLPTR
                     {:

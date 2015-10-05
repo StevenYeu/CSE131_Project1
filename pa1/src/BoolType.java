@@ -6,8 +6,8 @@
 
 class BoolType extends BasicType{
     
-    public BoolType (String strName, int size){
-        super(strName, size);
+    public BoolType (String strName){
+        super(strName);
     }
 
     public boolean isBool() { return true; }

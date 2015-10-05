@@ -15,7 +15,6 @@ class StructType extends CompositeType {
     public boolean isEquivalent(Type t){
         if(t instanceof StructType){
             if( t.getName() == this.getName()){
-                //ash tutor
                 return true;
             }
 

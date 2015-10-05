@@ -5,8 +5,8 @@
 
 
 class FloatType extends NumericType {
-    public FloatType(String strName, int size){
-        super(strName, size);
+    public FloatType(String strName){
+        super(strName);
     }
     public boolean isFloat() { return true; }
     
