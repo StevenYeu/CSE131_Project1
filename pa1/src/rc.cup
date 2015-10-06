@@ -152,7 +152,7 @@ non terminal
     ArrayList,
     Array,
     NewStmt,
-    DeleteStmt	
+    DeleteStmt
     ;
 
 non terminal String    
@@ -630,9 +630,9 @@ Expr ::=            Designator:_1 T_ASSIGN Expr
 
 
 
-Expr0 ::=           Expr0:_1 T_OR Expr1
+Expr0 ::=           Expr0:_1 T_OR Expr1:_2
                     {:
-                        RESULT = _1;
+                        RESULT = ((MyParser) parser).DoBinaryExpr (_1, new OrOp(_1,_2),_2); 
                     :}
     |               Expr1:_1
                     {:
@@ -641,9 +641,9 @@ Expr0 ::=           Expr0:_1 T_OR Expr1
     ;
 
 
-Expr1 ::=           Expr1:_1 T_AND Expr2
+Expr1 ::=           Expr1:_1 T_AND Expr2:_2
                     {:
-                        RESULT = _1;
+                        RESULT = ((MyParser) parser).DoBinaryExpr (_1, new AndOp(_1,_2),_2); 
                     :}
     |               Expr2:_1
                     {:
@@ -652,9 +652,9 @@ Expr1 ::=           Expr1:_1 T_AND Expr2
     ;
 
 
-Expr2 ::=           Expr2:_1 T_BAR Expr3
+Expr2 ::=           Expr2:_1 T_BAR Expr3:_2
                     {:
-                        RESULT = _1;
+                        RESULT = ((MyParser) parser).DoBinaryExpr (_1,new BarOp(_1,_2),_2);
                     :}
     |               Expr3:_1
                     {:
@@ -663,9 +663,9 @@ Expr2 ::=           Expr2:_1 T_BAR Expr3
     ;
 
 
-Expr3 ::=           Expr3:_1 T_CARET Expr4
+Expr3 ::=           Expr3:_1 T_CARET Expr4:_2
                     {:
-                        RESULT = _1;
+                        RESULT = ((MyParser) parser).DoBinaryExpr (_1,new CaretOp(_1,_2),_2);
                     :}
     |               Expr4:_1
                     {:
@@ -674,9 +674,9 @@ Expr3 ::=           Expr3:_1 T_CARET Expr4
     ;
 
 
-Expr4 ::=           Expr4:_1 T_AMPERSAND Expr5
+Expr4 ::=           Expr4:_1 T_AMPERSAND Expr5:_2
                     {:
-                        RESULT = _1;
+                         RESULT = ((MyParser) parser).DoBinaryExpr (_1,new AmpersandOp(_1,_2),_2);
                     :}
     |               Expr5:_1
                     {:
@@ -685,9 +685,15 @@ Expr4 ::=           Expr4:_1 T_AMPERSAND Expr5
     ;
 
 
-Expr5 ::=           Expr5:_1 Equality Expr6
+Expr5 ::=           Expr5:_1 Equality:_2 Expr6:_3
                     {:
-                        RESULT = _1;
+                        if(_2.equals("==")) {
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new EqualOp(_1,_3,(String)_2),_3);    
+                        }
+                        else if(_2.equals("!=")) {
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new NotEqualOp(_1,_3,(String)_2),_3);    
+                        }
+
                     :}
     |               Expr6:_1
                     {:
@@ -696,9 +702,21 @@ Expr5 ::=           Expr5:_1 Equality Expr6
     ;
 
 
-Expr6 ::=           Expr6:_1 Relation Expr7
+Expr6 ::=           Expr6:_1 Relation:_2 Expr7:_3 // changed
                     {:
-                        RESULT = _1;
+                        if(_2.equals("<")) {
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new LTOp(_1,_3,(String)_2),_3);    
+                        }
+                        else if(_2.equals("<=")) {
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new LTEOp(_1,_3,(String)_2),_3);    
+                        }
+                        else if(_2.equals(">")) {
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new GTOp(_1,_3,(String)_2),_3);    
+                        }
+                        if(_2.equals(">=")) {
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new GTEOp(_1,_3,(String)_2),_3);    
+                        }
+
                     :}
     |               Expr7:_1
                     {:
@@ -709,7 +727,13 @@ Expr6 ::=           Expr6:_1 Relation Expr7
 
 Expr7 ::=           Expr7:_1 AddOp:_2 Expr8:_3
                     {:
-                        RESULT = ((MyParser) parser).DoBinaryExpr (_1,new ArithmetricOp(_1,_3, _2),_3);
+                        if(_2.equals("+")) {
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new AddOp(_1,_3, _2),_3);    
+                        }
+                        else {
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new MinusOp(_1,_3, _2),_3);   
+                        }
+                        
 
                     :}
     |               Expr8:_1
@@ -721,7 +745,15 @@ Expr7 ::=           Expr7:_1 AddOp:_2 Expr8:_3
 
 Expr8 ::=           Expr8:_1 MulOp:_2 Designator:_3
                     {:
-                        RESULT = _1;
+                        if(_2.equals("*")){
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new MulOp(_1,_3, _2),_3);
+                        }
+                        else if(_2.equals("/")){
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new DivOp(_1,_3, _2),_3);
+                        }
+                        else{
+                            RESULT = ((MyParser) parser).DoBinaryExpr (_1,new ModOp(_1,_3, _2),_3);
+                        }
                     :}
     |               Designator:_1
                     {:
@@ -730,15 +762,36 @@ Expr8 ::=           Expr8:_1 MulOp:_2 Designator:_3
     ;
 
 
+
+
+
 Equality ::=        T_EQU
+                    {:
+                        RESULT = "==";
+                    :}
     |               T_NEQ
+                    {:
+                        RESULT = "!=";
+                    :}
     ;
 
 
 Relation ::=        T_LT
+                    {:
+                        RESULT = "<";
+                    :}
     |               T_GT
+                    {:
+                        RESULT = ">";
+                    :}
     |               T_LTE
+                    {:
+                        RESULT = "<=";
+                    :}
     |               T_GTE
+                    {:
+                        RESULT = ">=";
+                    :}
     ;
 
 
@@ -779,6 +832,8 @@ IncDecOp ::=        T_PLUSPLUS
     ;
 
 
+
+
 Designator ::=      T_STAR Designator:_1
                     {:
                         RESULT = _1;
@@ -793,7 +848,7 @@ Designator ::=      T_STAR Designator:_1
                     :}
     |               T_NOT Designator:_1
                     {:
-                        RESULT = _1;
+                         RESULT = ((MyParser) parser).DoUnaryExpr(_1, new NotOp(_1));
                     :}
     |               T_SIZEOF T_LPAREN Designator:_2 T_RPAREN
                     {:
@@ -807,9 +862,9 @@ Designator ::=      T_STAR Designator:_1
                     {:
                         RESULT = _2;
                     :}
-    |               IncDecOp Designator:_2
+    |               IncDecOp:_1 Designator:_2
                     {:
-                        RESULT = _2;
+                        RESULT = ((MyParser) parser).DoIncDecCheck(_1,_2);
                     :}
     |               Designator2:_1 
                     {:
@@ -830,9 +885,10 @@ Designator2 ::=     Designator2:_1 T_DOT T_ID:_3
                     {:
                         RESULT = _1;
                     :}
-    |               Designator2:_1 IncDecOp
+    |               Designator2:_1 IncDecOp:_2
                     {:
-                        RESULT = _1;
+                        RESULT = ((MyParser) parser).DoIncDecCheck(_2,_1);
+
                     :}
     |               Designator2:_1 T_LPAREN OptExprList T_RPAREN
                     {:
@@ -852,11 +908,11 @@ Designator3 ::=     T_LPAREN Expr:_2 T_RPAREN
                     :}
     |               T_INT_LITERAL:_1
                     {:
-                        RESULT = new ConstSTO (_1, new IntType(_1), Integer.parseInt(_1));    // fix me! Done
+                        RESULT = new ConstSTO (_1, new IntType("int"), Integer.parseInt(_1));    // fix me! Done
                     :}
     |               T_FLOAT_LITERAL:_1
                     {:
-                        RESULT = new ConstSTO (_1, new FloatType(_1), Float.parseFloat(_1));  // fix me! Done ask about size of float??
+                        RESULT = new ConstSTO (_1, new FloatType("float"), Float.parseFloat(_1));  // fix me! Done ask about size of float??
                     :}
     |               T_STR_LITERAL:_1
                     {:

@@ -378,10 +378,73 @@ class MyParser extends parser
     STO DoBinaryExpr(STO a, Operator o, STO b) {
         STO result = o.checkOperands(a, b);
         if (result instanceof ErrorSTO) {
-            m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp()));
+			m_nNumErrors++;
+
+            //System.out.println(o.getOp());
+            if(o.getOp().equals("%")) {
+                 m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));                
+            }
+
+            else if(o.getOp().equals("+") || o.getOp().equals("-") || o.getOp().equals("/") || o.getOp().equals("*")) {
+                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp()));                
+            }
+
+            else if(o.getOp().equals("<") || o.getOp().equals("<=") || o.getOp().equals(">") || o.getOp().equals(">=")) {
+                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp())); 
+            }
+            else if(o.getOp().equals("==") || o.getOp().equals("!=")) {
+                m_errors.print(Formatter.toString(ErrorMsg.error1b_Expr,a.getType().getName(),o.getOp(),b.getType().getName())); 
+            }
+            else if(o.getOp().equals("&&") || o.getOp().equals("||")) {
+                m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"bool")); 
+            }
+            else if(o.getOp().equals("&") || o.getOp().equals("^") || o.getOp().equals("|")) {
+                m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));
+            }
+
+
+
+
+
+            
+
+
             result = new ErrorSTO("Error");
         }
 
         return result;
     }
-}
+
+    STO DoUnaryExpr(STO a, Operator o) {
+        STO result = o.checkOperands(a);
+        if (result instanceof ErrorSTO) {
+            m_nNumErrors++;
+
+            if(o.getOp().equals("!")) {
+                m_errors.print(Formatter.toString(ErrorMsg.error1u_Expr,result.getName(),o.getOp(),"bool")); 
+            }
+            result = new ErrorSTO("Error");
+        }
+
+        return result;
+    
+    }
+
+    STO DoIncDecCheck(String s1, STO a) {
+        if (!(a.getType() instanceof NumericType)) {
+            m_nNumErrors++;
+            m_errors.print(Formatter.toString(ErrorMsg.error2_Type,a.getType().getName(), s1)); 
+        } 
+        else if (!(a.isModLValue())){
+            m_nNumErrors++;
+            m_errors.print(Formatter.toString(ErrorMsg.error2_Lval,a.getName()));
+        }
+
+        STO result = new ExprSTO(a.getName(), a.getType());
+        result.setIsAddressable(false);
+        result.setIsModifiable(false);
+
+       return result;
+
+    }
+  }

@@ -1,0 +1,7 @@
+int x;
+int y;
+int w;
+function : void main()
+{
+   w = x++ + --y;
+}
