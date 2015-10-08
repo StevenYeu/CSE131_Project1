@@ -61,11 +61,11 @@ class SymbolTable
 		for (Enumeration<Scope> e = m_stkScopes.elements(); e.hasMoreElements();)
 		{
 			scope = e.nextElement();
-			if ((stoReturn = scope.access(strName)) != null)
+			if ((stoReturn = scope.access(strName)) != null) {
 				stk.push(stoReturn);
+            }
 		}
 
-		//return null;
 		return stk.pop();
 	}
 

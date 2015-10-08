@@ -26,7 +26,8 @@ class ConstSTO extends STO
 		super(strName);
 		m_value = null; // fix this
 		// You may want to change the isModifiable and isAddressable
-		// fields as necessary
+		// fields as necessaryi
+        this.setIsAddressable(true);
 	}
 
 	public ConstSTO(String strName, Type typ)
@@ -35,12 +36,14 @@ class ConstSTO extends STO
 		m_value = null; // fix this
 		// You may want to change the isModifiable and isAddressable
 		// fields as necessary
+        this.setIsAddressable(true);
 	}
 
 	public ConstSTO(String strName, Type typ, int val)
 	{
 		super(strName, typ);
-		m_value = new BigDecimal(val);
+		m_value = new BigDecimal(val); 
+        this.setIsAddressable(true);
 		// You may want to change the isModifiable and isAddressable
 		// fields as necessary
 	}
@@ -49,6 +52,7 @@ class ConstSTO extends STO
 	{
 		super(strName, typ);
 		m_value = new BigDecimal(val);
+        this.setIsAddressable(true);
 		// You may want to change the isModifiable and isAddressable
 		// fields as necessary
 	}

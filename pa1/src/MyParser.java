@@ -16,6 +16,7 @@ class MyParser extends parser
 	private String m_strLastLexeme;
 	private boolean m_bSyntaxError = true;
 	private int m_nSavedLineNum;
+    private int errCount = 0; // add for check 3a Phase 1
 
 	private SymbolTable m_symtab;
 
@@ -286,13 +287,36 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	STO DoAssignExpr(STO stoDes)
 	{
-		if (!stoDes.isModLValue())
+        
+		if (!stoDes.isModLValue() && (m_nNumErrors < 1))
 		{
 			// Good place to do the assign checks
+            m_errors.print(ErrorMsg.error3a_Assign);
+            m_nNumErrors++;
+            errCount++;
+            return new ErrorSTO(stoDes.getName());
 		}
+        stoDes.setIsAddressable(false);
+        stoDes.setIsModifiable(false);
 		
 		return stoDes;
 	}
+
+    STO DoAssignTypeCheck(STO a, STO b) {
+        if (!b.getType().isAssignable(a.getType())) {
+            
+            if(m_nNumErrors < 1) {
+              m_nNumErrors++;
+               m_errors.print(Formatter.toString(ErrorMsg.error3b_Assign,b.getType().getName(),a.getType().getName())); 
+              return new ErrorSTO(a.getName());
+            }
+
+            
+                   
+        }
+        return a;
+    
+    }
 
 	//----------------------------------------------------------------
 	//
@@ -335,20 +359,29 @@ class MyParser extends parser
 	STO DoDesignator3_ID(String strID)
 	{
 		STO sto;
+        if(m_nNumErrors < 1){
+		    if ((sto = m_symtab.access(strID)) == null)
+		    {	
+                if ((sto = m_symtab.accessGlobal(strID)) == null) 
+		        {
+            
+                    m_nNumErrors++;
+			        m_errors.print(Formatter.toString(ErrorMsg.error0g_Scope, strID));
+			        sto = new ErrorSTO(strID);
+                    return sto;
+                
+		        }
 
-		if ((sto = m_symtab.access(strID)) == null)
-		{
-			m_nNumErrors++;
-		 	m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
-			sto = new ErrorSTO(strID);
-		}
-		else if (m_symtab.accessGlobal(strID) == null) 
-		{	
-			m_nNumErrors++;
-			m_errors.print(Formatter.toString(ErrorMsg.error0g_Scope, strID));	
-			sto = new ErrorSTO(strID);
-		}
-		return sto;
+                m_nNumErrors++;
+		 	    m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
+			    sto = new ErrorSTO(strID);
+                return sto;
+            }
+
+
+                    }
+            return sto;
+            
 	}
 
 	//----------------------------------------------------------------
@@ -378,38 +411,34 @@ class MyParser extends parser
     STO DoBinaryExpr(STO a, Operator o, STO b) {
         STO result = o.checkOperands(a, b);
         if (result instanceof ErrorSTO) {
-			m_nNumErrors++;
+            //errCount++;
 
-            //System.out.println(o.getOp());
-            if(o.getOp().equals("%")) {
-                 m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));                
+            if(m_nNumErrors < 1) {
+
+                m_nNumErrors++;
+                if(o.getOp().equals("%")) {
+                     m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));                
+                }
+
+                else if(o.getOp().equals("+") || o.getOp().equals("-") || o.getOp().equals("/") || o.getOp().equals("*")) {
+                     m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp()));                
+                }
+
+                else if(o.getOp().equals("<") || o.getOp().equals("<=") || o.getOp().equals(">") || o.getOp().equals(">=")) {
+                     m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp())); 
+                }
+                else if(o.getOp().equals("==") || o.getOp().equals("!=")) {
+                    m_errors.print(Formatter.toString(ErrorMsg.error1b_Expr,a.getType().getName(),o.getOp(),b.getType().getName())); 
+                }
+                else if(o.getOp().equals("&&") || o.getOp().equals("||")) {
+                    m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"bool")); 
+                }
+                else if(o.getOp().equals("&") || o.getOp().equals("^") || o.getOp().equals("|")) {
+                    m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));
+                }
+
+                result = new ErrorSTO("Error");
             }
-
-            else if(o.getOp().equals("+") || o.getOp().equals("-") || o.getOp().equals("/") || o.getOp().equals("*")) {
-                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp()));                
-            }
-
-            else if(o.getOp().equals("<") || o.getOp().equals("<=") || o.getOp().equals(">") || o.getOp().equals(">=")) {
-                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp())); 
-            }
-            else if(o.getOp().equals("==") || o.getOp().equals("!=")) {
-                m_errors.print(Formatter.toString(ErrorMsg.error1b_Expr,a.getType().getName(),o.getOp(),b.getType().getName())); 
-            }
-            else if(o.getOp().equals("&&") || o.getOp().equals("||")) {
-                m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"bool")); 
-            }
-            else if(o.getOp().equals("&") || o.getOp().equals("^") || o.getOp().equals("|")) {
-                m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));
-            }
-
-
-
-
-
-            
-
-
-            result = new ErrorSTO("Error");
         }
 
         return result;
@@ -418,12 +447,14 @@ class MyParser extends parser
     STO DoUnaryExpr(STO a, Operator o) {
         STO result = o.checkOperands(a);
         if (result instanceof ErrorSTO) {
-            m_nNumErrors++;
 
-            if(o.getOp().equals("!")) {
-                m_errors.print(Formatter.toString(ErrorMsg.error1u_Expr,result.getName(),o.getOp(),"bool")); 
+            if (m_nNumErrors < 1) { 
+                if(o.getOp().equals("!")) {
+                    m_errors.print(Formatter.toString(ErrorMsg.error1u_Expr,result.getName(),o.getOp(),"bool")); 
+                }
+                result = new ErrorSTO("Error");
             }
-            result = new ErrorSTO("Error");
+            m_nNumErrors++;
         }
 
         return result;
