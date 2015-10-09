@@ -1,0 +1,6 @@
+function : void foo() {
+   int x;
+   x  = 5.5 + true;
+   int y;
+   y = 1.1;
+}

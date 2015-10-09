@@ -12,6 +12,7 @@ class SymbolTable
 	private int m_nLevel;
 	private Scope m_scopeGlobal;
 	private FuncSTO m_func = null;
+    private Vector<STO> functions;
     
 	//----------------------------------------------------------------
 	//

@@ -263,6 +263,12 @@ class MyParser extends parser
 		}
 
 		// insert parameters here
+        FuncSTO sto = m_symtab.getFunc();
+        for(int i = 0; i < params.size(); i++){
+            STO s = this.ProcessParams(params.get(i));
+            sto.addParam(this.ProcessParams(params.get(i)));
+        }
+        m_symtab.setFunc(sto);
 	}
 
 	//----------------------------------------------------------------
@@ -288,12 +294,15 @@ class MyParser extends parser
 	STO DoAssignExpr(STO stoDes)
 	{
         
-		if (!stoDes.isModLValue() && (m_nNumErrors < 1))
+        if(stoDes instanceof ErrorSTO) {
+            return stoDes;
+        }
+
+		if (!stoDes.isModLValue()) 
 		{
 			// Good place to do the assign checks
             m_errors.print(ErrorMsg.error3a_Assign);
             m_nNumErrors++;
-            errCount++;
             return new ErrorSTO(stoDes.getName());
 		}
         stoDes.setIsAddressable(false);
@@ -303,32 +312,87 @@ class MyParser extends parser
 	}
 
     STO DoAssignTypeCheck(STO a, STO b) {
-        if (!b.getType().isAssignable(a.getType())) {
-            
-            if(m_nNumErrors < 1) {
-              m_nNumErrors++;
-               m_errors.print(Formatter.toString(ErrorMsg.error3b_Assign,b.getType().getName(),a.getType().getName())); 
-              return new ErrorSTO(a.getName());
-            }
+        
+        if(a instanceof ErrorSTO) {
+            return a;
+        }
+        else if (b instanceof ErrorSTO) {
+            return b;
+        }
 
-            
+
+        STO result;
+        if (!b.getType().isAssignable(a.getType())) {
+            m_nNumErrors++;
+            m_errors.print(Formatter.toString(ErrorMsg.error3b_Assign,b.getType().getName(),a.getType().getName())); 
+            return new ErrorSTO(a.getName());
                    
         }
-        return a;
+        result = a;
+        return result;
     
     }
 
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
-	STO DoFuncCall(STO sto)
+	STO DoFuncCall(STO sto, Vector<STO> params)
 	{
+        if(sto instanceof ErrorSTO){
+            return sto;
+        }
 		if (!sto.isFunc())
 		{
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.not_function, sto.getName()));
 			return new ErrorSTO(sto.getName());
 		}
+        else {
+
+            //String s = m_symtab.access(sto.getName()).getName();
+            //System.out.println(sto.getName());
+            
+          
+            if (m_symtab.access(sto.getName()) == null) {
+                m_nNumErrors++;
+                m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, sto.getName()));
+                return new ErrorSTO("Error");
+            }
+            else{
+
+                STO fsto = m_symtab.access(sto.getName());
+                
+                //if( !(params.equals(fsto.getParams()))){
+                if( params.size() != fsto.getParams().size()){
+                   m_nNumErrors++;
+                   m_errors.print(Formatter.toString(ErrorMsg.error5n_Call, params.size(), fsto.getParams().size()));
+                   return new ErrorSTO(sto.getName());
+                }
+                else if( params.size() == fsto.getParams().size()){
+                    for(int i = 0; i < fsto.getParams().size(); i++){
+                        if((fsto.getParams().get(i).getName().charAt(0)) == '&') {
+                            if(!(params.get(i).getType().isEquivalent(fsto.getParams().get(i).getType()))){
+                                m_nNumErrors++;
+                                m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
+                            }
+                            else if(!(params.get(i).isModLValue())){
+                                m_nNumErrors++;
+                                m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
+                            }
+
+                        }
+                        else if(!(params.get(i).getType().isAssignable(fsto.getParams().get(i).getType()))){
+                            m_nNumErrors++;
+                            m_errors.print(Formatter.toString(ErrorMsg.error5a_Call, params.get(i).getType().getName(), fsto.getParams().get(i).getName(), fsto.getParams().get(i).getType().getName()));
+                        }
+                        
+                    }
+                    return new ErrorSTO("Error");
+                }
+            
+            }
+
+        }
 
 		return sto;
 	}
@@ -359,30 +423,35 @@ class MyParser extends parser
 	STO DoDesignator3_ID(String strID)
 	{
 		STO sto;
-        if(m_nNumErrors < 1){
-		    if ((sto = m_symtab.access(strID)) == null)
-		    {	
-                if ((sto = m_symtab.accessGlobal(strID)) == null) 
-		        {
-            
-                    m_nNumErrors++;
-			        m_errors.print(Formatter.toString(ErrorMsg.error0g_Scope, strID));
-			        sto = new ErrorSTO(strID);
-                    return sto;
+		if (((sto = m_symtab.access(strID)) == null )  )
+		{	
                 
-		        }
-
-                m_nNumErrors++;
-		 	    m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
-			    sto = new ErrorSTO(strID);
-                return sto;
-            }
-
-
-                    }
+            m_nNumErrors++;
+		    m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
+		    sto = new ErrorSTO(strID);
             return sto;
+        }
+
+        return sto;
             
 	}
+
+    STO DoDes3_GlobalID(String strID)
+    {
+        STO sto;
+        if (((sto = m_symtab.accessGlobal(strID)) == null)) 
+		{
+            
+            m_nNumErrors++;
+			m_errors.print(Formatter.toString(ErrorMsg.error0g_Scope, strID));
+			sto = new ErrorSTO(strID);
+            return sto;
+                
+		}
+        return sto;
+
+    }
+
 
 	//----------------------------------------------------------------
 	//
@@ -409,52 +478,65 @@ class MyParser extends parser
 	}
 
     STO DoBinaryExpr(STO a, Operator o, STO b) {
+
+        if (a instanceof ErrorSTO) {
+            return a;
+        }
+        else if (b instanceof ErrorSTO) {
+            return b;
+        }
+        
+
         STO result = o.checkOperands(a, b);
-        if (result instanceof ErrorSTO) {
-            //errCount++;
+        if ((result instanceof ErrorSTO)) {
 
-            if(m_nNumErrors < 1) {
-
-                m_nNumErrors++;
-                if(o.getOp().equals("%")) {
-                     m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));                
-                }
-
-                else if(o.getOp().equals("+") || o.getOp().equals("-") || o.getOp().equals("/") || o.getOp().equals("*")) {
-                     m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp()));                
-                }
-
-                else if(o.getOp().equals("<") || o.getOp().equals("<=") || o.getOp().equals(">") || o.getOp().equals(">=")) {
-                     m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp())); 
-                }
-                else if(o.getOp().equals("==") || o.getOp().equals("!=")) {
-                    m_errors.print(Formatter.toString(ErrorMsg.error1b_Expr,a.getType().getName(),o.getOp(),b.getType().getName())); 
-                }
-                else if(o.getOp().equals("&&") || o.getOp().equals("||")) {
-                    m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"bool")); 
-                }
-                else if(o.getOp().equals("&") || o.getOp().equals("^") || o.getOp().equals("|")) {
-                    m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));
-                }
-
-                result = new ErrorSTO("Error");
+            m_nNumErrors++;
+            if(o.getOp().equals("%")) {
+                 m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));                
             }
+
+            else if(o.getOp().equals("+") || o.getOp().equals("-") || o.getOp().equals("/") || o.getOp().equals("*")) {
+                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp()));                
+            }
+
+            else if(o.getOp().equals("<") || o.getOp().equals("<=") || o.getOp().equals(">") || o.getOp().equals(">=")) {
+                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp())); 
+            }
+            else if(o.getOp().equals("==") || o.getOp().equals("!=")) {
+                m_errors.print(Formatter.toString(ErrorMsg.error1b_Expr,a.getType().getName(),o.getOp(),b.getType().getName())); 
+            }
+            else if(o.getOp().equals("&&") || o.getOp().equals("||")) {
+                m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"bool")); 
+            }
+            else if(o.getOp().equals("&") || o.getOp().equals("^") || o.getOp().equals("|")) {
+                m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));
+            }
+
+            //result = new ErrorSTO("Error");
+            return result;
+            
         }
 
         return result;
     }
 
     STO DoUnaryExpr(STO a, Operator o) {
+
+
+        if(a instanceof ErrorSTO) {
+            return a;
+        }
+
         STO result = o.checkOperands(a);
         if (result instanceof ErrorSTO) {
 
-            if (m_nNumErrors < 1) { 
-                if(o.getOp().equals("!")) {
-                    m_errors.print(Formatter.toString(ErrorMsg.error1u_Expr,result.getName(),o.getOp(),"bool")); 
-                }
-                result = new ErrorSTO("Error");
+            
+            if(o.getOp().equals("!")) {
+                m_errors.print(Formatter.toString(ErrorMsg.error1u_Expr,result.getName(),o.getOp(),"bool")); 
             }
             m_nNumErrors++;
+            result = new ErrorSTO("Error");
+            
         }
 
         return result;
@@ -462,20 +544,69 @@ class MyParser extends parser
     }
 
     STO DoIncDecCheck(String s1, STO a) {
+        STO result;
+
+        if (a instanceof ErrorSTO) {
+            return a;
+        }
+
+
         if (!(a.getType() instanceof NumericType)) {
             m_nNumErrors++;
-            m_errors.print(Formatter.toString(ErrorMsg.error2_Type,a.getType().getName(), s1)); 
+            m_errors.print(Formatter.toString(ErrorMsg.error2_Type,a.getType().getName(), s1));
+            return result = new ErrorSTO("Error");
         } 
         else if (!(a.isModLValue())){
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error2_Lval,a.getName()));
+            result = new ErrorSTO("Error");
+            return result;
         }
-
-        STO result = new ExprSTO(a.getName(), a.getType());
+        
+        result = new ExprSTO(a.getName(), a.getType());
         result.setIsAddressable(false);
         result.setIsModifiable(false);
 
        return result;
 
     }
+
+    STO DoIfAndWhile(STO a){
+        STO result;
+
+        if(a instanceof ErrorSTO) {
+            return a;
+        }
+
+
+        if(!(a.getType().isEquivalent(new BoolType("Bool")))){
+            m_nNumErrors++;
+            m_errors.print(Formatter.toString(ErrorMsg.error4_Test, a.getType().getName()));
+            return new ErrorSTO("Error");
+        }
+        result = a;
+        return result;
+    } 
+
+    STO ProcessParams(String s) {
+        String[] splitStr = s.split("\\s+");
+        String type = splitStr[0];
+        String id = splitStr[1];
+        Type t;
+        switch (type) 
+        {
+            case "int" :  t = new IntType("int");
+                          break;
+            case "float": t = new FloatType("float");
+                          break;
+            case "bool":  t = new BoolType("bool");
+                          break;
+            default:      t = new VoidType("void",1);
+        
+        }
+        STO result = new VarSTO(id,t);
+        return result;
+
+    }
+
   }

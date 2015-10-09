@@ -124,7 +124,7 @@ non terminal
     StmtList,
     Stmt,
     CodeBlock,
-    OptExprList,
+    // moved optExprList
     IfStmt,
     OptElse,
     ForeachStmt,
@@ -138,7 +138,7 @@ non terminal
     WritePairList,
     WritePair,
     ConstExpr,
-    ExprList,
+    // moved ExprList
     UnarySign,
     Equality,
     Relation,
@@ -189,7 +189,9 @@ non terminal Type
 
 non terminal Vector
     OptParamList,
-    ParamList
+    ParamList,
+    OptExprList,
+    ExprList
     ;
 
 //--------------------------------------------------------------------
@@ -240,7 +242,7 @@ VarDecl ::=         OptStatic:_1 DecoratedType:_2 T_ID:_3 OptArrayList:_4 OptIni
                     T_SEMI
     |               OptStatic:_1 T_AUTO T_ID:_3 T_ASSIGN Expr:_5 
                     {:
-                        ((MyParser) parser).DoVarDecl (_3,_5.getType()); // changed
+                        ((MyParser) parser).DoVarDecl (_3,_5.getType()); // changed again
                     :}
                     T_SEMI
     |               OptStatic:_1 StructType:_2 T_ID:_3 OptArrayList:_4 OptCtorCall:_5
@@ -504,7 +506,17 @@ Stmt ::=            VarDecl
 
 
 OptParamList ::=    ParamList:_1
+                    {:
+                        RESULT = _1;
+                        //for (int i = 0; i<RESULT.size();i++) {
+                          //  System.out.println(RESULT.get(i));    
+                       // }
+
+                    :}
     |               /* empty */
+                    {:
+                        RESULT = new Vector();
+                    :}
     ;
 
 
@@ -512,6 +524,7 @@ ParamList ::=       ParamDecl:_2
                     {:
                         RESULT = new Vector ();
                         RESULT.addElement (_2);
+
                     :}
     |               ParamList:_1 T_COMMA ParamDecl:_2
                     {:
@@ -521,12 +534,21 @@ ParamList ::=       ParamDecl:_2
     ;
 
 
-ParamDecl ::=       Type OptRef T_ID OptArrayList
+ParamDecl ::=       Type:_1 OptRef:_2 T_ID:_3 OptArrayList
+                    {:
+                        RESULT = new String(_1.getName() + " " +_2 + _3);
+                    :}
     ;
 
 
-OptRef ::=          T_AMPERSAND
+OptRef ::=          T_AMPERSAND:_1
+                    {:
+                        RESULT = "&";
+                    :}
     |               /* empty */
+                    {:
+                        RESULT = "";
+                    :}
     ;
 
 
@@ -540,11 +562,14 @@ OptCtorCall ::=     CtorCall
     ;
 
 
-CtorCall ::=        T_COLON T_LPAREN OptExprList T_RPAREN
+CtorCall ::=        T_COLON T_LPAREN OptExprList:_1 T_RPAREN
     ;
 
 
-IfStmt ::=          T_IF Expr CodeBlock OptElse
+IfStmt ::=          T_IF Expr:_1 CodeBlock OptElse
+                    {:
+                        ((MyParser) parser).DoIfAndWhile(_1);
+                    :}
     ;
 
 
@@ -553,7 +578,10 @@ OptElse ::=         T_ELSE CodeBlock
     ;
 
 
-WhileStmt ::=       T_WHILE Expr CodeBlock
+WhileStmt ::=       T_WHILE Expr:_1 CodeBlock
+                    {:
+                        ((MyParser) parser).DoIfAndWhile(_1);
+                    :}
     ;
 
 
@@ -608,13 +636,28 @@ ConstExpr ::=       Expr
     ;
 
 
-OptExprList ::=     ExprList
+OptExprList ::=     ExprList:_1
+                    {:
+                        RESULT = _1;
+                    :}
     |               /* empty */
+                    {:
+                        RESULT = new Vector();
+                    :}
     ;
 
 
-ExprList ::=        Expr
-    |               ExprList T_COMMA Expr
+ExprList ::=        Expr:_1
+                    {:
+                        RESULT = new Vector();
+                        RESULT.addElement(_1);
+                    :}
+    |               ExprList:_1 T_COMMA Expr:_2
+                    {:
+                        RESULT = _1;
+                        RESULT.addElement(_2);
+
+                    :}
     ;
 
 
@@ -893,9 +936,10 @@ Designator2 ::=     Designator2:_1 T_DOT T_ID:_3
                         RESULT = ((MyParser) parser).DoIncDecCheck(_2,_1);
 
                     :}
-    |               Designator2:_1 T_LPAREN OptExprList T_RPAREN
+    |               Designator2:_1 T_LPAREN OptExprList:_2 T_RPAREN
                     {:
-                        ((MyParser) parser).DoFuncCall (_1);
+                        
+                        ((MyParser) parser).DoFuncCall (_1,_2);
                         RESULT = _1;
                     :}
     |               Designator3:_1
@@ -943,7 +987,7 @@ Designator3 ::=     T_LPAREN Expr:_2 T_RPAREN
                     :}
     |               T_COLONCOLON T_ID:_1
                     {:
-                        RESULT = ((MyParser) parser).DoDesignator3_ID (_1);
+                        RESULT = ((MyParser) parser).DoDes3_GlobalID (_1);
                     :}
     |               T_ID:_1
                     {:

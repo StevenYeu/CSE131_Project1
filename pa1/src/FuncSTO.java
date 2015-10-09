@@ -4,9 +4,12 @@
 // University of California, San Diego
 //---------------------------------------------------------------------
 
+import java.util.Vector;
+
 class FuncSTO extends STO
 {
 	private Type m_returnType;
+    private Vector<STO> params = new Vector();
 
 	//----------------------------------------------------------------
 	//
@@ -46,4 +49,12 @@ class FuncSTO extends STO
 	{
 		return m_returnType;
 	}
+
+    public void addParam(STO a) {
+        params.add(a);
+    }
+
+    public Vector<STO> getParams() {
+        return params;
+    } 
 }
