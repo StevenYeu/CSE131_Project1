@@ -41,6 +41,7 @@ class FuncSTO extends STO
 	public void setReturnType(Type typ)
 	{
 		m_returnType = typ;
+        setType(typ);
 	}
 
 	//----------------------------------------------------------------

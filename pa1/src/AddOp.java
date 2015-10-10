@@ -20,10 +20,10 @@ class AddOp extends ArithmetricOp {
             return new ErrorSTO(b.getType().getName());
         }
         else if((typeA instanceof IntType) && (typeB instanceof IntType)){
-            return new ExprSTO(a.getName(), new IntType("result")); 
+            return new ExprSTO(a.getName(), new IntType("int")); 
         }
         else {
-            return new ExprSTO(a.getName(), new FloatType("result"));
+            return new ExprSTO(a.getName(), new FloatType("float"));
         }
     }
  

@@ -242,6 +242,29 @@ class MyParser extends parser
 		m_symtab.setFunc(sto);
 	}
 
+    void DoFuncDecl_3(String id, Type t, Object o)
+	{
+        String s = o.toString();
+		if (m_symtab.accessLocal(id) != null)
+		{
+			m_nNumErrors++;
+			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+		}
+	
+		FuncSTO sto = new FuncSTO(id);
+        if(s == "&"){
+            sto.flag = true;
+        }
+        sto.setReturnType(t);
+        
+
+		m_symtab.openScope();
+		m_symtab.setFunc(sto);
+	}
+
+
+
+
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
@@ -322,6 +345,7 @@ class MyParser extends parser
 
 
         STO result;
+        System.out.println(b.getType().getName());
         if (!b.getType().isAssignable(a.getType())) {
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error3b_Assign,b.getType().getName(),a.getType().getName())); 
@@ -347,11 +371,7 @@ class MyParser extends parser
 			m_errors.print(Formatter.toString(ErrorMsg.not_function, sto.getName()));
 			return new ErrorSTO(sto.getName());
 		}
-        else {
-
-            //String s = m_symtab.access(sto.getName()).getName();
-            //System.out.println(sto.getName());
-            
+        else {            
           
             if (m_symtab.access(sto.getName()) == null) {
                 m_nNumErrors++;
@@ -361,8 +381,6 @@ class MyParser extends parser
             else{
 
                 STO fsto = m_symtab.access(sto.getName());
-                
-                //if( !(params.equals(fsto.getParams()))){
                 if( params.size() != fsto.getParams().size()){
                    m_nNumErrors++;
                    m_errors.print(Formatter.toString(ErrorMsg.error5n_Call, params.size(), fsto.getParams().size()));
@@ -389,12 +407,22 @@ class MyParser extends parser
                     }
                     return new ErrorSTO("Error");
                 }
+
+                 //return by reference calls to function values setting
+                if(fsto.flag == true){
+                    sto.setIsAddressable(true);
+                    sto.setIsModifiable(true);
+                }
+                else {
+                    sto.setIsAddressable(false);
+                    sto.setIsModifiable(false);
+                }
             
             }
 
         }
-
-		return sto;
+        STO result = new ExprSTO(m_symtab.getFunc().getName(),m_symtab.getFunc().getReturnType());
+		return result;
 	}
 
 	//----------------------------------------------------------------
@@ -601,11 +629,55 @@ class MyParser extends parser
                           break;
             case "bool":  t = new BoolType("bool");
                           break;
-            default:      t = new VoidType("void",1);
+            default:      t = new VoidType("void",0);
         
         }
         STO result = new VarSTO(id,t);
         return result;
+
+    }
+
+    STO DoReturnStmt(STO expr){
+        if(expr instanceof ErrorSTO)
+            return expr;
+        if(!(m_symtab.getFunc().getReturnType() instanceof VoidType)){
+    
+            if(m_symtab.getFunc().flag == false)
+            {
+                if(!(expr.getType().isAssignable(m_symtab.getFunc().getReturnType()))){ 
+                    m_nNumErrors++;
+                    m_errors.print(Formatter.toString(ErrorMsg.error6a_Return_type, expr.getType().getName(), m_symtab.getFunc().getReturnType().getName()));
+                    return new ErrorSTO("Error");
+                }
+            }
+            else if(m_symtab.getFunc().flag == true){
+                if(!(expr.getType().isEquivalent(m_symtab.getFunc().getReturnType()))){ 
+
+                    m_nNumErrors++;
+                    m_errors.print(Formatter.toString(ErrorMsg.error6b_Return_equiv, expr.getType().getName(), m_symtab.getFunc().getReturnType().getName()));
+                    return new ErrorSTO("Error");
+                }
+                else if(!(expr.isModLValue())){
+                    m_nNumErrors++;
+                    m_errors.print(ErrorMsg.error6b_Return_modlval);
+                    return new ErrorSTO("Error");
+                }
+
+                
+            }
+        }
+        return expr;
+
+    }
+
+
+    STO DoReturnStmt(){
+        if(!(m_symtab.getFunc().getReturnType() instanceof VoidType)){
+                m_nNumErrors++;
+                m_errors.print(ErrorMsg.error6a_Return_expr);
+                return new ErrorSTO("Error");
+        }
+        return m_symtab.getFunc();
 
     }
 

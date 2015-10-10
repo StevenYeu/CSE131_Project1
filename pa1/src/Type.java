@@ -33,7 +33,7 @@ abstract class Type
 
     public Type(String strName){
         setName(strName);
-        setSize(1);
+        setSize(4);
     }
 	//----------------------------------------------------------------
 	//

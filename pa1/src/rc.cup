@@ -358,7 +358,9 @@ FieldFuncDecl ::=   FuncDef
 FuncDef ::=         T_FUNCTION T_COLON ReturnType:_1 OptRef:_2 T_ID:_3
                     {:
                         ((MyParser) parser).SaveLineNum ();
+                        //((MyParser) parser).DoFuncDecl_3(_3,_1,_2);
                         ((MyParser) parser).DoFuncDecl_1(_3);
+                        
                     :}
                     T_LPAREN OptParamList:_4 T_RPAREN
                     {:
@@ -441,6 +443,9 @@ ReturnType ::=      Type:_1
                         RESULT = _1;
                     :}
     |               T_VOID
+                    {:
+                        RESULT = new VoidType("Void",0);
+                    :}
     ;
 
 
@@ -609,8 +614,14 @@ ExitStmt ::=        T_EXIT T_LPAREN Expr T_RPAREN T_SEMI
     ;
 
 
-ReturnStmt ::=      T_RETURN T_SEMI
-    |               T_RETURN Expr T_SEMI
+ReturnStmt ::=      T_RETURN T_SEMI 
+                    {:
+                       // ((MyParser)parser).DoReturnStmt();
+                    :}
+    |               T_RETURN Expr:_1 T_SEMI
+                    {:
+                       // ((MyParser)parser).DoReturnStmt(_1);
+                    :}
     ;
 
 
@@ -961,7 +972,7 @@ Designator3 ::=     T_LPAREN Expr:_2 T_RPAREN
                     :}
     |               T_FLOAT_LITERAL:_1
                     {:
-                        RESULT = new ConstSTO (_1, new FloatType("float"), Float.parseFloat(_1));  // fix me! Done ask about size of float??
+                        RESULT = new ConstSTO (_1, new FloatType("float"), Float.parseFloat(_1));  // fix me! Done 
                         RESULT.setIsAddressable(false);
                         RESULT.setIsModifiable(false);
                     :}

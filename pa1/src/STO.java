@@ -12,6 +12,7 @@ abstract class STO
 	private Type m_type;
 	private boolean m_isAddressable;
 	private boolean m_isModifiable;
+    public boolean flag = false;
 
 	//----------------------------------------------------------------
 	//
