@@ -23,6 +23,13 @@ class FuncSTO extends STO
 		// fields as necessary
 	}
 
+    // need a constructor that sets type
+    public FuncSTO(String strName, Type t)
+    {
+        super (strName, t);
+        setReturnType(null);
+    }
+
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------

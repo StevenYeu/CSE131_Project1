@@ -251,12 +251,13 @@ class MyParser extends parser
 			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
 		}
 	
-		FuncSTO sto = new FuncSTO(id);
+		FuncSTO sto = new FuncSTO(id, t);
+        //System.out.println(t.getName());
         if(s == "&"){
             sto.flag = true;
         }
         sto.setReturnType(t);
-        
+        m_symtab.insert(sto); 
 
 		m_symtab.openScope();
 		m_symtab.setFunc(sto);
@@ -421,8 +422,8 @@ class MyParser extends parser
             }
 
         }
-        STO result = new ExprSTO(m_symtab.getFunc().getName(),m_symtab.getFunc().getReturnType());
-		return result;
+        //STO result = new ExprSTO(m_symtab.getFunc().getName(),m_symtab.getFunc().getReturnType());
+		return sto;
 	}
 
 	//----------------------------------------------------------------
@@ -450,16 +451,15 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	STO DoDesignator3_ID(String strID)
 	{
-		STO sto;
+		STO sto; 
 		if (((sto = m_symtab.access(strID)) == null )  )
-		{	
-                
+		{	 
             m_nNumErrors++;
 		    m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
-		    sto = new ErrorSTO(strID);
+		    sto = new ErrorSTO(strID); // unsure
             return sto;
         }
-
+         
         return sto;
             
 	}
