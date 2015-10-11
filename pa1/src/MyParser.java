@@ -329,8 +329,8 @@ class MyParser extends parser
             m_nNumErrors++;
             return new ErrorSTO(stoDes.getName());
 		}
-        stoDes.setIsAddressable(false);
-        stoDes.setIsModifiable(false);
+        //stoDes.setIsAddressable(false);
+        //stoDes.setIsModifiable(false);
 		
 		return stoDes;
 	}
@@ -665,6 +665,7 @@ class MyParser extends parser
 
                 
             }
+
         }
         return expr;
 
@@ -679,6 +680,35 @@ class MyParser extends parser
         }
         return m_symtab.getFunc();
 
+    }
+
+    STO MissingReturnStmt(Object o, Type typ){
+        if (!(typ instanceof VoidType) ) {
+            if(o == null){
+               m_nNumErrors++;
+               m_errors.print(ErrorMsg.error6c_Return_missing);
+               return new ErrorSTO("Error");
+            }   
+        }
+        return new ExprSTO("return");
+    }
+
+    STO DoExit(STO expr) {
+
+        if(expr instanceof ErrorSTO) {
+            return expr;
+        }
+
+
+        if(!(expr.getType().isAssignable(new IntType("int") ))) {
+            m_nNumErrors++;
+            m_errors.print(Formatter.toString(ErrorMsg.error7_Exit,expr.getType().getName()));
+            return new ErrorSTO("error check 7");
+        }
+        else {
+            return expr;
+        }
+    
     }
 
   }

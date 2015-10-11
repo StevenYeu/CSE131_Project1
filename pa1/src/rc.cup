@@ -366,8 +366,9 @@ FuncDef ::=         T_FUNCTION T_COLON ReturnType:_1 OptRef:_2 T_ID:_3
                     {:
                         ((MyParser) parser).DoFormalParams(_4);
                     :}
-                    T_LBRACE OptStmtList
+                    T_LBRACE OptStmtList:_5
                     {:
+                        ((MyParser) parser).MissingReturnStmt(_5,_1);
                         ((MyParser) parser).DoFuncDecl_2();
                     :}
                     T_RBRACE
@@ -482,13 +483,23 @@ CodeBlock ::=       T_LBRACE
     ;
 
 
-OptStmtList ::=     StmtList
+OptStmtList ::=     StmtList:_1
+                    {:
+                        RESULT = _1;
+                    :}
+
     |               /* empty */
     ;
 
 
-StmtList ::=        Stmt
-    |               StmtList Stmt
+StmtList ::=        Stmt:_1
+                    {:
+                        RESULT = _1;
+                    :}
+    |               StmtList Stmt:_1
+                    {:
+                        RESULT = _1;
+                    :}
     ;
 
 
@@ -502,7 +513,10 @@ Stmt ::=            VarDecl
     |               BreakStmt
     |               ContinueStmt
     |               ExitStmt
-    |               ReturnStmt
+    |               ReturnStmt:_1
+                    {:
+                        RESULT = _1;
+                    :}
     |               ReadStmt
     |               WriteStmt
     |               NewStmt
@@ -607,7 +621,10 @@ ContinueStmt ::=    T_CONTINUE T_SEMI
     ;
 
 
-ExitStmt ::=        T_EXIT T_LPAREN Expr T_RPAREN T_SEMI
+ExitStmt ::=        T_EXIT T_LPAREN Expr:_1 T_RPAREN T_SEMI
+                    {:
+                        ((MyParser) parser).DoExit(_1);
+                    :}
     ;
 
 
@@ -615,9 +632,10 @@ ReturnStmt ::=      T_RETURN T_SEMI
                     {:
                        ((MyParser)parser).DoReturnStmt();
                     :}
-    |               T_RETURN Expr:_1 T_SEMI
+    |               T_RETURN:_1 Expr:_2 T_SEMI
                     {:
-                       ((MyParser)parser).DoReturnStmt(_1);
+                        RESULT = "result"; // changed
+                       ((MyParser)parser).DoReturnStmt(_2);
                     :}
     ;
 
@@ -672,8 +690,8 @@ ExprList ::=        Expr:_1
 Expr ::=            Designator:_1 T_ASSIGN Expr:_2
                     {:
                         
-                        RESULT = ((MyParser) parser).DoAssignExpr (_1);
                         RESULT = ((MyParser) parser).DoAssignTypeCheck(_1,_2);
+                        RESULT = ((MyParser) parser).DoAssignExpr (_1);
                        
                     :}
     |               Expr0:_1
