@@ -176,6 +176,8 @@ class MyParser extends parser
 		}
 
 		VarSTO sto = new VarSTO(id,t);
+        //System.out.println(sto.getName());
+        //System.out.println(sto.getType().getName());
 		m_symtab.insert(sto);
 	}
 
@@ -208,9 +210,11 @@ class MyParser extends parser
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
 		}
-
-        //System.out.println(constexpr.getName());
-
+        //if(m_symtab.accessGlobal(id) != null)
+        //{   
+        //    m_nNumErrors++;
+        //    m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));  
+        //}
 				
         if( !(constexpr instanceof ConstSTO)){
             m_nNumErrors++;
@@ -235,22 +239,42 @@ class MyParser extends parser
             else {
                 sto = new ConstSTO(constexpr.getName(),t);
             }
-            System.out.println(sto.getIntValue());
+           // System.out.println(sto.getIntValue());
            	m_symtab.insert(sto);
         }
 	}
 
 
-    void DoConstDecl(String id, Type t)
+    void DoAutoDecl(String id, STO expr)
 	{
+        if(expr instanceof ErrorSTO)
+            return;
 
 		if (m_symtab.accessLocal(id) != null)
 		{
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
 		}
+        //else if(m_symtab.accessGlobal(id) != null)
+        //{   
+        //    m_nNumErrors++;
+        //    m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+        //}
 		
-		ConstSTO sto = new ConstSTO(id, t, t.getSize());   // fix me ask tutor about size of type
+		ConstSTO sto;
+        if (expr.getType() instanceof IntType) {
+            sto = new ConstSTO(id, expr.getType(), Integer.parseInt(expr.getName()));   // fix me Done
+        }
+        else if (expr.getType() instanceof FloatType) {
+            sto = new ConstSTO(id, expr.getType(), Float.parseFloat(expr.getName()));   // fix me Done
+        }
+        else {
+            sto = new ConstSTO(id,expr.getType());
+        }
+
+        //System.out.println(sto.getName());
+        //System.out.println(sto.getType().getName());
+        //System.out.println(sto.getIntValue());
 		m_symtab.insert(sto);
 	}
 
@@ -566,6 +590,13 @@ class MyParser extends parser
 
             m_nNumErrors++;
             if(o.getOp().equals("%")) {
+                if(result.getName() == "Mod-by-zero"){
+                     m_nNumErrors++;
+                     m_errors.print(ErrorMsg.error8_Arithmetic);
+                     return result;
+                     
+                 }
+
                  m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));                
             }
 
@@ -576,8 +607,8 @@ class MyParser extends parser
                      m_errors.print(ErrorMsg.error8_Arithmetic);
                      return result;
                      
-                 }
-                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp()));                
+                }
+                m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp()));                
             }
 
             else if(o.getOp().equals("<") || o.getOp().equals("<=") || o.getOp().equals(">") || o.getOp().equals(">=")) {

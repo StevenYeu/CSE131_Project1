@@ -1,4 +1,6 @@
 function : void main() {
-    const int x = (5 - false) / true;
-        
+    //const int x = (5 - false) / true;
+    //const int y = 5/0.0;
+    //const int z = 5 % 0;
+    const int o = 2 % 2;
 }

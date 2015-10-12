@@ -1,0 +1,13 @@
+int a;
+int b;
+const int c = 2 + 3 * 0 - 1;
+//const int d = c * 7;
+
+function : int main() {
+
+//const float e = (d + c) * c;
+    a = b + c;
+    //a = (b + c + d);
+    //return (a % c);
+    return 0;
+}
