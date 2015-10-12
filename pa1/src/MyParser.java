@@ -197,8 +197,53 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
-	void DoConstDecl(String id, Type t)
+	void DoConstDecl2(String id, Type t, STO constexpr)
 	{
+        if(constexpr instanceof ErrorSTO){
+            return;
+        }
+
+		if (m_symtab.accessLocal(id) != null)
+		{
+			m_nNumErrors++;
+			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+		}
+
+        //System.out.println(constexpr.getName());
+
+				
+        if( !(constexpr instanceof ConstSTO)){
+            m_nNumErrors++;
+            m_errors.print(Formatter.toString(ErrorMsg.error8_CompileTime, id));
+            
+        }
+        if( !(constexpr.getType().isAssignable(t)))
+        {
+            m_nNumErrors++;
+            m_errors.print(Formatter.toString(ErrorMsg.error8_Assign, constexpr.getType().getName(),t.getName()));
+        }
+        else{
+            ConstSTO sto;
+            if (t instanceof IntType) {
+                sto = new ConstSTO(constexpr.getName(), t, Integer.parseInt(constexpr.getName()));   // fix me Done
+
+            }
+            else if (t instanceof FloatType) {
+                sto = new ConstSTO(constexpr.getName(), t, Float.parseFloat(constexpr.getName()));   // fix me Done
+
+            }
+            else {
+                sto = new ConstSTO(constexpr.getName(),t);
+            }
+            System.out.println(sto.getIntValue());
+           	m_symtab.insert(sto);
+        }
+	}
+
+
+    void DoConstDecl(String id, Type t)
+	{
+
 		if (m_symtab.accessLocal(id) != null)
 		{
 			m_nNumErrors++;
@@ -208,6 +253,7 @@ class MyParser extends parser
 		ConstSTO sto = new ConstSTO(id, t, t.getSize());   // fix me ask tutor about size of type
 		m_symtab.insert(sto);
 	}
+
 
 	//----------------------------------------------------------------
 	//
@@ -252,7 +298,7 @@ class MyParser extends parser
 		}
 	
 		FuncSTO sto = new FuncSTO(id, t);
-        //System.out.println(t.getName());
+        
         if(s == "&"){
             sto.flag = true;
         }
@@ -524,11 +570,18 @@ class MyParser extends parser
             }
 
             else if(o.getOp().equals("+") || o.getOp().equals("-") || o.getOp().equals("/") || o.getOp().equals("*")) {
+                 
+                if((o.getOp().equals("/")) && (result.getName() == "Divide-by-zero")){
+                     m_nNumErrors++;
+                     m_errors.print(ErrorMsg.error8_Arithmetic);
+                     return result;
+                     
+                 }
                  m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp()));                
             }
 
             else if(o.getOp().equals("<") || o.getOp().equals("<=") || o.getOp().equals(">") || o.getOp().equals(">=")) {
-                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp())); 
+                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getType().getName(),o.getOp())); 
             }
             else if(o.getOp().equals("==") || o.getOp().equals("!=")) {
                 m_errors.print(Formatter.toString(ErrorMsg.error1b_Expr,a.getType().getName(),o.getOp(),b.getType().getName())); 
