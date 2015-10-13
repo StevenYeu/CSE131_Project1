@@ -21,10 +21,10 @@ class DivOp extends ArithmetricOp {
         }
         else if((typeA instanceof IntType) && (typeB instanceof IntType)){
             if(a instanceof ConstSTO && b instanceof ConstSTO) {
-                if (Integer.parseInt(b.getName()) == 0){
+                if (((ConstSTO)b).getIntValue() == 0){
                     return new ErrorSTO("Divide-by-zero");    
                 }
-                int result = Integer.parseInt(a.getName()) / Integer.parseInt(b.getName());
+                int result = ((ConstSTO)a).getIntValue() / ((ConstSTO)b).getIntValue();
                 return new ConstSTO(Integer.toString(result), new IntType("int"),result);
 
             }
@@ -33,10 +33,10 @@ class DivOp extends ArithmetricOp {
         else {
 
             if(a instanceof ConstSTO && b instanceof ConstSTO) {
-                if( Float.parseFloat(b.getName()) == 0.0){
+                if( ((ConstSTO)b).getFloatValue() == 0.0){
                     return new ErrorSTO("Divide-by-zero");
                 }
-                float result = Float.parseFloat(a.getName()) + Float.parseFloat(b.getName());
+                float result = ((ConstSTO)a).getFloatValue() / ((ConstSTO)b).getFloatValue();
                 return new ConstSTO(Float.toString(result), new FloatType("float"),result);
 
             }

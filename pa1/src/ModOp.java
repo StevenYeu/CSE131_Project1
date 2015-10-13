@@ -21,12 +21,12 @@ class ModOp extends ArithmetricOp {
         }
         else if((typeA instanceof IntType) && (typeB instanceof IntType)){
              if(a instanceof ConstSTO && b instanceof ConstSTO) {
-                if (Integer.parseInt(b.getName()) == 0){
+                if (((ConstSTO)b).getIntValue() == 0){
 
                     return new ErrorSTO("Mod-by-zero");
                     
                 }
-                int result = Integer.parseInt(a.getName()) % Integer.parseInt(b.getName());
+                int result = ((ConstSTO)a).getIntValue() % ((ConstSTO)b).getIntValue(); 
                 return new ConstSTO(Integer.toString(result), new IntType("int"),result);
 
             }

@@ -14,8 +14,15 @@ class CaretOp extends BitwiseOp {
         else if (!(typeB.isEquivalent(new IntType("int")))) {
             return new ErrorSTO(typeB.getName());
         }
-        else if ( (typeA.isEquivalent(new IntType("int"))) && (typeB.isEquivalent(new BoolType("int")))) {
-            return new ExprSTO("result", new IntType("int"));
+        else if ( (typeA.isEquivalent(new IntType("int"))) && (typeB.isEquivalent(new IntType("int")))) {
+           
+            if(a instanceof ConstSTO && b instanceof ConstSTO) {
+                int result = ((ConstSTO)a).getIntValue() ^ ((ConstSTO)b).getIntValue();
+                return new ConstSTO(Integer.toString(result), new IntType("int"),result);
+
+            }
+            return new ExprSTO(a.getName(), new IntType("int")); 
+ 
         }
         return new ErrorSTO("Error");
         

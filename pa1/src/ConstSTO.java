@@ -26,7 +26,7 @@ class ConstSTO extends STO
 		super(strName);
 		m_value = null; // fix this
 		// You may want to change the isModifiable and isAddressable
-		// fields as necessaryi
+		// fields as necessary
         this.setIsAddressable(true);
 	}
 
@@ -36,15 +36,6 @@ class ConstSTO extends STO
 
 
 		m_value = null; // fix this
-
-        if( typ instanceof BoolType) {
-            if(strName == "true") {
-                m_value = new BigDecimal(1);
-            }
-            else if(strName == "false") {
-                m_value = new BigDecimal(0);
-            }
-        }
 
 		// You may want to change the isModifiable and isAddressable
 		// fields as necessary

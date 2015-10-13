@@ -21,7 +21,7 @@ class MulOp extends ArithmetricOp {
         }
         else if((typeA instanceof IntType) && (typeB instanceof IntType)){
             if(a instanceof ConstSTO && b instanceof ConstSTO) {
-                int result = Integer.parseInt(a.getName()) * Integer.parseInt(b.getName());
+                int result = ((ConstSTO)a).getIntValue() * ((ConstSTO)b).getIntValue();
                 return new ConstSTO(Integer.toString(result), new IntType("int"),result);
 
             }
@@ -29,7 +29,8 @@ class MulOp extends ArithmetricOp {
         }
         else {
             if(a instanceof ConstSTO && b instanceof ConstSTO) {
-                float result = Float.parseFloat(a.getName()) * Float.parseFloat(b.getName());
+                float result = ((ConstSTO)a).getFloatValue() * ((ConstSTO)b).getFloatValue();
+
                 return new ConstSTO(Float.toString(result), new FloatType("float"),result);
 
             }

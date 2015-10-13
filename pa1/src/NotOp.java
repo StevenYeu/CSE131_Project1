@@ -11,6 +11,16 @@ class NotOp extends UnaryOp {
             return new ErrorSTO(typeA.getName());
         }
         else {
+            if(a instanceof ConstSTO) {
+                if (!((ConstSTO)a).getBoolValue()) {
+                    return new ConstSTO("true",new BoolType("bool"), 1);
+                }
+                else {
+                    return new ConstSTO("false",new BoolType("bool"), 0);
+                }
+            }
+
+
             return new ExprSTO(a.getType().getName(), new BoolType("bool"));
         
         }

@@ -229,17 +229,23 @@ class MyParser extends parser
         else{
             ConstSTO sto;
             if (t instanceof IntType) {
-                sto = new ConstSTO(constexpr.getName(), t, Integer.parseInt(constexpr.getName()));   // fix me Done
-
+                sto = new ConstSTO(id, t, Integer.parseInt(constexpr.getName()));   // fix me Done
+                System.out.println(sto.getIntValue());
             }
             else if (t instanceof FloatType) {
-                sto = new ConstSTO(constexpr.getName(), t, Float.parseFloat(constexpr.getName()));   // fix me Done
+                sto = new ConstSTO(id, t, Float.parseFloat(constexpr.getName()));   // fix me Done
 
             }
             else {
-                sto = new ConstSTO(constexpr.getName(),t);
+                //System.out.println(id);
+                if(((ConstSTO)constexpr).getBoolValue())
+                    sto = new ConstSTO(id,t,1);
+                else
+                    sto = new ConstSTO(id,t,0);
+                //System.out.println(sto.getBoolValue());
             }
-           // System.out.println(sto.getIntValue());
+          
+
            	m_symtab.insert(sto);
         }
 	}
@@ -269,7 +275,10 @@ class MyParser extends parser
             sto = new ConstSTO(id, expr.getType(), Float.parseFloat(expr.getName()));   // fix me Done
         }
         else {
-            sto = new ConstSTO(id,expr.getType());
+            if(((ConstSTO)expr).getBoolValue())
+                sto = new ConstSTO(id,expr.getType(),1);
+            else
+                sto = new ConstSTO(id,expr.getType(),0);   
         }
 
         //System.out.println(sto.getName());

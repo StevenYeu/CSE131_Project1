@@ -5,6 +5,6 @@ function : void main(){
     const auto d = true;
    
    
-    const auto d = 8; 
-    auto d = 748; 
+    const auto e = 8; 
+    auto f = 748; 
 }
