@@ -148,8 +148,8 @@ non terminal
     OptPointerList,
     PointerList,
     Pointer,
-    OptArrayList,
-    ArrayList,
+    // moved OptArrayList,
+    // moved ArrayList,
     Array,
     NewStmt,
     DeleteStmt
@@ -191,7 +191,9 @@ non terminal Vector
     OptParamList,
     ParamList,
     OptExprList,
-    ExprList
+    ExprList,
+    ArrayList,
+    OptArrayList
     ;
 
 //--------------------------------------------------------------------
@@ -237,7 +239,7 @@ ExternDecl ::=      T_EXTERN DecoratedBasicType:_2 T_ID:_3 OptArrayList:_4
 
 VarDecl ::=         OptStatic:_1 DecoratedType:_2 T_ID:_3 OptArrayList:_4 OptInit:_5
                     {:
-                        ((MyParser) parser).DoVarDecl (_3,_2); //changed
+                        ((MyParser) parser).DoVarDecl2 (_3,_2,_4,((STO)_5)); //changed
                     :}
                     T_SEMI
     |               OptStatic:_1 T_AUTO T_ID:_3 T_ASSIGN Expr:_5 
@@ -464,15 +466,32 @@ Pointer ::=         T_STAR
     ;
 
 
-OptArrayList ::=    ArrayList
+OptArrayList ::=    ArrayList:_1
+                    {:
+                        RESULT = _1;
+                    :}
     |               /* empty */
+                    {:
+                        RESULT = new Vector();
+                    :}
     ;
 
-ArrayList ::=       Array
-    |               ArrayList Array
+ArrayList ::=       Array:_1
+                    {:
+                        RESULT = new Vector();
+                        RESULT.addElement(_1);
+                    :}
+    |               ArrayList:_1 Array:_2
+                    {:
+                        RESULT = _1;
+                        RESULT.addElement(_2);
+                    :}
     ;
 
-Array ::=           T_LBRACKET ConstExpr T_RBRACKET
+Array ::=           T_LBRACKET ConstExpr:_1 T_RBRACKET
+                    {:
+                        RESULT =_1;
+                    :}
     ;
 
 
@@ -569,7 +588,10 @@ OptRef ::=          T_AMPERSAND:_1
     ;
 
 
-OptInit ::=         T_ASSIGN Expr
+OptInit ::=         T_ASSIGN Expr:_1
+                    {:
+                        RESULT = _1;
+                    :}
     |               /* empty */
     ;
 
@@ -918,9 +940,10 @@ Designator ::=      T_STAR Designator:_1
                     {:
                         RESULT = _1;
                     :}
-    |               UnarySign Designator:_2
+    |               UnarySign:_1 Designator:_2
                     {:
-                        RESULT = _2;
+
+                        RESULT = ((MyParser) parser).DoUnarySign((String)_1,_2);
                     :}
     |               T_NOT Designator:_1
                     {:
@@ -1032,6 +1055,12 @@ NewStmt ::=	    T_NEW Designator OptCtorCall T_SEMI
 DeleteStmt ::=      T_DELETE Designator T_SEMI
     ;
 
-UnarySign ::=       T_MINUS 
-    |		    T_PLUS  
+UnarySign ::=       T_MINUS
+                {:
+                    RESULT = "-";
+                :}
+    |		    T_PLUS
+                {:
+                    RESULT = "+";
+                :}
     ;

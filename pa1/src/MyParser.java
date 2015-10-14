@@ -16,10 +16,9 @@ class MyParser extends parser
 	private String m_strLastLexeme;
 	private boolean m_bSyntaxError = true;
 	private int m_nSavedLineNum;
-    private int errCount = 0; // add for check 3a Phase 1
+    private boolean paramAmp = false;
 
 	private SymbolTable m_symtab;
-
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
@@ -181,6 +180,67 @@ class MyParser extends parser
 		m_symtab.insert(sto);
 	}
 
+    //----------------------------------------------------------------
+	//
+	//----------------------------------------------------------------
+	void DoVarDecl2(String id, Type t, Vector<STO> arraylist, STO expr)
+	{
+        int numDim = arraylist.size();
+        if( expr instanceof ErrorSTO)
+            return;
+
+        if (m_symtab.accessLocal(id) != null)
+		{
+		    m_nNumErrors++;
+		    m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+            return;
+		}
+
+
+        if(numDim > 0)
+        {
+            for(int i = 0; i < numDim; i++){
+                STO arrayDim = arraylist.elementAt(i);
+                if(! arrayDim.getType().isEquivalent(new IntType("int"))) {
+                    m_nNumErrors++;
+			        m_errors.print(Formatter.toString(ErrorMsg.error10i_Array, arrayDim.getType().getName()));
+                    return;
+                }
+                else if(!(arrayDim instanceof ConstSTO)){
+                    m_nNumErrors++;
+                    m_errors.print(ErrorMsg.error10c_Array);
+                    return;
+                }
+                else if(((ConstSTO)arrayDim).getIntValue() < 0){
+                    m_nNumErrors++;
+			        m_errors.print(Formatter.toString(ErrorMsg.error10z_Array, (((ConstSTO)arrayDim).getIntValue())));
+                    return;
+                }
+                
+            }
+        }
+        else {
+
+            if(expr == null) {
+              	VarSTO sto = new VarSTO(id,t);
+		        m_symtab.insert(sto);
+                return;
+            }
+		   
+            else if(!expr.getType().isAssignable(t)){
+                m_nNumErrors++;
+                m_errors.print(Formatter.toString(ErrorMsg.error8_Assign, expr.getType().getName(),t.getName()));
+                return;
+            }
+        }
+            
+
+		VarSTO sto = new VarSTO(id,t);
+		m_symtab.insert(sto);
+            
+        
+	}
+
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
@@ -210,12 +270,7 @@ class MyParser extends parser
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
 		}
-        //if(m_symtab.accessGlobal(id) != null)
-        //{   
-        //    m_nNumErrors++;
-        //    m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));  
-        //}
-				
+       				
         if( !(constexpr instanceof ConstSTO)){
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error8_CompileTime, id));
@@ -261,12 +316,7 @@ class MyParser extends parser
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
 		}
-        //else if(m_symtab.accessGlobal(id) != null)
-        //{   
-        //    m_nNumErrors++;
-        //    m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
-        //}
-		
+       		
 		ConstSTO sto;
         if (expr.getType() instanceof IntType) {
             sto = new ConstSTO(id, expr.getType(), Integer.parseInt(expr.getName()));   // fix me Done
@@ -280,10 +330,6 @@ class MyParser extends parser
             else
                 sto = new ConstSTO(id,expr.getType(),0);   
         }
-
-        //System.out.println(sto.getName());
-        //System.out.println(sto.getType().getName());
-        //System.out.println(sto.getIntValue());
 		m_symtab.insert(sto);
 	}
 
@@ -323,12 +369,18 @@ class MyParser extends parser
 
     void DoFuncDecl_3(String id, Type t, Object o)
 	{
-        String s = o.toString();
+        String s = o.toString(); 
 		if (m_symtab.accessLocal(id) != null)
 		{
-			m_nNumErrors++;
-			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+		    if (!(m_symtab.accessLocal(id) instanceof FuncSTO)) {
+                m_nNumErrors++;
+			    m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+        
+            }
 		}
+
+
+      
 	
 		FuncSTO sto = new FuncSTO(id, t);
         
@@ -371,6 +423,44 @@ class MyParser extends parser
             STO s = this.ProcessParams(params.get(i));
             sto.addParam(this.ProcessParams(params.get(i)));
         }
+
+        boolean overloadErr = false;
+        Vector<STO> over = m_symtab.OverloadCheck(sto.getName());
+        //System.out.println(over.size());
+        if (!over.isEmpty()) {
+            for (int i = 0; i < over.size(); i++) {
+
+                Vector<STO> par = ((FuncSTO)over.elementAt(i)).getParams();
+                if (par.size() == sto.getParams().size()) {
+                    for(int curParam = 0; curParam < par.size(); curParam++) {
+                        Type parType = par.elementAt(curParam).getType();
+                        Type curType = sto.getParams().elementAt(curParam).getType();
+                        if(!parType.isEquivalent(curType)) {
+                            m_symtab.addFunc(sto);
+                            overloadErr = true;
+                            break;
+                        }
+                    }
+
+                    if(!overloadErr) {
+                        m_nNumErrors++;
+                        m_errors.print(Formatter.toString(ErrorMsg.error9_Decl, sto.getName()));
+                        return;
+                    }
+                }
+                else {
+                    m_symtab.addFunc(sto);
+                }
+               
+            }
+
+        
+        }
+        else {
+            m_symtab.addFunc(sto);
+        }
+
+
         m_symtab.setFunc(sto);
 	}
 
@@ -425,11 +515,12 @@ class MyParser extends parser
 
 
         STO result;
-        System.out.println(b.getType().getName());
+        //System.out.println(b.getType().getName());
         if (!b.getType().isAssignable(a.getType())) {
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error3b_Assign,b.getType().getName(),a.getType().getName())); 
-            return new ErrorSTO(a.getName());
+            return new ErrorSTO(a.getName()); 
+           
                    
         }
         result = a;
@@ -459,33 +550,77 @@ class MyParser extends parser
                 return new ErrorSTO("Error");
             }
             else{
-
                 STO fsto = m_symtab.access(sto.getName());
-                if( params.size() != fsto.getParams().size()){
-                   m_nNumErrors++;
-                   m_errors.print(Formatter.toString(ErrorMsg.error5n_Call, params.size(), fsto.getParams().size()));
-                   return new ErrorSTO(sto.getName());
-                }
-                else if( params.size() == fsto.getParams().size()){
-                    for(int i = 0; i < fsto.getParams().size(); i++){
-                        if((fsto.getParams().get(i).getName().charAt(0)) == '&') {
-                            if(!(params.get(i).getType().isEquivalent(fsto.getParams().get(i).getType()))){
-                                m_nNumErrors++;
-                                m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
-                            }
-                            else if(!(params.get(i).isModLValue())){
-                                m_nNumErrors++;
-                                m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
-                            }
+                Vector<STO> ovldList = m_symtab.OverloadCheck(sto.getName());
+                System.out.println("OverloadCount: " + ovldList.size());
+                if(ovldList.size() < 2){
 
+                   
+                    if( params.size() != fsto.getParams().size()){
+                        m_nNumErrors++;
+                        m_errors.print(Formatter.toString(ErrorMsg.error5n_Call, params.size(), fsto.getParams().size()));
+                        return new ErrorSTO(sto.getName());
+                    }
+                    else if( params.size() == fsto.getParams().size()){
+                        for(int i = 0; i < fsto.getParams().size(); i++){
+                        //if((fsto.getParams().get(i).getName().charAt(0)) == '&') {
+                            if(paramAmp == true){
+                                if(!(params.get(i).getType().isEquivalent(fsto.getParams().get(i).getType()))){
+                                    m_nNumErrors++;
+                                    m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
+                                }
+                                else if(!(params.get(i).isModLValue())){
+                                    m_nNumErrors++;
+                                    m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
+                                }
+                                paramAmp = false;
+
+                            }
+                            else {
+                                 if(!(params.get(i).getType().isAssignable(fsto.getParams().get(i).getType()))){
+                                    m_nNumErrors++;
+                                    m_errors.print(Formatter.toString(ErrorMsg.error5a_Call, params.get(i).getType().getName(), fsto.getParams().get(i).getName(), fsto.getParams().get(i).getType().getName()));
+                                }
+                            
+                            }
+                                                   
                         }
-                        else if(!(params.get(i).getType().isAssignable(fsto.getParams().get(i).getType()))){
-                            m_nNumErrors++;
-                            m_errors.print(Formatter.toString(ErrorMsg.error5a_Call, params.get(i).getType().getName(), fsto.getParams().get(i).getName(), fsto.getParams().get(i).getType().getName()));
+                        return new ErrorSTO("Error");
+                    }
+                }
+                else{
+                    int OverloadCnt = 0;
+                    for(int i = 0; i < ovldList.size(); i++){
+                        Vector<STO> curPar = ovldList.elementAt(i).getParams();
+
+                        if(curPar.size() == params.size()){
+                            int ParamCnt = 0;
+                            for(int j = 0; j < params.size(); j++){
+                               
+                                Type parType = params.elementAt(j).getType();
+                                Type curParType = curPar.elementAt(j).getType();
+                                if(!parType.isEquivalent(curParType)){
+                                    OverloadCnt++;
+                                    break;
+                                }
+                                else{
+                                    ParamCnt++;
+                                }
+                            }
+                            if(ParamCnt == (params.size()))
+                                return sto;
+                        }
+                        else{
+                            OverloadCnt++;
                         }
                         
                     }
-                    return new ErrorSTO("Error");
+                    System.out.println(OverloadCnt);
+                    if(OverloadCnt == (ovldList.size())){
+                        m_nNumErrors++;
+                        m_errors.print(Formatter.toString(ErrorMsg.error9_Illegal, sto.getName()));
+                        return new ErrorSTO("Error");
+                    }
                 }
 
                  //return by reference calls to function values setting
@@ -710,9 +845,24 @@ class MyParser extends parser
     } 
 
     STO ProcessParams(String s) {
-        String[] splitStr = s.split("\\s+");
-        String type = splitStr[0];
-        String id = splitStr[1];
+        String[] splitStr;
+        String type;
+        String id;
+        
+        if(s.contains("&")) {
+            paramAmp = true;
+            splitStr = s.split("&");
+            type = splitStr[0].trim();
+            id = splitStr[1].trim();
+            System.out.println(type);
+        }
+        else {
+            splitStr = s.split("\\s+");
+            type = splitStr[0].trim();
+            id = splitStr[1].trim();
+
+        }
+
         Type t;
         switch (type) 
         {
@@ -726,6 +876,7 @@ class MyParser extends parser
         
         }
         STO result = new VarSTO(id,t);
+        m_symtab.insert(result);
         return result;
 
     }
@@ -804,4 +955,20 @@ class MyParser extends parser
     
     }
 
-  }
+    STO DoUnarySign(String s, STO des){
+        if(des instanceof ErrorSTO)
+            return des;
+        if(s == "-"){
+            if( des instanceof ConstSTO){
+                if(des.getType() instanceof IntType){
+                    return new ConstSTO("-" + des.getName(), des.getType(), -1*((ConstSTO)des).getIntValue());
+                }
+                else if(des.getType() instanceof FloatType){
+                    return new ConstSTO("-" + des.getName(), des.getType(), -1.0*((ConstSTO)des).getFloatValue());
+                }
+            }
+            
+        }
+        return des;
+    }
+}

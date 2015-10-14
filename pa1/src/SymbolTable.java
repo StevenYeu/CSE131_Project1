@@ -12,7 +12,7 @@ class SymbolTable
 	private int m_nLevel;
 	private Scope m_scopeGlobal;
 	private FuncSTO m_func = null;
-    private Vector<STO> functions;
+    private Vector<STO> functions = new Vector<STO>();
     
 	//----------------------------------------------------------------
 	//
@@ -31,7 +31,25 @@ class SymbolTable
 	{
 		Scope scope = m_stkScopes.peek();
 		scope.InsertLocal(sto);
-	}
+        	
+    }
+
+    //----------------------------------------------------------------
+    // added Check for overloaded Functions
+    //---------------------------------------------------------------
+    public Vector<STO> OverloadCheck(String funcName) {
+
+        Vector<STO> overloaded = new Vector<STO>();
+        for (int i =0; i < functions.size(); i++) {
+
+            if (funcName.equals(functions.elementAt(i).getName())) {
+                //System.out.println("Curretn Function: " + funcName);
+                //System.out.println("In functions: " + functions.elementAt(i).getName());
+                overloaded.add(functions.elementAt(i));
+            }
+        }
+        return overloaded;
+    }  
 
 	//----------------------------------------------------------------
 	//
@@ -105,7 +123,14 @@ class SymbolTable
 
 	//----------------------------------------------------------------
 	//	This is the function currently being parsed.
-	//----------------------------------------------------------------
+	//---------------------------------------------------------------
+
+    public void addFunc(STO f) {
+        if( f instanceof FuncSTO){
+            functions.add(f);
+        }
+    }
+
 	public FuncSTO getFunc() { return m_func; }
 	public void setFunc(FuncSTO sto) { m_func = sto; }
 }
