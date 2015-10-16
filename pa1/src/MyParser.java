@@ -6,6 +6,7 @@
 
 import java_cup.runtime.*;
 import java.util.Vector;
+import java.util.List;
 
 class MyParser extends parser
 {
@@ -17,6 +18,7 @@ class MyParser extends parser
 	private boolean m_bSyntaxError = true;
 	private int m_nSavedLineNum;
     private boolean paramAmp = false;
+    private boolean isInLoop = false;
 
 	private SymbolTable m_symtab;
 	//----------------------------------------------------------------
@@ -180,12 +182,28 @@ class MyParser extends parser
 		m_symtab.insert(sto);
 	}
 
+
+    void DoStructVarDecl(Type t, String id)
+	{
+		if (m_symtab.accessLocal(id) != null)
+		{
+			m_nNumErrors++;
+			m_errors.print(Formatter.toString(ErrorMsg.error13a_Struct, id));
+		}
+
+		VarSTO sto = new VarSTO(id,t);
+        
+		m_symtab.insert(sto);
+	}
+
+
     //----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
 	void DoVarDecl2(String id, Type t, Vector<STO> arraylist, STO expr)
 	{
         int numDim = arraylist.size();
+        VarSTO sto;
         if( expr instanceof ErrorSTO)
             return;
 
@@ -216,13 +234,34 @@ class MyParser extends parser
 			        m_errors.print(Formatter.toString(ErrorMsg.error10z_Array, (((ConstSTO)arrayDim).getIntValue())));
                     return;
                 }
-                
+
             }
+             
+            STO sizeStoTop = arraylist.elementAt(0);
+            ArrayType aTopType = new ArrayType(t.getName(), ((ConstSTO)sizeStoTop).getIntValue(), numDim);
+
+            //int j = 1;
+            for(int i = 1; i <=numDim; i++){
+            
+                if(i == numDim){
+                    aTopType.addNext(t);
+                }
+                else{  
+                  STO sizeSto = arraylist.elementAt(i);
+                  ArrayType typ = new ArrayType(t.getName()+"["+ ((ConstSTO)sizeSto).getIntValue() +"]", ((ConstSTO)sizeSto).getIntValue(),numDim-i);
+                  aTopType.addNext(typ);
+                }
+                
+                
+                //j++;        
+            }
+            
+            sto = new VarSTO(id, aTopType);
         }
         else {
 
             if(expr == null) {
-              	VarSTO sto = new VarSTO(id,t);
+              	sto = new VarSTO(id,t);
 		        m_symtab.insert(sto);
                 return;
             }
@@ -232,14 +271,68 @@ class MyParser extends parser
                 m_errors.print(Formatter.toString(ErrorMsg.error8_Assign, expr.getType().getName(),t.getName()));
                 return;
             }
+            sto = new VarSTO(id,t);
+
         }
             
-
-		VarSTO sto = new VarSTO(id,t);
 		m_symtab.insert(sto);
             
         
 	}
+
+
+    //----------------------------------------------------------------
+	//
+	//----------------------------------------------------------------
+	void DoForEachDecl(Type iterType, Object opRef, String id, STO expr)
+	{ 
+
+        isInLoop = true;
+
+        String s = opRef.toString();
+        
+		if (m_symtab.accessLocal(id) != null)
+		{
+			m_nNumErrors++;
+			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+            return;
+		}
+        VarSTO sto = new VarSTO(id,iterType);        
+		m_symtab.insert(sto);
+
+        if (!(expr.getType() instanceof ArrayType)){
+	        m_nNumErrors++;
+			m_errors.print(ErrorMsg.error12a_Foreach);
+            return;
+        }
+
+        if ( s == "&" ){
+            System.out.println("expr Basetype: " + ((ArrayType)expr.getType()).getBaseType().getName());
+            System.out.println("iter type: " + iterType.getName());
+
+            if(!(((ArrayType)expr.getType()).getNext().isEquivalent(iterType))){
+
+                
+                m_nNumErrors++;
+			    m_errors.print(Formatter.toString(ErrorMsg.error12r_Foreach, ( (ArrayType) expr.getType()).getNext().getName(), id, iterType.getName()));
+                return;
+
+            }
+
+        }
+        else{
+            if(!(((ArrayType)expr.getType()).getNext().isAssignable(iterType))){
+                
+                m_nNumErrors++;
+			    m_errors.print(Formatter.toString(ErrorMsg.error12v_Foreach, ( (ArrayType) expr.getType()).getNext().getName(), id, iterType.getName()));
+                return;
+
+            }
+        }
+		//VarSTO sto = new VarSTO(id,iterType);        
+		//m_symtab.insert(sto);
+	}
+
 
 	//----------------------------------------------------------------
 	//
@@ -285,19 +378,16 @@ class MyParser extends parser
             ConstSTO sto;
             if (t instanceof IntType) {
                 sto = new ConstSTO(id, t, Integer.parseInt(constexpr.getName()));   // fix me Done
-                System.out.println(sto.getIntValue());
             }
             else if (t instanceof FloatType) {
                 sto = new ConstSTO(id, t, Float.parseFloat(constexpr.getName()));   // fix me Done
 
             }
             else {
-                //System.out.println(id);
                 if(((ConstSTO)constexpr).getBoolValue())
                     sto = new ConstSTO(id,t,1);
                 else
                     sto = new ConstSTO(id,t,0);
-                //System.out.println(sto.getBoolValue());
             }
           
 
@@ -337,15 +427,36 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
-	void DoStructdefDecl(String id)
+	void DoStructdefDecl(String id, Vector<STO> vars)
 	{
 		if (m_symtab.accessLocal(id) != null)
 		{
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
 		}
-		
+
+      //  if(vars == null) {
+      //      System.out.println("Bad");
+      //  }
+      //  for(int i = 0; i < vars.size(); i++){
+      //      STO vsto = vars.get(i);
+            
+      //      VarSTO varsto = new VarSTO(vsto.getName(),vsto.getType());
+      //      if (m_symtab.accessStruct(id) != null)
+      //      {
+      //          m_nNumErrors++;
+      //          m_errors.print(Formatter.toString(ErrorMsg.error13a_Struct, id));
+      //          return;
+
+      //      }
+      //      m_symtab.insert(varsto);
+            
+      //  }
+
+	
+        
 		StructdefSTO sto = new StructdefSTO(id);
+        System.out.println(sto.getName());
 		m_symtab.insert(sto);
 	}
 
@@ -421,12 +532,15 @@ class MyParser extends parser
         FuncSTO sto = m_symtab.getFunc();
         for(int i = 0; i < params.size(); i++){
             STO s = this.ProcessParams(params.get(i));
+            if(s.getType() instanceof ArrayType){  //add array type check
+                paramAmp = true;
+            }
+
             sto.addParam(this.ProcessParams(params.get(i)));
         }
 
         boolean overloadErr = false;
         Vector<STO> over = m_symtab.OverloadCheck(sto.getName());
-        //System.out.println(over.size());
         if (!over.isEmpty()) {
             for (int i = 0; i < over.size(); i++) {
 
@@ -515,7 +629,6 @@ class MyParser extends parser
 
 
         STO result;
-        //System.out.println(b.getType().getName());
         if (!b.getType().isAssignable(a.getType())) {
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error3b_Assign,b.getType().getName(),a.getType().getName())); 
@@ -552,7 +665,6 @@ class MyParser extends parser
             else{
                 STO fsto = m_symtab.access(sto.getName());
                 Vector<STO> ovldList = m_symtab.OverloadCheck(sto.getName());
-                System.out.println("OverloadCount: " + ovldList.size());
                 if(ovldList.size() < 2){
 
                    
@@ -563,8 +675,8 @@ class MyParser extends parser
                     }
                     else if( params.size() == fsto.getParams().size()){
                         for(int i = 0; i < fsto.getParams().size(); i++){
-                        //if((fsto.getParams().get(i).getName().charAt(0)) == '&') {
-                            if(paramAmp == true){
+                        //if((fsto.getParams().get(i).getName().charAt(0)) == '&') { // pass by refernece check
+                            if(paramAmp == true || params.get(i).getType() instanceof ArrayType){ // added Array Type check
                                 if(!(params.get(i).getType().isEquivalent(fsto.getParams().get(i).getType()))){
                                     m_nNumErrors++;
                                     m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
@@ -588,7 +700,7 @@ class MyParser extends parser
                         return new ErrorSTO("Error");
                     }
                 }
-                else{
+                else{ // overload check
                     int OverloadCnt = 0;
                     for(int i = 0; i < ovldList.size(); i++){
                         Vector<STO> curPar = ovldList.elementAt(i).getParams();
@@ -615,7 +727,6 @@ class MyParser extends parser
                         }
                         
                     }
-                    System.out.println(OverloadCnt);
                     if(OverloadCnt == (ovldList.size())){
                         m_nNumErrors++;
                         m_errors.print(Formatter.toString(ErrorMsg.error9_Illegal, sto.getName()));
@@ -653,12 +764,44 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
-	STO DoDesignator2_Array(STO sto)
+	STO DoDesignator2_Array(STO sto, STO expr)
 	{
 		// Good place to do the array checks
+        if (sto instanceof ErrorSTO){
+            return sto;
+        }
+        else if(expr instanceof ErrorSTO){
+            return expr;
+        }
+        
+        if (!(sto.getType() instanceof ArrayType) && !(sto.getType() instanceof PointerType)){
+            
+            m_nNumErrors++;
+            m_errors.print(Formatter.toString(ErrorMsg.error11t_ArrExp, sto.getType().getName()));
+            return new ErrorSTO("error");
+            
+        }
+        else if(!expr.getType().isEquivalent(new IntType("int"))){
+            m_nNumErrors++;
+            m_errors.print(Formatter.toString(ErrorMsg.error11i_ArrExp, expr.getType().getName()));
+            return new ErrorSTO("error");
+        }
 
-		return sto;
-	}
+        else if(expr instanceof ConstSTO){
+            Type temp = sto.getType();
+            if(temp instanceof ArrayType){
+                if (temp.getSize()-1 < ((ConstSTO)expr).getIntValue()  || ( (ConstSTO )expr).getIntValue() < 0  ){
+                    m_nNumErrors++;
+                    m_errors.print(Formatter.toString(ErrorMsg.error11b_ArrExp, ((ConstSTO) expr).getIntValue(),temp.getSize()));
+                    return new ErrorSTO("Error");
+                }
+
+            }
+        }
+        
+        return new VarSTO(sto.getName(), ((ArrayType)sto.getType()).getNext());
+        
+    }
 
 	//----------------------------------------------------------------
 	//
@@ -768,7 +911,7 @@ class MyParser extends parser
                 m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"int"));
             }
 
-            //result = new ErrorSTO("Error");
+            result = new ErrorSTO("Error");
             return result;
             
         }
@@ -848,13 +991,30 @@ class MyParser extends parser
         String[] splitStr;
         String type;
         String id;
+        int dim = 0;
+        Boolean isArray = false;
+        Vector<Integer> sizes = new Vector<Integer>();
+
         
         if(s.contains("&")) {
             paramAmp = true;
             splitStr = s.split("&");
             type = splitStr[0].trim();
             id = splitStr[1].trim();
-            System.out.println(type);
+        }
+        else if (s.contains("[") || s.contains("]")) {
+            isArray = true;
+            String[] split = s.split(" ");
+            type = split[0];
+            id = split[1].substring(0,1);
+            String arr = split[1].replaceAll("[^-?0-9]+", " ");
+            splitStr = arr.trim().split(" ");
+            for(int index = 0 ; index<splitStr.length ; index++) {
+              sizes.add(Integer.parseInt(splitStr[index]));
+            }
+            dim = sizes.size();
+
+            
         }
         else {
             splitStr = s.split("\\s+");
@@ -875,7 +1035,32 @@ class MyParser extends parser
             default:      t = new VoidType("void",0);
         
         }
-        STO result = new VarSTO(id,t);
+        STO result;
+        if(isArray == false){
+            result = new VarSTO(id,t);
+        }
+        else{
+            ArrayType aTopType = new ArrayType("array",sizes.get(0), dim);
+
+            
+            for(int i = 1; i <=dim; i++){
+            
+                if(i == dim){
+                    aTopType.addNext(t);
+                }
+                else{  
+                  int size = sizes.get(i);
+                  ArrayType typ = new ArrayType("array", size,dim-i);
+                  aTopType.addNext(typ);
+                }
+                
+                
+                
+            }
+
+            result = new VarSTO(id,aTopType);
+            isArray = false;
+        }
         m_symtab.insert(result);
         return result;
 
@@ -971,4 +1156,40 @@ class MyParser extends parser
         }
         return des;
     }
+
+    int CountChar(String s, char c) {
+        int count = 0;
+        for(char ch : s.toCharArray()) {
+            if (ch == c ) {
+                count++;
+            } 
+        }
+        return count;
+    }
+
+    
+    void DoInLoop(){
+        isInLoop = true;
+    }
+
+    void DoExitLoop(){
+        isInLoop = false;
+    }
+
+    void DoBreak(){
+        if(!isInLoop){
+            m_nNumErrors++;
+            m_errors.print(ErrorMsg.error12_Break);
+            return;
+        }
+    }
+
+    void DoContinue(){
+         if(!isInLoop){
+            m_nNumErrors++;
+            m_errors.print(ErrorMsg.error12_Continue);
+            return;
+        }
+    }
+
 }

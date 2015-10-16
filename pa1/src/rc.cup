@@ -112,7 +112,7 @@ non terminal
     CtorDef,
     DtorDef,
     OptRef,
-    FieldVarsList,
+    // moved FieldVarsList,
     FieldVarDecl,
     OptCtorDtorList,
     CtorDtorList,
@@ -193,7 +193,8 @@ non terminal Vector
     OptExprList,
     ExprList,
     ArrayList,
-    OptArrayList
+    OptArrayList,
+    FieldVarsList
     ;
 
 //--------------------------------------------------------------------
@@ -278,7 +279,7 @@ StructdefDecl ::=   T_STRUCTDEF T_ID_U:_1 T_LBRACE
                     {:
                         ((MyParser) parser).DoBlockOpen();
                     :}
-                    FieldVarsList
+                    FieldVarsList:_2
                     OptCtorDtorList
                     {:
                         // Put logic here to create default ctor if needed
@@ -286,7 +287,7 @@ StructdefDecl ::=   T_STRUCTDEF T_ID_U:_1 T_LBRACE
                     OptFieldFuncsList
                     {:
                         ((MyParser) parser).DoBlockClose();
-                        ((MyParser) parser).DoStructdefDecl (_1);
+                        ((MyParser) parser).DoStructdefDecl (_1, _2);
                     :}
                     T_RBRACE T_SEMI
     ;
@@ -297,7 +298,10 @@ FieldVarsList ::=   FieldVarDecl
     ;
 
 
-FieldVarDecl ::=    DecoratedType T_ID OptArrayList T_SEMI
+FieldVarDecl ::=    DecoratedType:_1 T_ID:_2 OptArrayList T_SEMI
+                    {:
+                        ((MyParser) parser).DoStructVarDecl(_1,_2);
+                    :}
     ;
 
 
@@ -498,7 +502,12 @@ Array ::=           T_LBRACKET ConstExpr:_1 T_RBRACKET
 CodeBlock ::=       T_LBRACE
                     {: ((MyParser) parser).DoBlockOpen(); :}
                     OptStmtList
-                    {: ((MyParser) parser).DoBlockClose(); :}
+                    {: 
+                        //((MyParser) parser).DoBreak();
+                        //((MyParser) parser).DoContinue();
+                        ((MyParser) parser).DoExitLoop();
+                        ((MyParser) parser).DoBlockClose();
+                    :}
                     T_RBRACE
     ;
 
@@ -619,15 +628,17 @@ OptElse ::=         T_ELSE CodeBlock
 
 WhileStmt ::=       T_WHILE Expr:_1 CodeBlock
                     {:
+                        ((MyParser) parser).DoInLoop();
                         ((MyParser) parser).DoIfAndWhile(_1);
                     :}
     ;
 
 
-ForeachStmt ::=     T_FOREACH T_LPAREN Type OptRef T_ID:_3 T_COLON Expr T_RPAREN
+ForeachStmt ::=     T_FOREACH T_LPAREN Type:_1 OptRef:_2 T_ID:_3 T_COLON Expr:_4 T_RPAREN
                     {:
                         ((MyParser) parser).DoBlockOpen();
-                        ((MyParser) parser).DoVarDecl (_3, null); //changed ?????????????????
+                        ((MyParser) parser).DoInLoop();
+                        ((MyParser) parser).DoForEachDecl (_1,_2,_3,_4); //changed Done
                     :}
                     CodeBlock
                     {:
@@ -637,10 +648,16 @@ ForeachStmt ::=     T_FOREACH T_LPAREN Type OptRef T_ID:_3 T_COLON Expr T_RPAREN
 
 
 BreakStmt ::=       T_BREAK T_SEMI
+                    {:
+                        ((MyParser) parser).DoBreak();
+                    :}
     ;
 
 
 ContinueStmt ::=    T_CONTINUE T_SEMI
+                    {:
+                        ((MyParser) parser).DoContinue();
+                    :}
     ;
 
 
@@ -657,7 +674,7 @@ ReturnStmt ::=      T_RETURN T_SEMI
                     :}
     |               T_RETURN:_1 Expr:_2 T_SEMI
                     {:
-                        RESULT = "result"; // changed
+                        RESULT = "return"; // changed
                        ((MyParser)parser).DoReturnStmt(_2);
                     :}
     ;
@@ -976,9 +993,9 @@ Designator2 ::=     Designator2:_1 T_DOT T_ID:_3
                     {:
                         RESULT = ((MyParser) parser).DoDesignator2_Dot (_1, _3);
                     :}
-    |               Designator2:_1 T_LBRACKET Expr T_RBRACKET
+    |               Designator2:_1 T_LBRACKET Expr:_2 T_RBRACKET
                     {:
-                        RESULT = ((MyParser) parser).DoDesignator2_Array (_1);
+                        RESULT = ((MyParser) parser).DoDesignator2_Array (_1,_2);
                     :}
     |               Designator2:_1 T_ARROW T_ID
                     {:

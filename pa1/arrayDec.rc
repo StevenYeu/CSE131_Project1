@@ -1,8 +1,4 @@
-int x;
-float a[1.2];
-int b[x];
-float c[2][10];
-bool d[-1][1.2][3][2][1];
-
-
+function : void main() {
+    float a[3][2][2][1][4];
+}
 

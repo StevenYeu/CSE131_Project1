@@ -27,7 +27,7 @@ class MinusOp extends ArithmetricOp {
 
             }
             
-            return new ExprSTO(a.getName(), new IntType("result")); 
+            return new ExprSTO(a.getName(), new IntType("int")); 
         }
         else {
             if(a instanceof ConstSTO && b instanceof ConstSTO) {
@@ -36,7 +36,7 @@ class MinusOp extends ArithmetricOp {
 
             }
 
-            return new ExprSTO(a.getName(), new FloatType("result"));
+            return new ExprSTO(a.getName(), new FloatType("float"));
         }
     }
  

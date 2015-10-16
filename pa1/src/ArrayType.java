@@ -5,34 +5,68 @@ import java.util.Vector;
 
 class ArrayType extends CompositeType{
 
-    Type element;
+    Type next;
     int dimension;
-    //Vector<int> indices = new Vector<int>();
-
-    public ArrayType(String strName, int size, int dim, Type elmt){
+    public ArrayType(String strName, int size,int dim){
         super(strName, size);
-        element = elmt;
-        dimension = dim;
-
+        dimension  = dim;
+       //System.out.println("Dims: " + dimension);
     }
 
     public boolean isArray() { return true; }
 
     public boolean isEquivalent(Type t) {     
-        //if(t instanceof element) {
-          //  return t.isEquivalent(element);
-        //}
-        return false;
-
+       if (t instanceof ArrayType) {
+           if(this.getSize() == t.getSize()) {
+            return (this.getNext()).isEquivalent(((ArrayType)t).getNext());
+           }
+           else {
+            return false;
+           }
+       } 
+       else {
+           return false;
+           
+       }
     }
     public boolean isAssignable(Type t){
-        return element.isEquivalent(t);     
+        if (t instanceof ArrayType) {
+            return this.getBaseType().isAssignable(((ArrayType)t).getBaseType());
+        }
+        else {
+            return false;
+        }
+    }
+
+    public Type getNext() {
+        return next;
     }
 
     public Type getBaseType() {
-        return element;
+        if(dimension == 1) {
+            return next;
+        }
+        else {
+            return ((ArrayType)next).getBaseType();
+        }
     }
-    public void setIndices(int d){
-       // indices.add(d);
+
+
+    public int getTotalSize() {
+        if (dimension ==1) {
+            return (4 * this.getSize());
+        }
+        else {
+            return this.getSize()*((ArrayType)next).getTotalSize();
+        }
+    }
+
+    public void addNext(Type t) {
+        if (next == null) {
+            next = t;
+        }
+        else {
+            ((ArrayType)next).addNext(t);
+        }
     }
 }
