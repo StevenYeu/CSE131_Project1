@@ -278,16 +278,22 @@ OptStatic ::=       T_STATIC
 StructdefDecl ::=   T_STRUCTDEF T_ID_U:_1 T_LBRACE
                     {:
                         ((MyParser) parser).DoBlockOpen();
+                        ((MyParser) parser).IsInStruct();
+                        ((MyParser) parser).DoStructName(_1);
                     :}
-                    FieldVarsList:_2
+                    FieldVarsList
                     OptCtorDtorList
                     {:
                         // Put logic here to create default ctor if needed
+                        ((MyParser) parser).DoDefaultConstructor();
+                        ((MyParser) parser).DoFuncDecl_2();
+
                     :}
                     OptFieldFuncsList
                     {:
+                        ((MyParser) parser).IsInStruct();
                         ((MyParser) parser).DoBlockClose();
-                        ((MyParser) parser).DoStructdefDecl (_1, _2);
+                        ((MyParser) parser).DoStructdefDecl (_1);
                     :}
                     T_RBRACE T_SEMI
     ;
@@ -323,7 +329,7 @@ CtorDtorDecl ::=    CtorDef
 CtorDef ::=         T_ID_U:_3
                     {:
                         ((MyParser) parser).SaveLineNum ();
-                        ((MyParser) parser).DoFuncDecl_1(_3);
+                        ((MyParser) parser).DoStructorDecl(_3);
                     :}
                     T_LPAREN OptParamList:_4 T_RPAREN
                     {:
@@ -339,7 +345,7 @@ CtorDef ::=         T_ID_U:_3
 DtorDef ::=         T_TILDE T_ID_U:_3
                     {:
                         ((MyParser) parser).SaveLineNum ();
-                        ((MyParser) parser).DoFuncDecl_1("~" + _3);
+                        ((MyParser) parser).DoStructorDecl("~" + _3);
                     :}
                     T_LPAREN T_RPAREN T_LBRACE OptStmtList T_RBRACE
                     {:
@@ -366,12 +372,12 @@ FuncDef ::=         T_FUNCTION T_COLON ReturnType:_1 OptRef:_2 T_ID:_3
                     {:
                         ((MyParser) parser).SaveLineNum ();
                         ((MyParser) parser).DoFuncDecl_3(_3,_1,_2);
-                       // ((MyParser) parser).DoFuncDecl_1(_3);
                         
                     :}
                     T_LPAREN OptParamList:_4 T_RPAREN
                     {:
                         ((MyParser) parser).DoFormalParams(_4);
+                    
                     :}
                     T_LBRACE OptStmtList:_5
                     {:

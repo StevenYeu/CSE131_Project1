@@ -19,6 +19,9 @@ class MyParser extends parser
 	private int m_nSavedLineNum;
     private boolean paramAmp = false;
     private boolean isInLoop = false;
+    private boolean isInStruct = false;
+    private boolean isMultiError = false;
+    private String StructName;
 
 	private SymbolTable m_symtab;
 	//----------------------------------------------------------------
@@ -240,7 +243,7 @@ class MyParser extends parser
             STO sizeStoTop = arraylist.elementAt(0);
             ArrayType aTopType = new ArrayType(t.getName(), ((ConstSTO)sizeStoTop).getIntValue(), numDim);
 
-            //int j = 1;
+            
             for(int i = 1; i <=numDim; i++){
             
                 if(i == numDim){
@@ -251,9 +254,7 @@ class MyParser extends parser
                   ArrayType typ = new ArrayType(t.getName()+"["+ ((ConstSTO)sizeSto).getIntValue() +"]", ((ConstSTO)sizeSto).getIntValue(),numDim-i);
                   aTopType.addNext(typ);
                 }
-                
-                
-                //j++;        
+                        
             }
             
             sto = new VarSTO(id, aTopType);
@@ -427,7 +428,7 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
-	void DoStructdefDecl(String id, Vector<STO> vars)
+	void DoStructdefDecl(String id)
 	{
 		if (m_symtab.accessLocal(id) != null)
 		{
@@ -435,37 +436,76 @@ class MyParser extends parser
 			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
 		}
 
-      //  if(vars == null) {
-      //      System.out.println("Bad");
-      //  }
-      //  for(int i = 0; i < vars.size(); i++){
-      //      STO vsto = vars.get(i);
-            
-      //      VarSTO varsto = new VarSTO(vsto.getName(),vsto.getType());
-      //      if (m_symtab.accessStruct(id) != null)
-      //      {
-      //          m_nNumErrors++;
-      //          m_errors.print(Formatter.toString(ErrorMsg.error13a_Struct, id));
-      //          return;
-
-      //      }
-      //      m_symtab.insert(varsto);
-            
-      //  }
-
-	
-        
 		StructdefSTO sto = new StructdefSTO(id);
-        System.out.println(sto.getName());
 		m_symtab.insert(sto);
 	}
 
+    //----------------------------------------------------------------
+    // Crafty way to get struct name
+    //----------------------------------------------------------------
+    void DoStructName(String name){
+        StructName = name;
+    }
+
+    //----------------------------------------------------------------
+    //
+    //----------------------------------------------------------------
+    void DoDefaultConstructor(){
+        if (m_symtab.accessLocal(StructName) == null)
+        {
+            FuncSTO sto = new FuncSTO(StructName);
+            m_symtab.insert(sto);
+
+		    m_symtab.openScope();
+		    m_symtab.setFunc(sto);
+
+            
+        }
+    }
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
+	void DoStructorDecl(String id)
+	{
+        // destructor
+        if (id.charAt(0) == '~'){
+            String s = id.substring(1);
+            if( !s.equals(StructName)){
+                m_nNumErrors++;
+			    m_errors.print(Formatter.toString(ErrorMsg.error13b_Dtor, id, StructName));
+                
+            }
+            if (m_symtab.accessLocal(id) != null)
+		    {
+            	m_nNumErrors++;
+			    m_errors.print(Formatter.toString(ErrorMsg.error9_Decl, id));
+                
+		    }
+
+        }
+        // constructor
+        else {
+            if (!id.equals(StructName) ){
+                m_nNumErrors++;
+			    m_errors.print(Formatter.toString(ErrorMsg.error13b_Ctor, id, StructName));
+                
+            }
+        }
+			
+		FuncSTO sto = new FuncSTO(id);
+		m_symtab.insert(sto);
+
+		m_symtab.openScope();
+		m_symtab.setFunc(sto);
+	}
+
+
+    //----------------------------------------------------------------
+	// Original
+	//----------------------------------------------------------------
 	void DoFuncDecl_1(String id)
 	{
-		if (m_symtab.accessLocal(id) != null)
+        if (m_symtab.accessLocal(id) != null)
 		{
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
@@ -478,16 +518,43 @@ class MyParser extends parser
 		m_symtab.setFunc(sto);
 	}
 
+
+
+    //----------------------------------------------------------------
+    // helper method to check if it's in struct
+    //----------------------------------------------------------------
+    void IsInStruct(){
+
+        if(m_symtab.accessLocal(StructName) != null){
+            System.out.println("Done");
+        }
+        isInStruct = !isInStruct;}
+
+    //---------------------------------------------------------------
+    // helper method that resolves multi-errors in same line for struct
+    //---------------------------------------------------------------
+
     void DoFuncDecl_3(String id, Type t, Object o)
 	{
-        String s = o.toString(); 
+        String s = o.toString();
 		if (m_symtab.accessLocal(id) != null)
 		{
-		    if (!(m_symtab.accessLocal(id) instanceof FuncSTO)) {
-                m_nNumErrors++;
-			    m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
-        
+            if(isInStruct){
+                if (!(m_symtab.accessLocal(id) instanceof FuncSTO)){
+                    m_nNumErrors++;
+                    m_errors.print(Formatter.toString(ErrorMsg.error13a_Struct, id));
+                    isMultiError = true;
+                }
+                
             }
+            else {
+                if (!(m_symtab.accessLocal(id) instanceof FuncSTO)) {
+                    m_nNumErrors++;
+			        m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+                }
+
+            }
+            
 		}
 
 
@@ -513,6 +580,7 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	void DoFuncDecl_2()
 	{
+
 		m_symtab.closeScope();
 		m_symtab.setFunc(null);
 	}
@@ -556,7 +624,7 @@ class MyParser extends parser
                         }
                     }
 
-                    if(!overloadErr) {
+                    if(!overloadErr && !isMultiError) {
                         m_nNumErrors++;
                         m_errors.print(Formatter.toString(ErrorMsg.error9_Decl, sto.getName()));
                         return;
@@ -574,7 +642,8 @@ class MyParser extends parser
             m_symtab.addFunc(sto);
         }
 
-
+        isMultiError = false;
+        
         m_symtab.setFunc(sto);
 	}
 

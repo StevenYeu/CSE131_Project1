@@ -11,7 +11,6 @@ class SymbolTable
 	private Stack<Scope> m_stkScopes;
 	private int m_nLevel;
 	private Scope m_scopeGlobal;
-    private Scope m_scopeStruct;    //scope for struct decl
 	private FuncSTO m_func = null;
     private Vector<STO> functions = new Vector<STO>();
     
@@ -23,7 +22,7 @@ class SymbolTable
 		m_nLevel = 0;
 		m_stkScopes = new Stack<Scope>();
 		m_scopeGlobal = null;
-        //m_scopeStruct = null;
+    
 	}
 
 	//----------------------------------------------------------------
@@ -37,13 +36,14 @@ class SymbolTable
     }
 
     //----------------------------------------------------------------
-    // added Check for overloaded Functions
+    // added Check for overloaded Functions, create a list for all functions with
+    // the same name
     //---------------------------------------------------------------
     public Vector<STO> OverloadCheck(String funcName) {
 
         Vector<STO> overloaded = new Vector<STO>();
         for (int i =0; i < functions.size(); i++) {
-
+            
             if (funcName.equals(functions.elementAt(i).getName())) {
                 overloaded.add(functions.elementAt(i));
             }
@@ -59,14 +59,6 @@ class SymbolTable
 		return m_scopeGlobal.access(strName);
 	}
 
-
-    //----------------------------------------------------------------
-	// added for check 13a struct declaration
-	//----------------------------------------------------------------
-	public STO accessStruct(String strName)
-	{
-		return m_scopeStruct.access(strName);
-	}
 
 	//----------------------------------------------------------------
 	//
