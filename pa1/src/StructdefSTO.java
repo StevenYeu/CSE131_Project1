@@ -7,9 +7,13 @@
 //---------------------------------------------------------------------
 // For structdefs
 //---------------------------------------------------------------------
-
+import java.util.Vector;
 class StructdefSTO extends STO
 {
+    Vector<STO> vars = new Vector<STO>();
+    Vector<STO> funcs = new Vector<STO>();
+    Vector<STO> overload = new Vector<STO>();
+
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
@@ -30,4 +34,32 @@ class StructdefSTO extends STO
 	{
 		return true;
 	}
+
+    public void setVars(Vector<STO> v) {
+        vars = v;
+    }
+
+    public void setFuncs(Vector<STO> f) {
+        funcs = f;
+    }
+
+    public Vector<STO> getVars() {
+        return vars;
+    }
+    public Vector<STO> getFuncs() {
+        return funcs;
+    }
+
+    public Vector<STO> OverloadCheck(String funcName) {
+
+        Vector<STO> overload = new Vector<STO>();
+        for (int i =0; i < funcs.size(); i++) {
+            
+            if (funcName.equals(funcs.elementAt(i).getName())) {
+                overload.add(funcs.elementAt(i));
+            }
+        }
+        return overload;
+    }  
+
 }

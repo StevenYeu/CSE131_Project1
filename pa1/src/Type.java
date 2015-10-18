@@ -62,7 +62,7 @@ abstract class Type
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
-	private void setSize(int size)
+	public void setSize(int size)
 	{
 		m_size = size;
 	}

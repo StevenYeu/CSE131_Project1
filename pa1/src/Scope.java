@@ -51,4 +51,11 @@ class Scope
 	{
 		m_lstLocals.addElement(sto);
 	}
+
+    //-----------------------------------------------------------------
+    // added for struct, get the local list of vars and funcs
+    //-----------------------------------------------------------------
+    public Vector<STO> getLocals(){
+        return m_lstLocals;
+    }
 }

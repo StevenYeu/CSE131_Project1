@@ -12,6 +12,7 @@ class SymbolTable
 	private int m_nLevel;
 	private Scope m_scopeGlobal;
 	private FuncSTO m_func = null;
+    private StructdefSTO m_struct = null;
     private Vector<STO> functions = new Vector<STO>();
     
 	//----------------------------------------------------------------
@@ -113,6 +114,29 @@ class SymbolTable
 		m_nLevel--;
 	}
 
+    //----------------------------------------------------------------
+    // added for struct
+    //----------------------------------------------------------------
+    public Scope getCurrScope()
+    {
+        return m_stkScopes.peek();
+    }
+    //----------------------------------------------------------------
+    // added for struct
+    //----------------------------------------------------------------
+    public Scope getAboveScope(){
+        //Scope tempScope = m_stkScopes.pop();
+        Vector<Scope> temp  = new Vector<Scope>();
+        for(int i = 0;i < m_stkScopes.size()-1; i++) {
+            temp.addElement(m_stkScopes.pop());
+        
+        }
+        Scope result = m_stkScopes.peek(); 
+        for(int i = temp.size()-1; i >= 0; i--) {
+            m_stkScopes.push(temp.get(i));
+        }
+        return result;
+    }
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
@@ -134,4 +158,9 @@ class SymbolTable
 
 	public FuncSTO getFunc() { return m_func; }
 	public void setFunc(FuncSTO sto) { m_func = sto; }
+
+    // added for struct
+    public StructdefSTO getStruct() { return m_struct;}
+    public void setStruct(StructdefSTO sto) { m_struct = sto;}
+    
 }

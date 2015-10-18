@@ -2,13 +2,10 @@
 //
 //----------
 
-import java.util.ArrayList;
 
 class StructType extends CompositeType {
-    ArrayList<Type> Member;
-    public StructType(String strName, int size, ArrayList<Type> Mem){
-        super(strName,size);
-        Member = Mem;
+    public StructType(String strName){
+        super(strName,0);
     }
 
     public boolean isStruct(){ return true; }
@@ -25,5 +22,5 @@ class StructType extends CompositeType {
     public boolean isAssignable(Type t){
         return this.isEquivalent(t);
     }
-
+ 
 }
