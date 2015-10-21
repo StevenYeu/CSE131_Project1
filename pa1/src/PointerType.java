@@ -10,8 +10,9 @@ class PointerType extends CompositeType{
         super(strNum, 4);
     }
 
-    public PointerType(String strName,int size){
+    public PointerType(String strName,int num){
         super(strName,4);
+        numPointers = num;
     }
     
     public int getSize(){

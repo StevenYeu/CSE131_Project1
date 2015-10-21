@@ -15,7 +15,7 @@ class EqualOp extends ComparisonOp {
 
         if((typeA instanceof NumericType) && (typeB instanceof NumericType)){
 
-
+             // constant folding
              if(a instanceof ConstSTO && b instanceof ConstSTO) { 
 
                 if(a.getType() instanceof IntType && b.getType() instanceof IntType)  { 
@@ -62,6 +62,16 @@ class EqualOp extends ComparisonOp {
             }
 
             return new ExprSTO(a.getName(), new BoolType("bool"));
+        }
+
+        else if ( (typeA.isEquivalent(typeB))  &&    typeB.isEquivalent(typeA))  {
+             return new ExprSTO(typeA.getName(), new BoolType("bool"));
+        }
+        else if ( (typeA instanceof PointerType)  &&   (typeB instanceof NullPointerType) ) {
+             return new ExprSTO(typeA.getName(), new BoolType("bool"));
+        }
+        else if ( (typeB instanceof PointerType)  &&   (typeA instanceof NullPointerType) ) {
+             return new ExprSTO(typeA.getName(), new BoolType("bool"));
         }
         else {
             return new ErrorSTO("Error");

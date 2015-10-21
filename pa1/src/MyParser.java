@@ -213,7 +213,7 @@ class MyParser extends parser
         STO str = m_symtab.accessGlobal(t.getName());
 
        
-        Vector<STO> functions = ((StructdefSTO)str).getFuncs(); 
+        Vector<STO> functions = ((StructdefSTO)str).OverloadCheck(t.getName()); 
         
 
         
@@ -1299,7 +1299,17 @@ class MyParser extends parser
                  m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getType().getName(),o.getOp())); 
             }
             else if(o.getOp().equals("==") || o.getOp().equals("!=")) {
-                m_errors.print(Formatter.toString(ErrorMsg.error1b_Expr,a.getType().getName(),o.getOp(),b.getType().getName())); 
+                
+                if(a.getType() instanceof PointerType && !(b.getType() instanceof PointerType)) {
+                   m_errors.print(Formatter.toString(ErrorMsg.error17_Expr,o.getOp(),a.getType().getName(),b.getType().getName())); 
+                }
+                else if (!(a.getType() instanceof PointerType) && (b.getType() instanceof PointerType)) {
+                    m_errors.print(Formatter.toString(ErrorMsg.error17_Expr,o.getOp(),a.getType().getName(),b.getType().getName()));                 
+                }
+                else {
+                   m_errors.print(Formatter.toString(ErrorMsg.error1b_Expr,a.getType().getName(),o.getOp(),b.getType().getName())); 
+                }
+
             }
             else if(o.getOp().equals("&&") || o.getOp().equals("||")) {
                 m_errors.print(Formatter.toString(ErrorMsg.error1w_Expr,result.getName(),o.getOp(),"bool")); 
@@ -1349,11 +1359,11 @@ class MyParser extends parser
         }
 
 
-        if (!(a.getType() instanceof NumericType)) {
+        if (!(a.getType() instanceof NumericType) && !(a.getType() instanceof PointerType)) {
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error2_Type,a.getType().getName(), s1));
             return result = new ErrorSTO("Error");
-        } 
+        }
         else if (!(a.isModLValue())){
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error2_Lval,a.getName()));
@@ -1675,6 +1685,7 @@ class MyParser extends parser
     
         PointerType TopType = new PointerType(t.getName() + this.PrintStar(ptrlist.size()));
         TopType.setNumPointers(ptrlist.size());
+        System.out.println(ptrlist.size());
         if(ptrlist.isEmpty()){
             return t;
         }
@@ -1683,9 +1694,7 @@ class MyParser extends parser
                 TopType.addNext(t);
             }
             else{
-                //STO ptr = ptrlist.get(i);
-                PointerType typ = new PointerType(t.getName());
-                //System.out.println(this.PrintStar(i));
+                PointerType typ = new PointerType(t.getName()+ this.PrintStar(i));
                 typ.setNumPointers(i);
                 TopType.addNext(typ);
             }

@@ -13,6 +13,7 @@ class StructdefSTO extends STO
     Vector<STO> vars = new Vector<STO>();
     Vector<STO> funcs = new Vector<STO>();
     Vector<STO> overload = new Vector<STO>();
+    Vector<STO> ctors = new Vector<STO>();
 
 	//----------------------------------------------------------------
 	//
@@ -50,6 +51,12 @@ class StructdefSTO extends STO
         return funcs;
     }
 
+    public Vector<STO> getCtors() {
+        for (int i =0; i < funcs.size(); i++) {   
+        }
+       return ctors;
+    }
+
     public Vector<STO> OverloadCheck(String funcName) {
 
         Vector<STO> overload = new Vector<STO>();
@@ -60,6 +67,13 @@ class StructdefSTO extends STO
             }
         }
         return overload;
-    }  
+    }
+
+    //public boolean isCtor(String c) {
+       //int caps = 0;
+       //for(int i =0; i < c.length(); i++) {
+         // if(c.charAt(i).isUpper)   
+      // }
+    //}
 
 }

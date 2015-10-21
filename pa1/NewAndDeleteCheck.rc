@@ -1,13 +1,24 @@
+structdef BAR{
+   int y;
+   BAR() {}
+   BAR(float y) {}
+};
+
 structdef FOO{
   int x;
+  FOO() {}
   FOO(int x) {}
+  function : void pow() {
+         BAR * y;
+         new y: ();
+      }
 };
 
 function : void main(){
     //new 1;
     
-   // int x;
+    // int x;
     //delete x;
     FOO * f;
-    new f;
+    new f: (1);
 }

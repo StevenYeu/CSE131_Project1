@@ -6,8 +6,6 @@ class NotEqualOp extends ComparisonOp {
     public STO checkOperands(STO a, STO b) {
         typeA = a.getType();
         typeB = b.getType();
-
-
         if((typeA instanceof NumericType) && (typeB instanceof NumericType)){
            
             
@@ -58,6 +56,15 @@ class NotEqualOp extends ComparisonOp {
              } 
 
             return new ExprSTO(a.getName(), new BoolType("bool"));
+        }
+        else if ( (typeA.isEquivalent(typeB))  &&   (  typeB.isEquivalent(typeA)) ) {
+             return new ExprSTO(typeA.getName(), new BoolType("bool"));
+        }
+        else if ( (typeA instanceof PointerType)  &&   (typeB instanceof NullPointerType) ) {
+             return new ExprSTO(typeA.getName(), new BoolType("bool"));
+        }
+        else if ( (typeB instanceof PointerType)  &&   (typeA instanceof NullPointerType) ) {
+             return new ExprSTO(typeA.getName(), new BoolType("bool"));
         }
         else {
             return new ErrorSTO("Error");
