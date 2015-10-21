@@ -1,0 +1,6 @@
+function : void main() {
+    int x;
+    x[99] = x[-40] + x[*x];
+}
+
+

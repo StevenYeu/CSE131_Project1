@@ -145,8 +145,8 @@ non terminal
     OptInit,
     OptCtorCall,
     CtorCall,
-    OptPointerList,
-    PointerList,
+    // moved OptPointerList, 
+    // moved PointerList,
     Pointer,
     // moved OptArrayList,
     // moved ArrayList,
@@ -194,7 +194,9 @@ non terminal Vector
     ExprList,
     ArrayList,
     OptArrayList,
-    FieldVarsList
+    FieldVarsList,
+    OptPointerList,
+    PointerList
     ;
 
 //--------------------------------------------------------------------
@@ -420,14 +422,14 @@ DecoratedType ::=   DecoratedBasicType:_1
                     :}
     |               StructType:_1 PointerList:_2
                     {:
-                        RESULT = _1;    // gotta do something here!
+                        RESULT = ((MyParser) parser).DoPointer(_1,_2);    // gotta do something here!
                     :}
     ;
 
 
 DecoratedBasicType ::= BasicType:_1 OptPointerList:_2
                     {:
-                        RESULT = _1;    // gotta do something here!
+                        RESULT = ((MyParser) parser).DoPointer(_1,_2);    // gotta do something here!
                     :}
     ;
 
@@ -465,16 +467,33 @@ ReturnType ::=      Type:_1
     ;
 
 
-OptPointerList ::=  PointerList
+OptPointerList ::=  PointerList:_1
+                    {:
+                        RESULT = _1;
+                    :}
     |               /* empty */
+                    {:
+                        RESULT = new Vector();
+                    :}
     ;
 
-PointerList ::=     Pointer
-    |               PointerList Pointer
+PointerList ::=     Pointer:_1
+                    {:
+                        RESULT = new Vector();
+                        RESULT.addElement(_1);
+                    :}
+    |               PointerList:_1 Pointer:_2
+                    {:
+                        RESULT = _1;
+                        RESULT.addElement(_2);
+                    :}
     ;
 
 
 Pointer ::=         T_STAR
+                    {:
+                        RESULT = "*";
+                    :}
     ;
 
 
@@ -968,7 +987,9 @@ IncDecOp ::=        T_PLUSPLUS
 
 Designator ::=      T_STAR Designator:_1
                     {:
-                        RESULT = _1;
+                        RESULT = ((MyParser) parser).DoNullPointerCheck(_1);
+                        RESULT = ((MyParser) parser).DoPointerCheck(RESULT);
+                        RESULT = ((MyParser) parser).DoDereference(RESULT); 
                     :}
     |               T_AMPERSAND Designator:_1
                     {:
@@ -1013,11 +1034,14 @@ Designator2 ::=     Designator2:_1 T_DOT T_ID:_3
                     :}
     |               Designator2:_1 T_LBRACKET Expr:_2 T_RBRACKET
                     {:
+                        
                         RESULT = ((MyParser) parser).DoDesignator2_Array (_1,_2);
                     :}
-    |               Designator2:_1 T_ARROW T_ID
+    |               Designator2:_1 T_ARROW T_ID:_2
                     {:
-                        RESULT = _1;
+                        RESULT = ((MyParser) parser).DoNullPointerCheck(_1);
+                        RESULT = ((MyParser) parser).DoPointerArrowCheck(RESULT, _2); 
+                    
                     :}
     |               Designator2:_1 IncDecOp:_2
                     {:
@@ -1067,7 +1091,9 @@ Designator3 ::=     T_LPAREN Expr:_2 T_RPAREN
                     :}
     |               T_NULLPTR
                     {:
-                        RESULT = new ExprSTO ("nullptr", null);     // fix me!
+                        RESULT = new ExprSTO ("nullptr", new NullPointerType("nullptr"));     // fix me!
+                        RESULT.setIsModifiable(false);
+                        RESULT.setIsAddressable(false); 
                     :}
     |               T_THIS
                     {:
@@ -1086,10 +1112,17 @@ Designator3 ::=     T_LPAREN Expr:_2 T_RPAREN
     ;
 
 // Phase 0 change
-NewStmt ::=	    T_NEW Designator OptCtorCall T_SEMI
+NewStmt ::=	        T_NEW Designator:_1 OptCtorCall:_2 T_SEMI
+                    {:
+                        RESULT = ((MyParser) parser).DoNew(_1,((Vector<STO>)_2));
+                    :}
     ;
 
-DeleteStmt ::=      T_DELETE Designator T_SEMI
+DeleteStmt ::=      T_DELETE Designator:_1 T_SEMI
+                    {:
+                        RESULT = ((MyParser) parser).DoDelete(_1);
+                    :}
+            
     ;
 
 UnarySign ::=       T_MINUS

@@ -4,31 +4,74 @@
 
 
 class PointerType extends CompositeType{
-    int cnt;
-    Type elmt;
-    public PointerType(String strNum, int size, int count, Type element){
-        super(strNum, size);
-        cnt = count;
-        elmt = element;
+    Type next;
+    int numPointers;
+    public PointerType(String strNum){
+        super(strNum, 4);
+    }
+
+    public PointerType(String strName,int size){
+        super(strName,4);
     }
     
-    // override getSize() to access the number of dereference
     public int getSize(){
-        return cnt;
+        return 4;
+    }
+
+    public void setNumPointers(int p) {
+        numPointers = p;
     }
     
     public boolean isPointer() { return true; }
 
     public boolean isEquivalent(Type t) {
+        if(t instanceof NullPointerType) {
+           return true;
+        }
+
         if( t instanceof PointerType ) {
-            if(t.getSize() == this.getSize())
-                return t.isEquivalent(elmt);
-                            
+            if(this.getNumPtr() == ((PointerType)t).getNumPtr()){
+                return (this.getNext()).isEquivalent(((PointerType)t).getNext());
+            }             
         }
         return false;
     }
 
     public boolean isAssignable(Type t){
-        return this.isEquivalent(t);
+        if( t instanceof PointerType ) {
+            if(this.getNumPtr() == ((PointerType)t).getNumPtr()){
+                return (this.getNext()).isAssignable(((PointerType)t).getNext());
+            } 
+        }
+        return false;
+            
     }
+
+    public Type getNext() {
+        return next;
+    }
+    public Type getBaseType() {
+        if( numPointers == 1 ) {
+            return next;
+        }
+        else {
+            return ((PointerType)next).getBaseType();
+        }
+    }
+
+    public void addNext(Type t) {
+        if( next == null){
+            next = t;
+        }
+        else {
+            ((PointerType)next).addNext(t);
+        }
+    }
+
+    public int getNumPtr() {
+       return numPointers;
+    }
+
+
+
 }

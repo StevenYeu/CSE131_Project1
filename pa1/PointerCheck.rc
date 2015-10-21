@@ -1,0 +1,9 @@
+structdef MY {
+    int x;
+};
+
+function: void main(){
+    MY * a;
+    a->y = 2;
+
+}

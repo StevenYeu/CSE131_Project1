@@ -182,6 +182,15 @@ class MyParser extends parser
 		}
 
 		VarSTO sto = new VarSTO(id,t);
+        if(t instanceof ArrayType){
+            sto.setIsAddressable(true);
+            sto.setIsModifiable(false);
+        }
+        else{
+            sto.setIsAddressable(false);
+            sto.setIsModifiable(false);
+        }
+
   		m_symtab.insert(sto);
 	}
 
@@ -293,13 +302,18 @@ class MyParser extends parser
 		StructdefSTO sto = new StructdefSTO(id,t);
         sto.setFuncs(((StructdefSTO)str).getFuncs());
         sto.setVars(((StructdefSTO)str).getVars());
+        
+        //set to Lval for struct
+        sto.setIsAddressable(true);
+        sto.setIsModifiable(true);
+        
 		m_symtab.insert(sto);
 	}
 
 
 
 
-
+    // decl of var in struct
     void DoStructVarDecl(Type t, String id)
 	{
 		if (m_symtab.accessLocal(id) != null)
@@ -311,6 +325,16 @@ class MyParser extends parser
 
 
 		VarSTO sto = new VarSTO(id,t);
+
+        // set var in struct to mod-lval
+        if(t instanceof ArrayType){
+            sto.setIsAddressable(true);
+            sto.setIsModifiable(false);
+        }
+        else{
+            sto.setIsAddressable(false);
+            sto.setIsModifiable(false);
+        }
         
 		m_symtab.insert(sto);
 	}
@@ -372,26 +396,59 @@ class MyParser extends parser
                 }
                         
             }
+ 
+
             
             sto = new VarSTO(id, aTopType);
+            // non-mod l-val for array
+            sto.setIsAddressable(true);
+            sto.setIsModifiable(false);
         }
         else {
+            if(t instanceof PointerType){
+                if(expr == null) {
+              	    sto = new VarSTO(id,t);
+		            m_symtab.insert(sto);
+                    return;
+                }
+                
+                else if(!(expr.getType() instanceof PointerType)){
+                    m_nNumErrors++;
+                    m_errors.print(Formatter.toString(ErrorMsg.error8_Assign, expr.getType().getName(),t.getName()));
+                    return;
+                }
+ 
 
-            if(expr == null) {
-              	sto = new VarSTO(id,t);
-		        m_symtab.insert(sto);
-                return;
+    
+                sto = new VarSTO(id,t);
+                //lval for pointer
+                sto.setIsAddressable(true);
+                sto.setIsModifiable(true);
+  
             }
+            else{            
+
+                if(expr == null) {
+              	    sto = new VarSTO(id,t);
+		            m_symtab.insert(sto);
+                    return;
+                }
 		   
-            else if(!expr.getType().isAssignable(t)){
-                m_nNumErrors++;
-                m_errors.print(Formatter.toString(ErrorMsg.error8_Assign, expr.getType().getName(),t.getName()));
-                return;
+                else if(!expr.getType().isAssignable(t)){
+                    m_nNumErrors++;
+                    m_errors.print(Formatter.toString(ErrorMsg.error8_Assign, expr.getType().getName(),t.getName()));
+                    return;
+                }
+                sto = new VarSTO(id,t);
+                
+                // r-val for var
+                sto.setIsAddressable(false);
+                sto.setIsModifiable(false);
+                
             }
-            sto = new VarSTO(id,t);
-
         }
             
+
 		m_symtab.insert(sto);
             
         
@@ -506,11 +563,16 @@ class MyParser extends parser
             }
           
 
+            sto.setIsModifiable(false);
+            sto.setIsAddressable(true);
+            
+
            	m_symtab.insert(sto);
         }
 	}
 
 
+    // auto for const decl
     void DoAutoDecl(String id, STO expr)
 	{
         if(expr instanceof ErrorSTO)
@@ -535,6 +597,10 @@ class MyParser extends parser
             else
                 sto = new ConstSTO(id,expr.getType(),0);   
         }
+
+        sto.setIsModifiable(false);
+        sto.setIsAddressable(true);
+
 		m_symtab.insert(sto);
 	}
 
@@ -981,10 +1047,12 @@ class MyParser extends parser
                 }
 
                  //return by reference calls to function values setting
+                // true if pass by reference
                 if(m_symtab.access(sto.getName()).flag == true){
                     sto.setIsAddressable(true);
                     sto.setIsModifiable(true);
                 }
+                // pass by value
                 else {
                     sto.setIsAddressable(false);
                     sto.setIsModifiable(false);
@@ -993,7 +1061,6 @@ class MyParser extends parser
             }
 
         }
-        //STO result = new ExprSTO(m_symtab.getFunc().getName(),m_symtab.getFunc().getReturnType());
 		return sto;
 	}
 
@@ -1002,13 +1069,14 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	STO DoDesignator2_Dot(STO sto, String strID)
 	{
-        System.out.println("sto: " +sto.getName());
+        System.out.println("sto: " +sto.getType().getName());
         if( sto instanceof ErrorSTO){
             return sto;
         }
+        
 
 		// Good place to do the struct checks
-        if(!(sto.getType() instanceof StructType)){
+        if(!(sto.getType() instanceof StructType) ){
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error14t_StructExp, sto.getType().getName()));
             return new ErrorSTO("error");
@@ -1020,6 +1088,8 @@ class MyParser extends parser
             Vector<STO> locals = scope.getLocals();
             for(int j = 0; j < locals.size(); j++){
                 if(locals.get(j).getName().equals(strID)){
+                    locals.get(j).setIsModifiable(true);
+                    locals.get(j).setIsAddressable(true);
                     return locals.get(j);
                 }
 
@@ -1029,42 +1099,39 @@ class MyParser extends parser
             return new ErrorSTO("error"); 
 
         }
-        else if(!(sto.getName().equals("this"))) {
-            System.out.println("STO: " +sto.getName());
-            if(m_symtab.accessLocal(strID) == null) {
-                return sto;
-            }
-            else if(m_symtab.accessGlobal(strID) != null) {
-                return sto;
-            }
-            else {
-                m_nNumErrors++;
-                m_errors.print(Formatter.toString(ErrorMsg.undeclared_id,strID));
-                return new ErrorSTO("error");
+       
+       
+        if((sto.getType() instanceof StructType) && (!sto.getName().equals("this"))) {
 
-            }
-        }
-
-        Vector<STO> fun = ((StructdefSTO)sto).getFuncs();
-        Vector<STO> var = ((StructdefSTO)sto).getVars();
+                Vector<STO> fun = ((StructdefSTO)sto).getFuncs();
+                Vector<STO> var = ((StructdefSTO)sto).getVars();
         
-        for(int i = 0; i < fun.size(); i++){
-            if(fun.get(i).getName().equals(strID)){
-                return sto;
-            }
+                for(int i = 0; i < fun.size(); i++){
+                   if(fun.get(i).getName().equals(strID)){
+                       fun.get(i).setIsModifiable(true);
+                       fun.get(i).setIsAddressable(true);
+
+                       return fun.get(i);
+                   }
+                }
+                for(int i = 0; i < var.size(); i++){
+                   if(var.get(i).getName().equals(strID)){
+                       var.get(i).setIsModifiable(true);
+                       var.get(i).setIsAddressable(true);
+
+                       return var.get(i);
+
+                   }
+                }
+
+
+
+                m_nNumErrors++;
+                m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, sto.getType().getName()));
+                return new ErrorSTO("error");
         }
-        for(int i = 0; i < var.size(); i++){
-            if(var.get(i).getName().equals(strID)){
-                return sto;
 
-            }
-        }
-        m_nNumErrors++;
-        m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, sto.getType().getName()));
-        return new ErrorSTO("error");
-
-
-		//return sto;
+	    return sto;
 	}
 
 	//----------------------------------------------------------------
@@ -1079,6 +1146,12 @@ class MyParser extends parser
         else if(expr instanceof ErrorSTO){
             return expr;
         }
+
+        STO ptr = this.DoNullPointerCheck(sto);
+        if(ptr instanceof ErrorSTO){
+            return ptr;
+        }
+
         
         if (!(sto.getType() instanceof ArrayType) && !(sto.getType() instanceof PointerType)){
             
@@ -1087,13 +1160,13 @@ class MyParser extends parser
             return new ErrorSTO("error");
             
         }
-        else if(!expr.getType().isEquivalent(new IntType("int"))){
+        else if(!(expr.getType().isEquivalent(new IntType("int")))){
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error11i_ArrExp, expr.getType().getName()));
             return new ErrorSTO("error");
         }
 
-        else if(expr instanceof ConstSTO){
+        else if(expr instanceof ConstSTO && !(sto.getType() instanceof PointerType)){
             Type temp = sto.getType();
             if(temp instanceof ArrayType){
                 if (temp.getSize()-1 < ((ConstSTO)expr).getIntValue()  || ( (ConstSTO )expr).getIntValue() < 0  ){
@@ -1104,8 +1177,24 @@ class MyParser extends parser
 
             }
         }
+        if(sto.getType() instanceof ArrayType) {
+            
+            VarSTO v = new VarSTO(sto.getName(), ((ArrayType)sto.getType()).getNext());
+            v.setIsModifiable(true);
+            v.setIsAddressable(true);
+            return v;
+        }
+        else if(sto.getType() instanceof PointerType) {
+            VarSTO v = new VarSTO(sto.getName(), ((PointerType)sto.getType()).getNext());
+            v.setIsModifiable(true);
+            v.setIsAddressable(true);
+            return v;
+
+
+        }
         
-        return new VarSTO(sto.getName(), ((ArrayType)sto.getType()).getNext());
+        return sto;
+        
         
     }
 
@@ -1117,10 +1206,12 @@ class MyParser extends parser
 		STO sto; 
 		if (((sto = m_symtab.accessLocal(strID)) == null )  )
 		{	 
-            m_nNumErrors++;
-		    m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
-		    sto = new ErrorSTO(strID); // unsure
-            return sto;
+            if((sto = m_symtab.accessGlobal(strID)) == null){
+                m_nNumErrors++;
+		        m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
+		        sto = new ErrorSTO(strID);
+                return sto;
+            }
         }
          
         return sto;
@@ -1221,6 +1312,8 @@ class MyParser extends parser
             return result;
             
         }
+        result.setIsModifiable(false);
+        result.setIsAddressable(false);
 
         return result;
     }
@@ -1502,6 +1595,177 @@ class MyParser extends parser
         return m_symtab.getStruct();
     }
 
+
+    STO DoNullPointerCheck(STO sto){
+        if(sto.getType() instanceof NullPointerType){
+            m_nNumErrors++;
+            m_errors.print(ErrorMsg.error15_Nullptr);
+            return new ErrorSTO("Error");
+
+        }
+        return sto;
+    }
+    // this is only for * 
+    STO DoPointerCheck(STO sto){
+        if (sto instanceof ErrorSTO){
+            return sto;
+        }
+        if(!(sto.getType() instanceof PointerType)){ // Pointer
+            m_nNumErrors++;
+            m_errors.print(Formatter.toString(ErrorMsg.error15_Receiver, sto.getType().getName()));
+            return new ErrorSTO("Error");
+
+            
+        }
+
+        return sto;
+    }
+    STO DoPointerArrowCheck(STO sto, String strID){
+        if (sto instanceof ErrorSTO)
+            return sto; 
+
+
+        if(!(sto.getType() instanceof PointerType)){ // Arrow
+           m_nNumErrors++;
+           m_errors.print(Formatter.toString(ErrorMsg.error15_ReceiverArrow, sto.getType().getName()));
+           return new ErrorSTO("Error");
+
+        }
+        else if(!(((PointerType)sto.getType()).getBaseType() instanceof StructType)){
+           m_nNumErrors++;
+           m_errors.print(Formatter.toString(ErrorMsg.error15_ReceiverArrow, sto.getType().getName()));
+           return new ErrorSTO("Error");
+
+        }
+        else {
+        
+           STO struct = m_symtab.accessGlobal(((PointerType)sto.getType()).getBaseType().getName());
+           //System.out.println("hello: " +  struct.getName());
+            
+             
+           Vector<STO> fun = ((StructdefSTO)struct).getFuncs();
+           Vector<STO> var = ((StructdefSTO)struct).getVars();
+        
+           for(int i = 0; i < fun.size(); i++){
+              if(fun.get(i).getName().equals(strID)){
+                  fun.get(i).setIsModifiable(true);
+                  fun.get(i).setIsAddressable(true);
+                  return fun.get(i);
+              }
+           }
+           for(int i = 0; i < var.size(); i++){
+              if(var.get(i).getName().equals(strID)){
+                   var.get(i).setIsModifiable(true);
+                   var.get(i).setIsAddressable(true);
+                   return var.get(i);
+
+              }
+           }
+
+           m_nNumErrors++;
+           m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, sto.getType().getName()));
+           return new ErrorSTO("error");
+
+        }
+        
+    }
+
+    // decl a pointer
+    Type DoPointer(Type t, Vector<STO> ptrlist){
+    
+        PointerType TopType = new PointerType(t.getName() + this.PrintStar(ptrlist.size()));
+        TopType.setNumPointers(ptrlist.size());
+        if(ptrlist.isEmpty()){
+            return t;
+        }
+        for (int i = ptrlist.size()-1; i >=0 ; i--){
+            if(i == 0){
+                TopType.addNext(t);
+            }
+            else{
+                //STO ptr = ptrlist.get(i);
+                PointerType typ = new PointerType(t.getName());
+                //System.out.println(this.PrintStar(i));
+                typ.setNumPointers(i);
+                TopType.addNext(typ);
+            }
+        }
+
+        
+        return TopType;
+    }
+
+
+    STO DoDereference(STO sto){
+        if(sto instanceof ErrorSTO){
+            return sto;
+        }
+        VarSTO result = new VarSTO(sto.getName(),((PointerType)sto.getType()).getNext());
+        if(!(((PointerType)sto.getType()).getNext() instanceof ArrayType)){
+            result.setIsModifiable(true);
+            result.setIsAddressable(true);
+        }
+        else{
+            result.setIsModifiable(false);
+            result.setIsAddressable(true);
+
+        }
+        return result;
+    }
+
+
+
+    String PrintStar(int i){
+        return new String(new char[i]).replace("\0", "*");
+    }
+
+    STO DoNew(STO sto, Vector<STO> params){
+        if(sto instanceof ErrorSTO)
+            return sto;
+
+
+        if(!sto.isModLValue()){
+           m_nNumErrors++;
+           m_errors.print(ErrorMsg.error16_New_var);
+           return new ErrorSTO("error");
+        }
+        else if(!(sto.getType() instanceof PointerType)){
+           m_nNumErrors++;
+           m_errors.print(Formatter.toString(ErrorMsg.error16_New, sto.getType().getName()));
+           return new ErrorSTO("error");           
+        }
+
+        if(sto.getType() instanceof PointerType) {
+            if(!(((PointerType)sto.getType()).getNext() instanceof StructType)) {
+               m_nNumErrors++;
+               m_errors.print(Formatter.toString(ErrorMsg.error16b_NonStructCtorCall, sto.getType().getName()));
+               return new ErrorSTO("error"); 
+            }
+            else {
+               this.DoCtorStructs(null, ((PointerType)sto.getType()).getNext()  ,params);
+            }
+        }
+        return sto;
+
+    }
+
+    STO DoDelete(STO sto){
+        if(sto instanceof ErrorSTO)
+            return sto;
+
+
+        if(!sto.isModLValue()){
+           m_nNumErrors++;
+           m_errors.print(ErrorMsg.error16_Delete_var);
+           return new ErrorSTO("error");
+        }
+        else if(!(sto.getType() instanceof PointerType)){
+           m_nNumErrors++;
+           m_errors.print(Formatter.toString(ErrorMsg.error16_Delete, sto.getType().getName()));
+           return new ErrorSTO("error");           
+        }
+        return sto;
+    }
 
 
 }

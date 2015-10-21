@@ -3,8 +3,8 @@
 //---------
 
 class NullPointerType extends PointerType {
-    public NullPointerType( String strNum, int size, Type elemt, int count){
-        super(strNum, size,count,elemt);
+    public NullPointerType( String strNum){
+        super(strNum, 0);
     }
 
     public boolean isNullPointer() { return true; }

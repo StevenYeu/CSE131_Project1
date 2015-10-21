@@ -31,7 +31,7 @@ class ArrayType extends CompositeType{
     }
     public boolean isAssignable(Type t){
         if (t instanceof ArrayType) {
-            return this.getBaseType().isAssignable(((ArrayType)t).getBaseType());
+            return this.getNext().isAssignable(((ArrayType)t).getNext());
         }
         else {
             return false;

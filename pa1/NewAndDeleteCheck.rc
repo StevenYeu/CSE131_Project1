@@ -1,0 +1,13 @@
+structdef FOO{
+  int x;
+  FOO(int x) {}
+};
+
+function : void main(){
+    //new 1;
+    
+   // int x;
+    //delete x;
+    FOO * f;
+    new f;
+}

@@ -2,16 +2,15 @@ int MyStruct;
 structdef STRUCT{
     int y; 
     function : void foo(){
-    //    while(i < 5){
-            o =1;
-      //  }
+        int i = 0;
+        while(i < 5){
+        }
     }
 
 };
 
-//function : void main(){
-//    MyStruct.SomeField;
-//    STRUCT a1;
-//    a1.y;
-//    a1.foo();
-//}
+
+function : void main(){
+    STRUCT a1;
+    a1.y = 1;
+}
