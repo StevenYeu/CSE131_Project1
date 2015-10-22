@@ -940,13 +940,6 @@ class MyParser extends parser
                    
         }
 
-        System.out.println("aname " + a.getName());
-        System.out.println("atype " + a.getType().getName());
-
-        System.out.println("name " + b.getName());
-        System.out.println("type " + b.getType().getName());
-
-
 
         result = a;
         return result;
