@@ -461,14 +461,14 @@ class MyParser extends parser
                 }
                 sto = new VarSTO(id,t);
                 
-                // r-val for var
-                sto.setIsAddressable(false);
-                sto.setIsModifiable(false);
+                // r-val for var why
+                sto.setIsAddressable(true);
+                sto.setIsModifiable(true);
                 
             }
         }
             
-
+       
 		m_symtab.insert(sto);
             
         
@@ -1224,15 +1224,17 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	STO DoDesignator3_ID(String strID)
 	{
-		STO sto; 
-		if (((sto = m_symtab.accessLocal(strID)) == null )  )
-		{	 
-            if((sto = m_symtab.accessGlobal(strID)) == null){
+		STO sto;
+
+        //change accesslocal to access might break things
+		if (((sto = m_symtab.access(strID)) == null )  )
+		{	
+           // if((sto = m_symtab.accessGlobal(strID)) == null){
                 m_nNumErrors++;
 		        m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
 		        sto = new ErrorSTO(strID);
                 return sto;
-            }
+           // }
         }
          
         return sto;
@@ -1452,6 +1454,7 @@ class MyParser extends parser
         
         }
 
+    
         else if (s.contains("[") || s.contains("]")) {
                isArray = true;
                String[] split = s.split(" ");
@@ -1459,6 +1462,7 @@ class MyParser extends parser
                id = split[1].substring(0,1);
                String arr = split[1].replaceAll("[^-?0-9]+", " ");
                splitStr = arr.trim().split(" ");
+         
                for(int index = 0 ; index<splitStr.length ; index++) {
                  sizes.add(Integer.parseInt(splitStr[index]));
                }
@@ -1956,7 +1960,7 @@ class MyParser extends parser
 
 
     String processArray(Vector<STO> v) {
-        String s = " ";
+        String s = "";
       for(int i = 0; i < v.size();i++) {
          s = s.concat("["+v.get(i).getName() + "]");
       }
