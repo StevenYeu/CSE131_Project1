@@ -554,17 +554,20 @@ class MyParser extends parser
 		{
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+            return;
 		}
        				
         if( !(constexpr instanceof ConstSTO)){
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error8_CompileTime, id));
+            return;
             
         }
         if( !(constexpr.getType().isAssignable(t)))
         {
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error8_Assign, constexpr.getType().getName(),t.getName()));
+            return;
         }
         else{
             ConstSTO sto;

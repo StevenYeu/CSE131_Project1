@@ -1,0 +1,3 @@
+structdef MYS {
+    int x;
+};

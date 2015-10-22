@@ -1,0 +1,9 @@
+int a; 
+const int b = 2;
+function : int main() {
+    const bool x = true;
+    const bool y = true;
+    const int a =  0 | 2;
+    const bool c = (!x);
+    return a;
+}

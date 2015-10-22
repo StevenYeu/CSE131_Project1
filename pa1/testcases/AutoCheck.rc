@@ -1,0 +1,10 @@
+function : void main(){
+    int a;
+    auto b = a;
+    auto c = b* 1.0;
+    const auto d = true;
+   
+   
+    const auto e = 8; 
+    auto f = 748; 
+}

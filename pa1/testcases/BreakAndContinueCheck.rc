@@ -1,0 +1,16 @@
+function : void foo(){
+    break;
+}
+
+function : void bar(){
+    int x = 5;
+    if(x==5){
+        while(x > 0){
+            x--;
+            if(x == 1){
+                continue;
+            }
+        }
+    continue;
+    }
+}

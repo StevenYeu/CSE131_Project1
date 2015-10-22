@@ -1,0 +1,8 @@
+function : float foo(int & x) { return 1;}
+function : void foo(int x) {}
+//function : float foo(float x, float y, float z) { return (x+ y+ z);}
+
+function : int main() {
+    foo(1);
+    return 0;
+}

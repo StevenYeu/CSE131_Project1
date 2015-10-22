@@ -1,0 +1,14 @@
+function : void main(){
+//    int x = 5;
+//    x[2] = 1;
+//    int a[2];
+//    a[1.1] = 0;
+    const int cc = 1;
+    float a[10];
+    float b[10];
+    float c[2][10];
+    float *d;
+    c[1][9] = a[9];
+    b[b[b[b[2] -cc] + cc] -1] = c[1][9];
+    a[2] = d[0] + d[99999];
+}
