@@ -10,7 +10,6 @@ class ArrayType extends CompositeType{
     public ArrayType(String strName, int size,int dim){
         super(strName, size);
         dimension  = dim;
-       //System.out.println("Dims: " + dimension);
     }
 
     public boolean isArray() { return true; }

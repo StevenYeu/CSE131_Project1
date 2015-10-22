@@ -44,7 +44,7 @@ abstract class STO
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
-	private void setName(String str)
+	public void setName(String str)
 	{
 		m_strName = str;
 	}

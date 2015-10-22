@@ -227,13 +227,13 @@ class MyParser extends parser
             else if( params.size() == fsto.getParams().size()){
                 for(int i = 0; i < fsto.getParams().size(); i++){
                      
-                    if( fsto.getParams().get(i).getName().contains("&") || params.get(i).getType() instanceof ArrayType){ // added Array Type check
+                    if( fsto.getParams().get(i).flag == true || params.get(i).getType() instanceof ArrayType){ // added Array Type check
                         if(!(params.get(i).getType().isEquivalent(fsto.getParams().get(i).getType()))){
                             m_nNumErrors++;
                             m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
                             return;
                         }
-                        else if(!(params.get(i).isModLValue())){
+                        else if(!(params.get(i).isModLValue() && !(params.get(i).getType() instanceof ArrayType))){
                             m_nNumErrors++;
                             m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
                             return;
@@ -270,7 +270,7 @@ class MyParser extends parser
                             break;
                      }
                      else{
-                        if( functions.get(i).getParams().get(j).getName().contains("&") || params.get(j).getType() instanceof ArrayType){
+                        if( functions.get(i).getParams().get(j).flag == true || params.get(j).getType() instanceof ArrayType){
                             if(!(params.get(j).isModLValue())) {
                                m_nNumErrors++;
                                m_errors.print(Formatter.toString(ErrorMsg.error9_Illegal, t.getName()));
@@ -314,28 +314,47 @@ class MyParser extends parser
 
 
     // decl of var in struct
-    void DoStructVarDecl(Type t, String id)
+    void DoStructVarDecl(Type t, String id, Vector<STO> arraylist)
 	{
-		if (m_symtab.accessLocal(id) != null)
+		
+        VarSTO sto;
+        if (m_symtab.accessLocal(id) != null)
 		{
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.error13a_Struct, id));
 		}
 
 
+        if(arraylist.size() > 0) {
+            int numDim = arraylist.size();
+            STO sizeStoTop = arraylist.elementAt(0);
+            ArrayType aTopType = new ArrayType(t.getName(), ((ConstSTO)sizeStoTop).getIntValue(), numDim);
 
-		VarSTO sto = new VarSTO(id,t);
+            
+            for(int i = 1; i <=numDim; i++){
+            
+                if(i == numDim){
+                    aTopType.addNext(t);
+                }
+                else{  
+                  STO sizeSto = arraylist.elementAt(i);
+                  ArrayType typ = new ArrayType(t.getName()+"["+ ((ConstSTO)sizeSto).getIntValue() +"]", ((ConstSTO)sizeSto).getIntValue(),numDim-i);
+                  aTopType.addNext(typ);
 
-        // set var in struct to mod-lval
-        if(t instanceof ArrayType){
+                }                        
+            }
+		    sto = new VarSTO(id,aTopType);
             sto.setIsAddressable(true);
             sto.setIsModifiable(false);
         }
-        else{
+        else {
+		   sto = new VarSTO(id,t);
             sto.setIsAddressable(false);
             sto.setIsModifiable(false);
-        }
+
         
+        }
+        // set var in struct to mod-lval
 		m_symtab.insert(sto);
 	}
 
@@ -379,7 +398,7 @@ class MyParser extends parser
                 }
 
             }
-             
+
             STO sizeStoTop = arraylist.elementAt(0);
             ArrayType aTopType = new ArrayType(t.getName(), ((ConstSTO)sizeStoTop).getIntValue(), numDim);
 
@@ -618,18 +637,22 @@ class MyParser extends parser
 
        	StructdefSTO sto = new StructdefSTO(id, new StructType(id));
         Vector<STO> locals = scope.getLocals();
-    
         int size = 0;
+        
         for(int i = 0; i < locals.size(); i++){
             
             STO elm = locals.get(i);
-            int s = elm.getType().getSize();
-            size = size + s;
             if(elm instanceof FuncSTO) {
                 sto.getFuncs().addElement(elm);
             }
             else {
                 sto.getVars().addElement(elm);
+                if(elm.getType() instanceof ArrayType) {
+                   size = size + ((ArrayType)elm.getType()).getTotalSize();
+                }
+                else {
+                  size = size + elm.getType().getSize();
+                } 
             }
 
         }
@@ -936,10 +959,6 @@ class MyParser extends parser
        
 
 
-        for(int i = 0; i < params.size(); i++) {
-            System.out.println("Params: " + params.get(i).getName());
-        }
-
         boolean isStruct = false;
         if(sto instanceof ErrorSTO){
             return sto;
@@ -969,8 +988,6 @@ class MyParser extends parser
                   Vector<STO> funone = ((StructdefSTO)sto).OverloadCheck(name);
                   fsto = funone.get(0).getParams();
                   ovldList = ((StructdefSTO)sto).OverloadCheck(name);
-                  System.out.println("Ovld: " +ovldList.size());
-                  System.out.println("fsto: " +fsto.size());
                 }
                 else {
                   fsto = m_symtab.access(sto.getName()).getParams(); // get function from sym tab
@@ -988,18 +1005,19 @@ class MyParser extends parser
                     else if( params.size() == fsto.size()){
                         for(int i = 0; i < fsto.size(); i++){
                         //if((fsto.getParams().get(i).getName().charAt(0)) == '&') { // pass by refernece check
-                            if(fsto.get(i).getName().contains("&") || params.get(i).getType() instanceof ArrayType){ // added Array Type check 10/17 changed from flag to old way
+                            if(fsto.get(i).flag == true || params.get(i).getType() instanceof ArrayType){ // added Array Type check 10/17 changed from flag to old way
                                 if(!(params.get(i).getType().isEquivalent(fsto.get(i).getType()))){
                                     m_nNumErrors++;
                                     m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.get(i).getName().substring(1), fsto.get(i).getType().getName()));
                                 }
-                                else if(!(params.get(i).isModLValue())){
+                                else if(!(params.get(i).isModLValue()) && !(params.get(i).getType() instanceof ArrayType)){
                                     m_nNumErrors++;
                                     m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.get(i).getName().substring(1), fsto.get(i).getType().getName()));
                                 }
                                 //paramAmp = false;
 
                             }
+
                             else {
                                  if(!(params.get(i).getType().isAssignable(fsto.get(i).getType()))){
                                     m_nNumErrors++;
@@ -1069,7 +1087,6 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	STO DoDesignator2_Dot(STO sto, String strID)
 	{
-        System.out.println("sto: " +sto.getType().getName());
         if( sto instanceof ErrorSTO){
             return sto;
         }
@@ -1394,7 +1411,7 @@ class MyParser extends parser
         }
         result = a;
         return result;
-    } 
+    }
 
     STO ProcessParams(String s) {
         String[] splitStr;
@@ -1404,27 +1421,47 @@ class MyParser extends parser
         Boolean isArray = false;
         Vector<Integer> sizes = new Vector<Integer>();
 
+
         
         if(s.contains("&")) {
-            //paramAmp = true;
             splitStr = s.split("&");
             type = splitStr[0].trim();
             id = "&" +splitStr[1].trim();
-        }
-        else if (s.contains("[") || s.contains("]")) {
-            isArray = true;
-            String[] split = s.split(" ");
-            type = split[0];
-            id = split[1].substring(0,1);
-            String arr = split[1].replaceAll("[^-?0-9]+", " ");
-            splitStr = arr.trim().split(" ");
-            for(int index = 0 ; index<splitStr.length ; index++) {
-              sizes.add(Integer.parseInt(splitStr[index]));
-            }
-            dim = sizes.size();
+  
+             
+             if (id.contains("[") || id.contains("]")) {
 
-            
+               isArray = true;
+               String[] splits = id.split(" ");;
+               String newId = splits[0];
+               String arr = splits[1];
+               arr = splits[1].replaceAll("[^-?0-9]+", " ");
+               String[] splitStrs;
+               splitStrs = arr.trim().split(" ");
+               for(int index = 0 ; index<splitStrs.length ; index++) {
+                 sizes.add(Integer.parseInt(splitStrs[index]));
+               }
+               dim = sizes.size();
+               id = newId;
+ 
+             }
+        
         }
+
+        else if (s.contains("[") || s.contains("]")) {
+               isArray = true;
+               String[] split = s.split(" ");
+               type = split[0];
+               id = split[1].substring(0,1);
+               String arr = split[1].replaceAll("[^-?0-9]+", " ");
+               splitStr = arr.trim().split(" ");
+               for(int index = 0 ; index<splitStr.length ; index++) {
+                 sizes.add(Integer.parseInt(splitStr[index]));
+               }
+               dim = sizes.size();
+ 
+             }
+
         else {
             splitStr = s.split("\\s+");
             type = splitStr[0].trim();
@@ -1432,18 +1469,45 @@ class MyParser extends parser
 
         }
 
+
+
         Type t;
-        switch (type) 
-        {
-            case "int" :  t = new IntType("int");
-                          break;
-            case "float": t = new FloatType("float");
-                          break;
-            case "bool":  t = new BoolType("bool");
-                          break;
-            default:      t = new VoidType("void",0);
+        if(type.contains("*")) { // check for pointer
+          int numPtr; 
+          numPtr = this.CountChar(type,'*');
+          String ptrStr = type.replace("*","");
+          Vector<STO> ptrs = new Vector<STO>();
+          for (int i =0; i <numPtr; i++) {
+             ptrs.addElement(new ExprSTO("star"));
+          }
+          Type ptrType;
+          switch (ptrStr) 
+            {
+               case "int" :  ptrType = new IntType("int");
+                             break;
+               case "float": ptrType = new FloatType("float");
+                             break;
+               case "bool":  ptrType = new BoolType("bool");
+                             break;
+               default:      ptrType = new VoidType("void",0);
+            }
+            t = this.DoPointer(ptrType,ptrs);
+        }
+        else { // non pointers
+           switch (type) 
+            {
+               case "int" :  t = new IntType("int");
+                             break;
+               case "float": t = new FloatType("float");
+                             break;
+               case "bool":  t = new BoolType("bool");
+                             break;
+               default:      t = new VoidType("void",0);
+        
+            }
         
         }
+
         STO result;
         if(isArray == false){
             result = new VarSTO(id,t);
@@ -1468,13 +1532,20 @@ class MyParser extends parser
             }
 
             result = new VarSTO(id,aTopType);
-            isArray = false;
         }
+
+        if (result.getName().contains("&")) {
+            result.setName(result.getName().substring(1));
+            result.flag = true;
+        }
+
         m_symtab.insert(result);
         return result;
 
     }
 
+
+   
     STO DoReturnStmt(STO expr){
         if(expr instanceof ErrorSTO)
             return expr;
@@ -1505,8 +1576,13 @@ class MyParser extends parser
             }
 
         }
+        else if (m_symtab.getFunc().getReturnType() instanceof VoidType){
+                    m_nNumErrors++;
+                    m_errors.print(Formatter.toString(ErrorMsg.error6a_Return_type, expr.getType().getName(), m_symtab.getFunc().getReturnType().getName()));
+                    return new ErrorSTO("Error");
+        }
         return expr;
-
+        
     }
 
 
@@ -1566,7 +1642,7 @@ class MyParser extends parser
         return des;
     }
 
-    int CountChar(String s, char c) {
+    public int CountChar(String s, char c) {
         int count = 0;
         for(char ch : s.toCharArray()) {
             if (ch == c ) {
@@ -1650,7 +1726,6 @@ class MyParser extends parser
         else {
         
            STO struct = m_symtab.accessGlobal(((PointerType)sto.getType()).getBaseType().getName());
-           //System.out.println("hello: " +  struct.getName());
             
              
            Vector<STO> fun = ((StructdefSTO)struct).getFuncs();
@@ -1685,7 +1760,6 @@ class MyParser extends parser
     
         PointerType TopType = new PointerType(t.getName() + this.PrintStar(ptrlist.size()));
         TopType.setNumPointers(ptrlist.size());
-        System.out.println(ptrlist.size());
         if(ptrlist.isEmpty()){
             return t;
         }
@@ -1774,6 +1848,116 @@ class MyParser extends parser
            return new ErrorSTO("error");           
         }
         return sto;
+    }
+
+    STO DoAddressOf(STO sto){
+        if(sto instanceof ErrorSTO){
+            return sto;
+        }
+
+        if(!sto.getIsAddressable()){
+           m_nNumErrors++;
+           m_errors.print(Formatter.toString(ErrorMsg.error18_AddressOf, sto.getType().getName()));
+           return new ErrorSTO("error"); 
+        }
+
+        PointerType ptr =  new PointerType(sto.getType().getName()+ this.PrintStar(1),1);
+        ptr.addNext(sto.getType());
+
+        ExprSTO expr = new ExprSTO(sto.getName(),ptr);
+        expr.setIsAddressable(false);
+        expr.setIsAddressable(false);
+        return expr;
+         
+    }
+
+    STO DoSizeOf(STO sto){
+        if(sto instanceof ErrorSTO){
+            return sto;
+        }
+        
+        if(!(sto.getType() instanceof Type)){
+           m_nNumErrors++;
+           m_errors.print(ErrorMsg.error19_Sizeof);
+           return new ErrorSTO("error"); 
+
+        }
+        if(!(sto.getIsAddressable())) {
+           m_nNumErrors++;
+           m_errors.print(ErrorMsg.error19_Sizeof);
+           return new ErrorSTO("error");          
+        }
+        ConstSTO result;
+ 
+        if(sto.getType() instanceof ArrayType){
+          result = new ConstSTO(sto.getName(), new IntType("int"), ((ArrayType)sto.getType()).getTotalSize());
+
+        }
+        else {
+          result = new ConstSTO(sto.getName(), new IntType("int"), sto.getType().getSize());
+        
+        }
+
+
+        result.setIsAddressable(false);
+        result.setIsModifiable(false);
+        return result;       
+    }
+
+
+
+
+
+    STO DoSizeOf(Type t, Vector<STO> arraylist){
+        if(!(t instanceof Type)){
+           m_nNumErrors++;
+           m_errors.print(ErrorMsg.error19_Sizeof);
+           return new ErrorSTO("error"); 
+
+        }
+        ConstSTO result;
+
+        if(!(arraylist.isEmpty())) {
+            int numDim = arraylist.size();
+            STO sizeStoTop = arraylist.elementAt(0);
+            ArrayType aTopType = new ArrayType(t.getName(), ((ConstSTO)sizeStoTop).getIntValue(), numDim);
+
+            
+            for(int i = 1; i <=numDim; i++){
+            
+                if(i == numDim){
+                    aTopType.addNext(t);
+                }
+                else{  
+                  STO sizeSto = arraylist.elementAt(i);
+                  ArrayType typ = new ArrayType(t.getName()+"["+ ((ConstSTO)sizeSto).getIntValue() +"]", ((ConstSTO)sizeSto).getIntValue(),numDim-i);
+                  aTopType.addNext(typ);
+
+                }                        
+            }
+		    result = new ConstSTO(t.getName(), new IntType("int"),aTopType.getTotalSize());
+        }
+        else {
+           result = new ConstSTO(t.getName(), new IntType("int"), t.getSize());
+
+        }
+      
+
+        result.setIsAddressable(false);
+        result.setIsModifiable(false);
+        return result;       
+    }
+
+
+
+
+    String processArray(Vector<STO> v) {
+        String s = " ";
+      for(int i = 0; i < v.size();i++) {
+         s = s.concat("["+v.get(i).getName() + "]");
+      }
+      return s; 
+    
     }
 
 

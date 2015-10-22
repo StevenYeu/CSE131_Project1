@@ -308,9 +308,9 @@ FieldVarsList ::=   FieldVarDecl
     ;
 
 
-FieldVarDecl ::=    DecoratedType:_1 T_ID:_2 OptArrayList T_SEMI
+FieldVarDecl ::=    DecoratedType:_1 T_ID:_2 OptArrayList:_3 T_SEMI
                     {:
-                        ((MyParser) parser).DoStructVarDecl(_1,_2);
+                        ((MyParser) parser).DoStructVarDecl(_1,_2,_3);
                     :}
     ;
 
@@ -606,9 +606,9 @@ ParamList ::=       ParamDecl:_2
     ;
 
 
-ParamDecl ::=       Type:_1 OptRef:_2 T_ID:_3 OptArrayList
-                    {:
-                        RESULT = new String(_1.getName() + " " +_2 + _3);
+ParamDecl ::=       Type:_1 OptRef:_2 T_ID:_3 OptArrayList:_4
+                    {: 
+                        RESULT = new String(_1.getName() + " " +_2 + _3 + ((MyParser) parser).processArray(_4));
                     :}
     ;
 
@@ -993,7 +993,7 @@ Designator ::=      T_STAR Designator:_1
                     :}
     |               T_AMPERSAND Designator:_1
                     {:
-                        RESULT = _1;
+                        RESULT = ((MyParser) parser).DoAddressOf(_1);
                     :}
     |               UnarySign:_1 Designator:_2
                     {:
@@ -1006,11 +1006,11 @@ Designator ::=      T_STAR Designator:_1
                     :}
     |               T_SIZEOF T_LPAREN Designator:_2 T_RPAREN
                     {:
-                        RESULT = new ConstSTO("sizeof variable - fix me", null, 0);
+                        RESULT = ((MyParser) parser).DoSizeOf(_2);
                     :}
-    |               T_SIZEOF T_LPAREN Type:_2 OptArrayList T_RPAREN
+    |               T_SIZEOF T_LPAREN Type:_2 OptArrayList:_3 T_RPAREN
                     {:
-                        RESULT = new ConstSTO("sizeof type - fix me", null, 0);
+                        RESULT = ((MyParser) parser).DoSizeOf(_2, _3);
                     :}
     |               T_LPAREN DecoratedType T_RPAREN Designator:_2
                     {:
