@@ -770,7 +770,7 @@ Expr ::=            Designator:_1 T_ASSIGN Expr:_2
                     {:
                         
                         RESULT = ((MyParser) parser).DoAssignExpr (_1);
-                        RESULT = ((MyParser) parser).DoAssignTypeCheck(_1,_2);
+                        RESULT = ((MyParser) parser).DoAssignTypeCheck(RESULT,_2);
                        
                     :}
     |               Expr0:_1
@@ -1012,9 +1012,10 @@ Designator ::=      T_STAR Designator:_1
                     {:
                         RESULT = ((MyParser) parser).DoSizeOf(_2, _3);
                     :}
-    |               T_LPAREN DecoratedType T_RPAREN Designator:_2
+    |               T_LPAREN DecoratedType:_1 T_RPAREN Designator:_2
                     {:
-                        RESULT = _2;
+                        RESULT = ((MyParser) parser).DoTypeCast(_1,_2);
+                        //RESULT = _2;
                     :}
     |               IncDecOp:_1 Designator:_2
                     {:

@@ -2,11 +2,32 @@ int x;
 float y;
 float* z;
 int* intPtr;
+int q[5];
 
-function : void main() {
-   //x = (int) y;
+structdef FOO{
+   int b;
+};
+
+function : bool cat(int &i){ return true;}
+
+function : int main() {
+   //x = (int) q;
+  //int n;
+   //FOO a1;
+   //n = (int) a1;
+   //const float x =  (1-0.99999999);
+   const int x = 33333;
+   float y;
+   y =(float) x;
+
+   int a;
+   int * c;
+   a = (int)c;
+
+    bool b;
+   cat((int)b);
    //x = (int) (x + 4.9);
-   //y = (float)(int) (65.3);
+  // y = (float)(int) (65.3);
    //intPtr = (int*) z;
    return 0;
 }

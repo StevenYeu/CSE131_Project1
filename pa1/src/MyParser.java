@@ -230,12 +230,12 @@ class MyParser extends parser
                     if( fsto.getParams().get(i).flag == true || params.get(i).getType() instanceof ArrayType){ // added Array Type check
                         if(!(params.get(i).getType().isEquivalent(fsto.getParams().get(i).getType()))){
                             m_nNumErrors++;
-                            m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
+                            m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.getParams().get(i).getName(), fsto.getParams().get(i).getType().getName()));
                             return;
                         }
                         else if(!(params.get(i).isModLValue() && !(params.get(i).getType() instanceof ArrayType))){
                             m_nNumErrors++;
-                            m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.getParams().get(i).getName().substring(1), fsto.getParams().get(i).getType().getName()));
+                            m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.getParams().get(i).getName(), fsto.getParams().get(i).getType().getName()));
                             return;
                         }
                         //paramAmp = false;
@@ -328,7 +328,7 @@ class MyParser extends parser
         if(arraylist.size() > 0) {
             int numDim = arraylist.size();
             STO sizeStoTop = arraylist.elementAt(0);
-            ArrayType aTopType = new ArrayType(t.getName(), ((ConstSTO)sizeStoTop).getIntValue(), numDim);
+            ArrayType aTopType = new ArrayType(t.getName()+"["+ ((ConstSTO)sizeStoTop).getIntValue() +"]", ((ConstSTO)sizeStoTop).getIntValue(), numDim);
 
             
             for(int i = 1; i <=numDim; i++){
@@ -400,7 +400,8 @@ class MyParser extends parser
             }
 
             STO sizeStoTop = arraylist.elementAt(0);
-            ArrayType aTopType = new ArrayType(t.getName(), ((ConstSTO)sizeStoTop).getIntValue(), numDim);
+            ArrayType aTopType = new ArrayType(t.getName()+"["+ ((ConstSTO)sizeStoTop).getIntValue() +"]", ((ConstSTO)sizeStoTop).getIntValue(), numDim);
+
 
             
             for(int i = 1; i <=numDim; i++){
@@ -912,12 +913,13 @@ class MyParser extends parser
 		}
         //stoDes.setIsAddressable(false);
         //stoDes.setIsModifiable(false);
+
 		
 		return stoDes;
 	}
 
     STO DoAssignTypeCheck(STO a, STO b) {
-
+      
 
         
         if(a instanceof ErrorSTO) {
@@ -937,6 +939,15 @@ class MyParser extends parser
            
                    
         }
+
+        System.out.println("aname " + a.getName());
+        System.out.println("atype " + a.getType().getName());
+
+        System.out.println("name " + b.getName());
+        System.out.println("type " + b.getType().getName());
+
+
+
         result = a;
         return result;
     
@@ -1008,11 +1019,11 @@ class MyParser extends parser
                             if(fsto.get(i).flag == true || params.get(i).getType() instanceof ArrayType){ // added Array Type check 10/17 changed from flag to old way
                                 if(!(params.get(i).getType().isEquivalent(fsto.get(i).getType()))){
                                     m_nNumErrors++;
-                                    m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.get(i).getName().substring(1), fsto.get(i).getType().getName()));
+                                    m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.get(i).getName(), fsto.get(i).getType().getName()));
                                 }
                                 else if(!(params.get(i).isModLValue()) && !(params.get(i).getType() instanceof ArrayType)){
                                     m_nNumErrors++;
-                                    m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.get(i).getName().substring(1), fsto.get(i).getType().getName()));
+                                    m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.get(i).getName(), fsto.get(i).getType().getName()));
                                 }
                                 //paramAmp = false;
 
@@ -1958,6 +1969,70 @@ class MyParser extends parser
       }
       return s; 
     
+    }
+
+    STO DoTypeCast(Type t, STO sto) {
+        if(sto instanceof ErrorSTO){
+            return sto;
+        }
+
+
+        if(sto.getType() instanceof BasicType || sto.getType() instanceof PointerType){
+
+            STO res = new ConstSTO("temp");
+            if(sto instanceof ConstSTO){
+
+                Type typ = sto.getType();
+                if( typ instanceof BoolType && t instanceof NumericType){
+                    int val=0;
+                    if(((ConstSTO)sto).getBoolValue()){val = 1;}
+                    else if (!(((ConstSTO)sto).getBoolValue())) {val = 0;}
+                    res = new ConstSTO(sto.getName(), t, val);
+                }
+               else if(typ instanceof IntType && t instanceof BoolType){
+                    
+                    res = new ConstSTO(sto.getName(), t, ((ConstSTO)sto).getIntValue());
+               }
+               else if(typ instanceof FloatType && t instanceof BoolType){
+                    if(((ConstSTO)sto).getFloatValue() == 0.0)
+                        res = new ConstSTO(sto.getName(), t, 0.0);
+                    else if(((ConstSTO)sto).getFloatValue() != 0.0)
+                        res = new ConstSTO(sto.getName(), t, 1.0);
+   
+               }
+               else if(typ instanceof FloatType && t instanceof IntType){
+                    float val = ((ConstSTO)sto).getFloatValue();
+                    int intVal = (int)val;
+                    res = new ConstSTO(sto.getName(), t,intVal);
+               
+               }
+               else if(typ instanceof IntType && t instanceof FloatType){
+                    float val = ((ConstSTO)sto).getFloatValue();
+                    //float floatVal = (float)val;
+                    res = new ConstSTO(sto.getName(), t, val);
+               }
+            
+            
+            }
+            else{
+                res = new ExprSTO(sto.getName(), t);
+                
+            }
+            res.setIsAddressable(false);
+            res.setIsModifiable(false);
+            return res;
+
+        }
+        else{
+           m_nNumErrors++;
+           m_errors.print(Formatter.toString(ErrorMsg.error20_Cast, sto.getType().getName(), t.getName()));
+           return new ErrorSTO("error"); 
+
+        }
+
+        //return sto;
+        
+
     }
 
 
