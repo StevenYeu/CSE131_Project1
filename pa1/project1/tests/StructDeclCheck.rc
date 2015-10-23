@@ -1,0 +1,19 @@
+structdef CAR {
+    int x;
+    int y;
+    int x;
+    int z;
+    int x;
+    int bar;
+    MYS * next;
+    function : void y() {}
+    function : void f( int &x)
+    {
+        x = x + 1;
+    }
+    function : void foo() {}
+    function : void foo() {}
+    function : void bar() {}
+    function : void bar(int x) {}
+    function : int bar() { return 0;}
+};

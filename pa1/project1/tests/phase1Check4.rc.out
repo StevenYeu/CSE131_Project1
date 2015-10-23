@@ -1,0 +1,5 @@
+Error, "/tmp/cs131_testrunner_SQ0qMF/file.rc": 
+  Initialization value of type bool not assignable to constant/variable of type int.
+Error, "/tmp/cs131_testrunner_SQ0qMF/file.rc": 
+  Initialization value of type int not assignable to constant/variable of type bool.
+Compile: failure.

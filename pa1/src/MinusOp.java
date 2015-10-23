@@ -21,7 +21,6 @@ class MinusOp extends ArithmetricOp {
         }
         else if((typeA instanceof IntType) && (typeB instanceof IntType)){
             if(a instanceof ConstSTO && b instanceof ConstSTO) {
-                System.out.println(a.getName());
                 int result = ((ConstSTO)a).getIntValue() - ((ConstSTO)b).getIntValue();
                 return new ConstSTO(Integer.toString(result), new IntType("int"),result);
 

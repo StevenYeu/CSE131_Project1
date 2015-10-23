@@ -1,0 +1,34 @@
+structdef MYS_A {
+    int x;
+};
+
+structdef MYS_B {
+    int x;
+    MYS_B(float x) {}
+};
+
+structdef MYS_C {
+  int x;
+  MYS_C() {}
+  MYS_C(int & x) {}
+  MYS_C(int x, float y) {}
+
+};
+
+//MYS_F f1;
+MYS_A a1;
+MYS_A a2 : ();
+MYS_A a3 : (1, 2);
+MYS_A a4[5][1];
+MYS_A a5[5] : ();
+//MYS_C c2 : (1);
+
+function : void main() {
+    MYS_B b1;
+    MYS_B b2 : ();
+    MYS_B b3 : (1);
+    int a = 5;
+    MYS_C c5 : (a);
+    MYS_C c3 : (1,5,2);
+    MYS_C c4 : (1,2.2);
+}

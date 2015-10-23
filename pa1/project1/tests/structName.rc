@@ -1,0 +1,14 @@
+structdef MYS {
+    int x;
+    MYS() {}
+    MYS(int x) {}
+    MYS(float x) {}
+    ~MYS() {}
+    //~MYS(int x) {}
+    FOO() {}
+    ~BAR() {}
+    MYS() {}
+    MYS(int y) {}
+    ~MYS() {}
+    
+};

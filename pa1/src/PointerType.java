@@ -39,13 +39,7 @@ class PointerType extends CompositeType{
     }
 
     public boolean isAssignable(Type t){
-        if( t instanceof PointerType ) {
-            if(this.getNumPtr() == ((PointerType)t).getNumPtr()){
-                return (this.getNext()).isAssignable(((PointerType)t).getNext());
-            } 
-        }
-        return false;
-            
+       return this.isEquivalent(t);            
     }
 
     public Type getNext() {

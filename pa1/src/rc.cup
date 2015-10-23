@@ -608,7 +608,7 @@ ParamList ::=       ParamDecl:_2
 
 ParamDecl ::=       Type:_1 OptRef:_2 T_ID:_3 OptArrayList:_4
                     {: 
-                        RESULT = new String(_1.getName() + " " +_2 + _3 + ((MyParser) parser).processArray(_4));
+                        RESULT = new String(_1.getName()  +_2 +" "+ _3 + " " + ((MyParser) parser).processArray(_4));
                     :}
     ;
 
@@ -1052,8 +1052,8 @@ Designator2 ::=     Designator2:_1 T_DOT T_ID:_3
     |               Designator2:_1 T_LPAREN OptExprList:_2 T_RPAREN
                     {:
                         
-                        ((MyParser) parser).DoFuncCall (_1,_2);
-                        RESULT = _1;
+                        RESULT = ((MyParser) parser).DoFuncCall (_1,_2);
+                       // RESULT = _1;
                     :}
     |               Designator3:_1
                     {:

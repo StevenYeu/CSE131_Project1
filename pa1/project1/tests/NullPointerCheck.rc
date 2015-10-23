@@ -1,0 +1,9 @@
+structdef MYS {
+    float * f;
+};
+
+function : void main(){
+    //nullptr[4] = 3;
+    int x;
+    *x = 5;
+}

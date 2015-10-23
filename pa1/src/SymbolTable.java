@@ -82,12 +82,21 @@ class SymbolTable
 		for (Enumeration<Scope> e = m_stkScopes.elements(); e.hasMoreElements();)
 		{
 			scope = e.nextElement();
+
 			if ((stoReturn = scope.access(strName)) != null) {
 				stk.push(stoReturn);
             }
 		}
 
-		return stk.pop();
+        if(stk.isEmpty()) {
+          return null;
+        }
+        else {
+
+		  return stk.pop();
+        
+        }
+
 	}
 
 	//----------------------------------------------------------------
@@ -162,5 +171,5 @@ class SymbolTable
     // added for struct
     public StructdefSTO getStruct() { return m_struct;}
     public void setStruct(StructdefSTO sto) { m_struct = sto;}
-    
+
 }

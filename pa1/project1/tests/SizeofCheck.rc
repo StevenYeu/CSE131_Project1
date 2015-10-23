@@ -1,0 +1,31 @@
+structdef MS {
+    int a;
+    int b;
+    //int arr[3][4];
+    function : int doo() { return 0; }
+};
+
+
+int x;
+const float y = 55.5;
+bool z[4];
+MS t;
+function : void foo(bool &p1[4], bool* p2) {
+    //x = sizeof(p1);
+    //x = sizeof(p2);
+}
+
+function : void main() {
+   foo(z, &z[0]);
+   x = sizeof(float);
+   x = sizeof(MS);
+   x = sizeof(float***);
+   //x = sizeof(int[3]);
+   //x = sizeof(x);
+   //x = sizeof(y);
+   //x = sizeof(z);
+   //x = sizeof(t);
+
+
+    
+}

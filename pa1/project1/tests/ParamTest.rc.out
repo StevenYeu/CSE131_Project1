@@ -1,0 +1,5 @@
+Error, "/tmp/cs131_testrunner_JJ0qMF/file.rc": 
+  Argument passed to reference parameter x (type int) is not a modifiable L-value.
+Error, "/tmp/cs131_testrunner_JJ0qMF/file.rc": 
+  Argument of type float not assignable to value parameter y, of type int.
+Compile: failure.

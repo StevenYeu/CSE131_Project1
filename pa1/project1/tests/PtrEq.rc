@@ -1,0 +1,13 @@
+function : void foo() {
+    
+   int * x;
+   int * y;
+   int * c;
+   float z;
+   float k;
+   bool b;
+  // b = (y != z);
+   //x++;
+   //x = 1 ;
+   x = y;
+}

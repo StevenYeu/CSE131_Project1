@@ -11,7 +11,7 @@ class StructType extends CompositeType {
     public boolean isStruct(){ return true; }
     public boolean isEquivalent(Type t){
         if(t instanceof StructType){
-            if( t.getName() == this.getName()){
+            if( t.getName().equals(this.getName())){
                 return true;
             }
 

@@ -1,0 +1,8 @@
+function : void foo(int x) {}
+function : void foo( int &x ) { }
+function : float & foo( float & x ) { return x; }
+function : int  foo( int x )   { return 0; }
+function : void bar( int x, float y ) {}
+function : int  bar( float y, int x ) {  return 0; } 
+function : void bar( int & x, int y ) {}    
+

@@ -1,0 +1,7 @@
+Error, "/tmp/cs131_testrunner_KI0qMF/file.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "/tmp/cs131_testrunner_KI0qMF/file.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "/tmp/cs131_testrunner_KI0qMF/file.rc": 
+  Non-addressable argument of type int to address-of operator.
+Compile: failure.

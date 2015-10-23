@@ -1,0 +1,9 @@
+Error, "/tmp/cs131_testrunner_FQ0qMF/file.rc": 
+  Number of arguments (2) differs from number of parameters (0).
+Error, "/tmp/cs131_testrunner_FQ0qMF/file.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "/tmp/cs131_testrunner_FQ0qMF/file.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "/tmp/cs131_testrunner_FQ0qMF/file.rc": 
+  Illegal call to overloaded function MYS_C.
+Compile: failure.

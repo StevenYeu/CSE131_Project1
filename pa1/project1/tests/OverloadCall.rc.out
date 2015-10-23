@@ -1,0 +1,5 @@
+Error, "/tmp/cs131_testrunner_GJ0qMF/file.rc": 
+  Duplicate declaration of overloaded function foo.
+Error, "/tmp/cs131_testrunner_GJ0qMF/file.rc": 
+  Argument passed to reference parameter x (type int) is not a modifiable L-value.
+Compile: failure.

@@ -225,8 +225,8 @@ class MyParser extends parser
                return;
             }
             else if( params.size() == fsto.getParams().size()){
-                for(int i = 0; i < fsto.getParams().size(); i++){
-                     
+                for(int i = 0; i < fsto.getParams().size(); i++){ 
+                    if(params.size() != 0) {if(params.get(i) instanceof ErrorSTO) {return;} }//Nasty Error check for indexoutofbound  
                     if( fsto.getParams().get(i).flag == true || params.get(i).getType() instanceof ArrayType){ // added Array Type check
                         if(!(params.get(i).getType().isEquivalent(fsto.getParams().get(i).getType()))){
                             m_nNumErrors++;
@@ -263,6 +263,7 @@ class MyParser extends parser
               if(curPar.size() == params.size()){
                  int ParamCnt = 0; // param counter
                  for(int j = 0; j < params.size(); j++){
+                    if(params.size() != 0) {if(params.get(j) instanceof ErrorSTO) {return;} }//Nasty Error check for indexoutofbound 
                      Type parType = params.elementAt(j).getType();
                      Type curParType = curPar.elementAt(j).getType();
                      if(!parType.isEquivalent(curParType)){
@@ -1010,8 +1011,15 @@ class MyParser extends parser
                         return new ErrorSTO(sto.getName());
                     }
                     else if( params.size() == fsto.size()){
+
+                        if(params.size()==0 ){
+                           return sto;
+                        } 
+   
+
                         for(int i = 0; i < fsto.size(); i++){
-                        //if((fsto.getParams().get(i).getName().charAt(0)) == '&') { // pass by refernece check
+
+                          if(params.size() != 0) {if(params.get(i) instanceof ErrorSTO) {return params.get(i);} }//Nasty Error check for indexoutofbound  
                             if(fsto.get(i).flag == true || params.get(i).getType() instanceof ArrayType){ // added Array Type check 10/17 changed from flag to old way
                                 if(!(params.get(i).getType().isEquivalent(fsto.get(i).getType()))){
                                     m_nNumErrors++;
@@ -1021,7 +1029,6 @@ class MyParser extends parser
                                     m_nNumErrors++;
                                     m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.get(i).getName(), fsto.get(i).getType().getName()));
                                 }
-                                //paramAmp = false;
 
                             }
 
@@ -1045,7 +1052,7 @@ class MyParser extends parser
                         if(curPar.size() == params.size()){
                             int ParamCnt = 0;
                             for(int j = 0; j < params.size(); j++){
-                               
+                                if(params.size() != 0) {if(params.get(j) instanceof ErrorSTO) {return params.get(j);} }//Nasty Error check for indexoutofbound      
                                 Type parType = params.elementAt(j).getType();
                                 Type curParType = curPar.elementAt(j).getType();
                                 if(!parType.isEquivalent(curParType)){
@@ -1086,6 +1093,7 @@ class MyParser extends parser
             }
 
         }
+
 		return sto;
 	}
 
@@ -1230,7 +1238,7 @@ class MyParser extends parser
 		STO sto;
 
         //change accesslocal to access might break things
-		if (((sto = m_symtab.access(strID)) == null )  )
+		if ((sto = m_symtab.access(strID)) == null )
 		{	
            // if((sto = m_symtab.accessGlobal(strID)) == null){
                 m_nNumErrors++;
@@ -1239,8 +1247,8 @@ class MyParser extends parser
                 return sto;
            // }
         }
-         
         return sto;
+      
             
 	}
 
@@ -1268,21 +1276,26 @@ class MyParser extends parser
 	{
 		STO sto;
 
-		if ((sto = m_symtab.access(strID)) == null)
+    // change access to accessGlobal 
+		if (m_symtab.accessGlobal(strID) == null)
 		{
 			m_nNumErrors++;
 		 	m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
 			return new ErrorType();
 		}
+        else{
+            sto = m_symtab.access(strID); 
 
-		if (!sto.isStructdef())
-		{
-			m_nNumErrors++;
-			m_errors.print(Formatter.toString(ErrorMsg.not_type, sto.getName()));
-			return new ErrorType();
-		}
+		    if (!sto.isStructdef())
+		    {
+			   m_nNumErrors++;
+			   m_errors.print(Formatter.toString(ErrorMsg.not_type, sto.getName()));
+			   return new ErrorType();
+		    }
+
 
 		return sto.getType();
+        }
 	}
 
     STO DoBinaryExpr(STO a, Operator o, STO b) {
@@ -1426,10 +1439,11 @@ class MyParser extends parser
         String[] splitStr;
         String type;
         String id;
+        String arr = "";
+        String numArr = "";
         int dim = 0;
         Boolean isArray = false;
         Vector<Integer> sizes = new Vector<Integer>();
-
 
         
         if(s.contains("&")) {
@@ -1440,10 +1454,13 @@ class MyParser extends parser
              
              if (id.contains("[") || id.contains("]")) {
 
+                 
+                 
                isArray = true;
                String[] splits = id.split(" ");;
                String newId = splits[0];
-               String arr = splits[1];
+               arr = splits[1];
+               numArr = splits[1];
                arr = splits[1].replaceAll("[^-?0-9]+", " ");
                String[] splitStrs;
                splitStrs = arr.trim().split(" ");
@@ -1462,8 +1479,9 @@ class MyParser extends parser
                isArray = true;
                String[] split = s.split(" ");
                type = split[0];
-               id = split[1].substring(0,1);
-               String arr = split[1].replaceAll("[^-?0-9]+", " ");
+               id = split[1];
+               numArr = split[2];
+               arr = split[2].replaceAll("[^-?0-9]+", " ");
                splitStr = arr.trim().split(" ");
          
                for(int index = 0 ; index<splitStr.length ; index++) {
@@ -1471,7 +1489,7 @@ class MyParser extends parser
                }
                dim = sizes.size();
  
-             }
+        }
 
         else {
             splitStr = s.split("\\s+");
@@ -1500,7 +1518,7 @@ class MyParser extends parser
                              break;
                case "bool":  ptrType = new BoolType("bool");
                              break;
-               default:      ptrType = new VoidType("void",0);
+               default:      ptrType = new StructType(type);
             }
             t = this.DoPointer(ptrType,ptrs);
         }
@@ -1513,7 +1531,7 @@ class MyParser extends parser
                              break;
                case "bool":  t = new BoolType("bool");
                              break;
-               default:      t = new VoidType("void",0);
+               default:      t = new StructType(type);
         
             }
         
@@ -1524,7 +1542,9 @@ class MyParser extends parser
             result = new VarSTO(id,t);
         }
         else{
-            ArrayType aTopType = new ArrayType("array",sizes.get(0), dim);
+
+            String name = type.concat("" + numArr);
+            ArrayType aTopType = new ArrayType(name,sizes.get(0), dim);
 
             
             for(int i = 1; i <=dim; i++){
@@ -1534,7 +1554,8 @@ class MyParser extends parser
                 }
                 else{  
                   int size = sizes.get(i);
-                  ArrayType typ = new ArrayType("array", size,dim-i);
+                  String n = name.substring(0,name.lastIndexOf("["));
+                  ArrayType typ = new ArrayType(n, size,dim-i);
                   aTopType.addNext(typ);
                 }
                 
@@ -1759,7 +1780,7 @@ class MyParser extends parser
            }
 
            m_nNumErrors++;
-           m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, sto.getType().getName()));
+           m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, struct.getName()));
            return new ErrorSTO("error");
 
         }
@@ -1830,14 +1851,32 @@ class MyParser extends parser
         }
 
         if(sto.getType() instanceof PointerType) {
-            if(!(((PointerType)sto.getType()).getNext() instanceof StructType)) {
-               m_nNumErrors++;
-               m_errors.print(Formatter.toString(ErrorMsg.error16b_NonStructCtorCall, sto.getType().getName()));
-               return new ErrorSTO("error"); 
+            //System.out.println(sto.getName());
+            if(params.size() == 0){
+                if(!(((PointerType)sto.getType()).getNext() instanceof StructType)) {
+                    return sto;
+                }
+                else if(((PointerType)sto.getType()).getNext() instanceof StructType){
+                   this.DoCtorStructs(null, ((PointerType)sto.getType()).getNext()  ,params);
+        
+                }
             }
-            else {
-               this.DoCtorStructs(null, ((PointerType)sto.getType()).getNext()  ,params);
+            else{
+                if(((PointerType)sto.getType()).getNext() instanceof StructType){
+                   this.DoCtorStructs(null, ((PointerType)sto.getType()).getNext()  ,params);
+        
+                }
+                else if(!(((PointerType)sto.getType()).getNext() instanceof StructType)) {
+                   m_nNumErrors++;
+                   m_errors.print(Formatter.toString(ErrorMsg.error16b_NonStructCtorCall, sto.getType().getName()));
+                   return new ErrorSTO("error"); 
+                }
+
+
+
             }
+
+
         }
         return sto;
 

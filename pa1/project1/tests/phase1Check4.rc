@@ -1,0 +1,6 @@
+function : void foo(){
+    //bool x = 5 + false;
+    int y = true;
+    bool i = 5;
+}
+

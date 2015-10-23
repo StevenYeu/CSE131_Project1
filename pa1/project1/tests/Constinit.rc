@@ -1,0 +1,6 @@
+function : void main(){
+
+   const int x = 5;
+   int y = x;
+   const int z = y;
+}

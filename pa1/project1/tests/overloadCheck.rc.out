@@ -1,0 +1,5 @@
+Error, "/tmp/cs131_testrunner_QQ0qMF/file.rc": 
+  Duplicate declaration of overloaded function foo.
+Error, "/tmp/cs131_testrunner_QQ0qMF/file.rc": 
+  Duplicate declaration of overloaded function foo.
+Compile: failure.

@@ -1,0 +1,16 @@
+int MyStruct;
+structdef STRUCT{
+    int y; 
+    function : void foo(){
+        int i = 0;
+        while(i < 5){
+        }
+    }
+
+};
+
+
+function : void main(){
+    STRUCT a1;
+    a1.y = 1;
+}

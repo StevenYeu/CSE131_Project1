@@ -1,0 +1,3 @@
+Error, "/tmp/cs131_testrunner_DJ0qMF/file.rc": 
+  Incompatible type int to unary dereference operator *, pointer expected.
+Compile: failure.
