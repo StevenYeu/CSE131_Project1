@@ -1,0 +1,4 @@
+  Left-hand operand is not assignable (not a modifiable L-value).
+  Left-hand operand is not assignable (not a modifiable L-value).
+  Non-addressable argument of type int to address-of operator.
+Compile: failure.

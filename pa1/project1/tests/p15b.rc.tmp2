@@ -1,0 +1,6 @@
+  Value of type int not assignable to variable of type bool.
+  Value of type int not assignable to variable of type bool.
+  Value of type bool not assignable to variable of type int.
+  Value of type YOURSTRUCT not assignable to variable of type MYSTRUCT.
+  Value of type YOURSTRUCT* not assignable to variable of type MYSTRUCT*.
+Compile: failure.

@@ -1,0 +1,10 @@
+  Number of arguments (2) differs from number of parameters (0).
+  Number of arguments (0) differs from number of parameters (1).
+  Number of arguments (0) differs from number of parameters (1).
+  Argument of type bool not assignable to value parameter x, of type float.
+  Number of arguments (0) differs from number of parameters (1).
+  Argument of type bool not assignable to value parameter x, of type float.
+  Illegal call to overloaded function MYS_C.
+  Illegal call to overloaded function MYS_C.
+  Illegal call to overloaded function MYS_C.
+Compile: failure.

@@ -1,0 +1,73 @@
+  Incompatible type float to binary operator %, equivalent to int expected.
+  Incompatible type bool to binary operator +, numeric expected.
+  Incompatible type bool to binary operator +, numeric expected.
+  Incompatible type bool to binary operator +, numeric expected.
+  Incompatible type bool to binary operator -, numeric expected.
+  Incompatible type bool to binary operator -, numeric expected.
+  Incompatible type bool to binary operator -, numeric expected.
+  Incompatible type float to binary operator %, equivalent to int expected.
+  Incompatible type float to binary operator %, equivalent to int expected.
+  Incompatible type bool to binary operator %, equivalent to int expected.
+  Incompatible type bool to binary operator /, numeric expected.
+  Incompatible type bool to binary operator /, numeric expected.
+  Incompatible type bool to binary operator *, numeric expected.
+  Incompatible type bool to binary operator *, numeric expected.
+  Incompatible type int to binary operator &&, equivalent to bool expected.
+  Incompatible type float to binary operator &&, equivalent to bool expected.
+  Incompatible type float to binary operator &&, equivalent to bool expected.
+  Incompatible type int to binary operator ||, equivalent to bool expected.
+  Incompatible type float to binary operator ||, equivalent to bool expected.
+  Incompatible type int to binary operator ||, equivalent to bool expected.
+  Incompatible type float to binary operator ||, equivalent to bool expected.
+  Incompatible type int to binary operator ||, equivalent to bool expected.
+  Incompatible type int to unary operator !, equivalent to bool expected.
+  Incompatible type float to unary operator !, equivalent to bool expected.
+  Incompatible type float to binary operator |, equivalent to int expected.
+  Incompatible type bool to binary operator |, equivalent to int expected.
+  Incompatible type float to binary operator |, equivalent to int expected.
+  Incompatible type float to binary operator &, equivalent to int expected.
+  Incompatible type bool to binary operator &, equivalent to int expected.
+  Incompatible type float to binary operator &, equivalent to int expected.
+  Incompatible type float to binary operator ^, equivalent to int expected.
+  Incompatible type bool to binary operator ^, equivalent to int expected.
+  Incompatible type float to binary operator ^, equivalent to int expected.
+  Incompatible type bool to binary operator <, numeric expected.
+  Incompatible type bool to binary operator <, numeric expected.
+  Incompatible type bool to binary operator >, numeric expected.
+  Incompatible type bool to binary operator >, numeric expected.
+  Incompatible type bool to binary operator >=, numeric expected.
+  Incompatible type bool to binary operator >=, numeric expected.
+  Incompatible type bool to binary operator <=, numeric expected.
+  Incompatible type bool to binary operator <=, numeric expected.
+  Incompatible types to operator: int == bool;
+  both must be numeric, or both equivalent to bool.
+  Incompatible types to operator: bool == int;
+  both must be numeric, or both equivalent to bool.
+  Incompatible types to operator: int != bool;
+  both must be numeric, or both equivalent to bool.
+  Incompatible types to operator: bool != int;
+  both must be numeric, or both equivalent to bool.
+  Incompatible types to operator: int == bool;
+  both must be numeric, or both equivalent to bool.
+  Incompatible types to operator: bool == int;
+  both must be numeric, or both equivalent to bool.
+  Incompatible types to operator: int != bool;
+  both must be numeric, or both equivalent to bool.
+  Incompatible types to operator: bool != int;
+  both must be numeric, or both equivalent to bool.
+  Value of type bool not assignable to variable of type int.
+  Value of type bool not assignable to variable of type int.
+  Value of type bool not assignable to variable of type int.
+  Value of type bool not assignable to variable of type int.
+  Value of type bool not assignable to variable of type int.
+  Value of type bool not assignable to variable of type int.
+  Value of type bool not assignable to variable of type int.
+  Value of type bool not assignable to variable of type int.
+  Value of type bool not assignable to variable of type int.
+  Operand to ++ is not a modifiable L-value.
+  Operand to ++ is not a modifiable L-value.
+  Operand to -- is not a modifiable L-value.
+  Operand to -- is not a modifiable L-value.
+  Incompatible type bool to operator ++, equivalent to int, float, or pointer expected.
+  Incompatible type bool to operator --, equivalent to int, float, or pointer expected.
+Compile: failure.

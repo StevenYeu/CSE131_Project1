@@ -1,0 +1,19 @@
+Error, "project1/tests/p14n.rc": 
+  Number of arguments (2) differs from number of parameters (0).
+Error, "project1/tests/p14n.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/p14n.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/p14n.rc": 
+  Argument of type bool not assignable to value parameter x, of type float.
+Error, "project1/tests/p14n.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/p14n.rc": 
+  Argument of type bool not assignable to value parameter x, of type float.
+Error, "project1/tests/p14n.rc": 
+  Illegal call to overloaded function MYS_C.
+Error, "project1/tests/p14n.rc": 
+  Illegal call to overloaded function MYS_C.
+Error, "project1/tests/p14n.rc": 
+  Illegal call to overloaded function MYS_C.
+Compile: failure.

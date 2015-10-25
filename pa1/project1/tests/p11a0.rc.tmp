@@ -1,0 +1,25 @@
+Error, "project1/tests/p11a0.rc": 
+  Type of expression referenced by array subscript (int) is not of array or pointer type.
+Error, "project1/tests/p11a0.rc": 
+  Type of index expression in array reference (float) not equivalent to int.
+Error, "project1/tests/p11a0.rc": 
+  Index value of 55 is outside legal range [0,10).
+Error, "project1/tests/p11a0.rc": 
+  Index value of -99 is outside legal range [0,10).
+Error, "project1/tests/p11a0.rc": 
+  Index value of 13 is outside legal range [0,10).
+Error, "project1/tests/p11a0.rc": 
+  Index value of 12 is outside legal range [0,10).
+Error, "project1/tests/p11a0.rc": 
+  Index value of 17 is outside legal range [0,10).
+Error, "project1/tests/p11a0.rc": 
+  Index value of -9 is outside legal range [0,10).
+Error, "project1/tests/p11a0.rc": 
+  Index value of 7 is outside legal range [0,2).
+Error, "project1/tests/p11a0.rc": 
+  Index value of -9 is outside legal range [0,10).
+Error, "project1/tests/p11a0.rc": 
+  Index value of 14 is outside legal range [0,2).
+Error, "project1/tests/p11a0.rc": 
+  Index value of -12 is outside legal range [0,10).
+Compile: failure.

@@ -1,0 +1,5 @@
+Error, "project1/tests/p15c4.rc": 
+  Initialization value of type int not assignable to constant/variable of type int*.
+Error, "project1/tests/p15c4.rc": 
+  Index value of 2 is outside legal range [0,2).
+Compile: failure.

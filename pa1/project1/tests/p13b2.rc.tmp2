@@ -1,0 +1,3 @@
+  Duplicate declaration of overloaded function foo.
+  undeclared identifier 'B'.
+Compile: failure.

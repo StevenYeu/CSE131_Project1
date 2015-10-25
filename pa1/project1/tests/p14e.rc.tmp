@@ -1,0 +1,3 @@
+Error, "project1/tests/p14e.rc": 
+  Type of expression referenced by "." (TR*) is not a struct.
+Compile: failure.

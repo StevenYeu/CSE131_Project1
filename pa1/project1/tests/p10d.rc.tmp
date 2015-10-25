@@ -1,0 +1,3 @@
+Error, "project1/tests/p10d.rc": 
+  Value of index expression not known at compile time.
+Compile: failure.

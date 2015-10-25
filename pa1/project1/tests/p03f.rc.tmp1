@@ -1,0 +1,2 @@
+  Value of type int not assignable to variable of type bool.
+Compile: failure.

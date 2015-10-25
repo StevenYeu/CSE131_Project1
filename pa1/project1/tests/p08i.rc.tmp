@@ -1,0 +1,13 @@
+Error, "project1/tests/p08i.rc": 
+  Initialization value of type float not assignable to constant/variable of type int.
+Error, "project1/tests/p08i.rc": 
+  Arithmetic exception occurred during constant folding.
+Error, "project1/tests/p08i.rc": 
+  Arithmetic exception occurred during constant folding.
+Error, "project1/tests/p08i.rc": 
+  Operand to ++ is not a modifiable L-value.
+Error, "project1/tests/p08i.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "project1/tests/p08i.rc": 
+  Initialization value of type bool not assignable to constant/variable of type int.
+Compile: failure.

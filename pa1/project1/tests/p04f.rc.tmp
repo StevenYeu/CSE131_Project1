@@ -1,0 +1,5 @@
+Error, "project1/tests/p04f.rc": 
+  bool required for conditional test, int found.
+Error, "project1/tests/p04f.rc": 
+  bool required for conditional test, int found.
+Compile: failure.

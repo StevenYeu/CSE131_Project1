@@ -1,0 +1,3 @@
+Error, "project1/tests/p05l.rc": 
+  Argument passed to reference parameter a (type int) is not a modifiable L-value.
+Compile: failure.

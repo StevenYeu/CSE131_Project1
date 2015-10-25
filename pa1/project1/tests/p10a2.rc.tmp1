@@ -1,0 +1,14 @@
+  Value of index expression not known at compile time.
+  Value of index expression not known at compile time.
+  Value of index expression not known at compile time.
+  Index expression value (0) in array declaration must be > 0.
+  Index expression value (-1) in array declaration must be > 0.
+  Index expression value (0) in array declaration must be > 0.
+  Incompatible type int to unary operator !, equivalent to bool expected.
+  Operand to ++ is not a modifiable L-value.
+  Left-hand operand is not assignable (not a modifiable L-value).
+  Index expression type (float) in array declaration not equivalent to int.
+  Index expression type (bool) in array declaration not equivalent to int.
+  Incompatible type bool to binary operator +, numeric expected.
+  redeclared identifier 'e'.
+Compile: failure.

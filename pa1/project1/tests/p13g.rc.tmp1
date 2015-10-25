@@ -1,0 +1,23 @@
+  Field x declared second time in struct.
+  Field x declared second time in struct.
+  Referenced field a not found in current struct.
+  Referenced field a not found in current struct.
+  Value of type float not assignable to variable of type int.
+  Return required in function, none found.
+  Field x declared second time in struct.
+  Referenced field a not found in current struct.
+  Referenced field a not found in current struct.
+  Value of type float not assignable to variable of type int.
+  Illegal call to overloaded function MYS1.
+  Illegal call to overloaded function MYS2.
+  Value of type float not assignable to variable of type int.
+  Value of type float not assignable to variable of type int.
+  Value of type float not assignable to variable of type int.
+  Referenced field a not found in type MYS1.
+  Referenced field a not found in type MYS1.
+  Referenced field a not found in type MYS1.
+  Value of type float not assignable to variable of type int.
+  Value of type void not assignable to variable of type int.
+  Value of type void not assignable to variable of type int.
+  Value of type void not assignable to variable of type int.
+Compile: failure.

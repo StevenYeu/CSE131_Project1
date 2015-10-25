@@ -1,0 +1,28 @@
+  Value of type bool** not assignable to variable of type int**.
+  Value of type bool* not assignable to variable of type int*.
+  Value of type int** not assignable to variable of type bool**.
+  Value of type bool** not assignable to variable of type int**.
+  Value of type int** not assignable to variable of type float**.
+  Value of type int* not assignable to variable of type float*.
+  Value of type float** not assignable to variable of type int**.
+  Incompatible types to operator ==:
+    float***,
+    bool**;
+  both must be of equivalent pointer type.
+  Incompatible types to operator !=:
+    float***,
+    bool**;
+  both must be of equivalent pointer type.
+  Incompatible types to operator ==:
+    float**,
+    bool**;
+  both must be of equivalent pointer type.
+  Incompatible types to operator ==:
+    int**,
+    int*;
+  both must be of equivalent pointer type.
+  Incompatible types to operator ==:
+    float**,
+    int**;
+  both must be of equivalent pointer type.
+Compile: failure.

@@ -1,0 +1,45 @@
+Error, "project1/tests/p13g.rc": 
+  Field x declared second time in struct.
+Error, "project1/tests/p13g.rc": 
+  Field x declared second time in struct.
+Error, "project1/tests/p13g.rc": 
+  Referenced field a not found in current struct.
+Error, "project1/tests/p13g.rc": 
+  Referenced field a not found in current struct.
+Error, "project1/tests/p13g.rc": 
+  Value of type float not assignable to variable of type int.
+Error, "project1/tests/p13g.rc": 
+  Return required in function, none found.
+Error, "project1/tests/p13g.rc": 
+  Field x declared second time in struct.
+Error, "project1/tests/p13g.rc": 
+  Referenced field a not found in current struct.
+Error, "project1/tests/p13g.rc": 
+  Referenced field a not found in current struct.
+Error, "project1/tests/p13g.rc": 
+  Value of type float not assignable to variable of type int.
+Error, "project1/tests/p13g.rc": 
+  Illegal call to overloaded function MYS1.
+Error, "project1/tests/p13g.rc": 
+  Illegal call to overloaded function MYS2.
+Error, "project1/tests/p13g.rc": 
+  Value of type float not assignable to variable of type int.
+Error, "project1/tests/p13g.rc": 
+  Value of type float not assignable to variable of type int.
+Error, "project1/tests/p13g.rc": 
+  Value of type float not assignable to variable of type int.
+Error, "project1/tests/p13g.rc": 
+  Referenced field a not found in type MYS1.
+Error, "project1/tests/p13g.rc": 
+  Referenced field a not found in type MYS1.
+Error, "project1/tests/p13g.rc": 
+  Referenced field a not found in type MYS1.
+Error, "project1/tests/p13g.rc": 
+  Value of type float not assignable to variable of type int.
+Error, "project1/tests/p13g.rc": 
+  Value of type void not assignable to variable of type int.
+Error, "project1/tests/p13g.rc": 
+  Value of type void not assignable to variable of type int.
+Error, "project1/tests/p13g.rc": 
+  Value of type void not assignable to variable of type int.
+Compile: failure.

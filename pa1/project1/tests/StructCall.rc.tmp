@@ -1,0 +1,9 @@
+Error, "project1/tests/StructCall.rc": 
+  Number of arguments (2) differs from number of parameters (0).
+Error, "project1/tests/StructCall.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/StructCall.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/StructCall.rc": 
+  Illegal call to overloaded function MYS_C.
+Compile: failure.

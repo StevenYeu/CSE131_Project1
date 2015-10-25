@@ -1,0 +1,5 @@
+Error, "project1/tests/p13b2.rc": 
+  Duplicate declaration of overloaded function foo.
+Error, "project1/tests/p13b2.rc": 
+  undeclared identifier 'B'.
+Compile: failure.

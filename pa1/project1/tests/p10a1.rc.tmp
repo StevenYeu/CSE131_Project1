@@ -1,0 +1,43 @@
+Error, "project1/tests/p10a1.rc": 
+  Index value of -1 is outside legal range [0,5).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 5 is outside legal range [0,5).
+Error, "project1/tests/p10a1.rc": 
+  Index value of -1 is outside legal range [0,10).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 10 is outside legal range [0,10).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 14 is outside legal range [0,10).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 15 is outside legal range [0,10).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 14 is outside legal range [0,10).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 15 is outside legal range [0,10).
+Error, "project1/tests/p10a1.rc": 
+  Index value of -1 is outside legal range [0,11).
+Error, "project1/tests/p10a1.rc": 
+  Index value of -1 is outside legal range [0,12).
+Error, "project1/tests/p10a1.rc": 
+  Index value of -1 is outside legal range [0,13).
+Error, "project1/tests/p10a1.rc": 
+  Index value of -1 is outside legal range [0,11).
+Error, "project1/tests/p10a1.rc": 
+  Index value of -1 is outside legal range [0,12).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 12 is outside legal range [0,11).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 13 is outside legal range [0,11).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 12 is outside legal range [0,11).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 12 is outside legal range [0,11).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 40 is outside legal range [0,11).
+Error, "project1/tests/p10a1.rc": 
+  Index value of -1 is outside legal range [0,6).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 6 is outside legal range [0,6).
+Error, "project1/tests/p10a1.rc": 
+  Index value of 10 is outside legal range [0,6).
+Compile: failure.

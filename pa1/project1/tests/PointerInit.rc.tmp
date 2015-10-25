@@ -1,0 +1,3 @@
+Error, "project1/tests/PointerInit.rc": 
+  Initialization value of type int not assignable to constant/variable of type int*.
+Compile: failure.

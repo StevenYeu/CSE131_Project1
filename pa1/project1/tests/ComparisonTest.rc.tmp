@@ -1,0 +1,5 @@
+Error, "project1/tests/ComparisonTest.rc": 
+  Incompatible type bool to binary operator +, numeric expected.
+Error, "project1/tests/ComparisonTest.rc": 
+  Incompatible type bool to binary operator -, numeric expected.
+Compile: failure.

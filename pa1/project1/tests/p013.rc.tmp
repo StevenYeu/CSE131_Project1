@@ -1,0 +1,7 @@
+Error, "project1/tests/p013.rc": 
+  Incompatible type int to binary operator &&, equivalent to bool expected.
+Error, "project1/tests/p013.rc": 
+  Incompatible type float to binary operator &&, equivalent to bool expected.
+Error, "project1/tests/p013.rc": 
+  Incompatible type int to binary operator &&, equivalent to bool expected.
+Compile: failure.

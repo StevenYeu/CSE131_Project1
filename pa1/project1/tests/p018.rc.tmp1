@@ -1,0 +1,9 @@
+  Incompatible type float to binary operator &, equivalent to int expected.
+  Incompatible type float to binary operator |, equivalent to int expected.
+  Incompatible type bool to binary operator ^, equivalent to int expected.
+  Incompatible type bool to binary operator |, equivalent to int expected.
+  Incompatible type bool to binary operator &, equivalent to int expected.
+  Incompatible type bool to binary operator %, equivalent to int expected.
+  Incompatible type bool to binary operator %, equivalent to int expected.
+  Incompatible type bool to binary operator %, equivalent to int expected.
+Compile: failure.

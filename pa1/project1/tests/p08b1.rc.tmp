@@ -1,0 +1,25 @@
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of constant named x6 not known at compile time.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of constant named x7 not known at compile time.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of constant named x8 not known at compile time.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of constant named fail1 not known at compile time.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of constant named fail2 not known at compile time.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of constant named fail3 not known at compile time.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of type float not assignable to constant/variable of type int.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of type int not assignable to constant/variable of type bool.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of type bool not assignable to constant/variable of type float.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of type float not assignable to constant/variable of type int.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of type int not assignable to constant/variable of type bool.
+Error, "project1/tests/p08b1.rc": 
+  Initialization value of type bool not assignable to constant/variable of type float.
+Compile: failure.

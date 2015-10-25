@@ -1,0 +1,3 @@
+Error, "project1/tests/p01g.rc": 
+  Value of type float not assignable to variable of type int.
+Compile: failure.

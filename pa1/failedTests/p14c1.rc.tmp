@@ -1,0 +1,3 @@
+Error, "project1/tests/p14c1.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Compile: failure.

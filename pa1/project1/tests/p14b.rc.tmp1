@@ -1,0 +1,2 @@
+  Type of expression referenced by "." (float[10]) is not a struct.
+Compile: failure.

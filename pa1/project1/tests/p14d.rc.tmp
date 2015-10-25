@@ -1,0 +1,3 @@
+Error, "project1/tests/p14d.rc": 
+  Type of expression referenced by "." (bool) is not a struct.
+Compile: failure.

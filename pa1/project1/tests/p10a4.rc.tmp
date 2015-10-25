@@ -1,0 +1,9 @@
+Error, "project1/tests/p10a4.rc": 
+  Incompatible type int[5] to binary operator +, numeric expected.
+Error, "project1/tests/p10a4.rc": 
+  Incompatible type float[1] to operator ++, equivalent to int, float, or pointer expected.
+Error, "project1/tests/p10a4.rc": 
+  Incompatible type float[1] to operator --, equivalent to int, float, or pointer expected.
+Error, "project1/tests/p10a4.rc": 
+  Incompatible type float[1] to unary operator !, equivalent to bool expected.
+Compile: failure.

@@ -1,0 +1,7 @@
+Error, "project1/tests/ArrayPtr.rc": 
+  Type of expression referenced by array subscript (int) is not of array or pointer type.
+Error, "project1/tests/ArrayPtr.rc": 
+  Type of expression referenced by array subscript (int) is not of array or pointer type.
+Error, "project1/tests/ArrayPtr.rc": 
+  Incompatible type int to unary dereference operator *, pointer expected.
+Compile: failure.

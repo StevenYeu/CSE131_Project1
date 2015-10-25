@@ -1,0 +1,5 @@
+Error, "project1/tests/p11c.rc": 
+  Index value of 42 is outside legal range [0,10).
+Error, "project1/tests/p11c.rc": 
+  Index value of -42 is outside legal range [0,10).
+Compile: failure.

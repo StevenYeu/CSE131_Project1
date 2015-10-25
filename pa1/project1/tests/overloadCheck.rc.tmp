@@ -1,0 +1,5 @@
+Error, "project1/tests/overloadCheck.rc": 
+  Duplicate declaration of overloaded function foo.
+Error, "project1/tests/overloadCheck.rc": 
+  Duplicate declaration of overloaded function foo.
+Compile: failure.

@@ -1,0 +1,11 @@
+Error, "project1/tests/p02c.rc": 
+  Value of type int not assignable to variable of type bool.
+Error, "project1/tests/p02c.rc": 
+  Operand to ++ is not a modifiable L-value.
+Error, "project1/tests/p02c.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "project1/tests/p02c.rc": 
+  Operand to ++ is not a modifiable L-value.
+Error, "project1/tests/p02c.rc": 
+  Operand to ++ is not a modifiable L-value.
+Compile: failure.

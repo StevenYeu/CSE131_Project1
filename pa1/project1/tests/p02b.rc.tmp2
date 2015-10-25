@@ -1,0 +1,4 @@
+  Incompatible type int[23] to operator ++, equivalent to int, float, or pointer expected.
+  Incompatible type bool to operator --, equivalent to int, float, or pointer expected.
+  Incompatible type bool to operator --, equivalent to int, float, or pointer expected.
+Compile: failure.

@@ -1,0 +1,3 @@
+Error, "project1/tests/p05f.rc": 
+  Argument of type bool not assignable to value parameter a, of type float.
+Compile: failure.

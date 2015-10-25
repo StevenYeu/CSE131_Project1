@@ -1,0 +1,7 @@
+Error, "project1/tests/p02b.rc": 
+  Incompatible type int[23] to operator ++, equivalent to int, float, or pointer expected.
+Error, "project1/tests/p02b.rc": 
+  Incompatible type bool to operator --, equivalent to int, float, or pointer expected.
+Error, "project1/tests/p02b.rc": 
+  Incompatible type bool to operator --, equivalent to int, float, or pointer expected.
+Compile: failure.

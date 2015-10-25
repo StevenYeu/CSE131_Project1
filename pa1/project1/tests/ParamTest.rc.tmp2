@@ -1,0 +1,3 @@
+  Argument passed to reference parameter x (type int) is not a modifiable L-value.
+  Argument of type float not assignable to value parameter y, of type int.
+Compile: failure.

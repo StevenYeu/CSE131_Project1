@@ -1,0 +1,5 @@
+Error, "project1/tests/OverloadCall.rc": 
+  Duplicate declaration of overloaded function foo.
+Error, "project1/tests/OverloadCall.rc": 
+  Argument passed to reference parameter x (type int) is not a modifiable L-value.
+Compile: failure.

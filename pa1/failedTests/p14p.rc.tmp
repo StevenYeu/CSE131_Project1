@@ -1,0 +1,13 @@
+Error, "project1/tests/p14p.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "project1/tests/p14p.rc": 
+  Value of type MYS not assignable to variable of type int.
+Error, "project1/tests/p14p.rc": 
+  Referenced field a not found in current struct.
+Error, "project1/tests/p14p.rc": 
+  Referenced field t not found in current struct.
+Error, "project1/tests/p14p.rc": 
+  Referenced field boo not found in current struct.
+Error, "project1/tests/p14p.rc": 
+  Referenced field foo2 not found in current struct.
+Compile: failure.

@@ -1,0 +1,3 @@
+Error, "project1/tests/p05r.rc": 
+  Initialization value of type float not assignable to constant/variable of type int.
+Compile: failure.

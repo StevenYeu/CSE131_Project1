@@ -1,0 +1,4 @@
+  Type of expression referenced by array subscript (int) is not of array or pointer type.
+  Type of expression referenced by array subscript (int) is not of array or pointer type.
+  Incompatible type int to unary dereference operator *, pointer expected.
+Compile: failure.

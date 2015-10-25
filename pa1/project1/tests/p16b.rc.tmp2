@@ -1,0 +1,3 @@
+  Operand to "new" is not a modifiable L-value.
+  Operand to "delete" is not a modifiable L-value.
+Compile: failure.

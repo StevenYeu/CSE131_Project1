@@ -1,0 +1,3 @@
+Error, "project1/tests/p10a.rc": 
+  Index expression value (0) in array declaration must be > 0.
+Compile: failure.

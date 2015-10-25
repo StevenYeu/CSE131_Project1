@@ -1,0 +1,7 @@
+Error, "project1/tests/p11a4.rc": 
+  Index value of 9 is outside legal range [0,2).
+Error, "project1/tests/p11a4.rc": 
+  Type of index expression in array reference (float) not equivalent to int.
+Error, "project1/tests/p11a4.rc": 
+  Index value of 9 is outside legal range [0,2).
+Compile: failure.

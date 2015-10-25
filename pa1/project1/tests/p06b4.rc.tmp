@@ -1,0 +1,5 @@
+Error, "project1/tests/p06b4.rc": 
+  Type of return expression (bool) is not equivalent to the function's return type (int).
+Error, "project1/tests/p06b4.rc": 
+  Return expression is not a modifiable L-value for function that returns by reference.
+Compile: failure.

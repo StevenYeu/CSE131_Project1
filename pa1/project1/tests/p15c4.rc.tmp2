@@ -1,0 +1,5 @@
+  Initialization value of type int not assignable to constant/variable of type int*.
+  Initialization value of type int* not assignable to constant/variable of type float*.
+  Initialization value of type bool* not assignable to constant/variable of type int*.
+  Index value of 2 is outside legal range [0,2).
+Compile: failure.

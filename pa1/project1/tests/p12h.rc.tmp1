@@ -1,0 +1,7 @@
+  Type of expression referenced in foreach is not of array type.
+  Foreach array element of type int not assignable to value iteration variable x, of type bool.
+  Foreach array element of type int not equivalent to reference iteration variable x, of type float.
+  Foreach array element of type float* not assignable to value iteration variable x, of type float.
+  Foreach array element of type float[4] not assignable to value iteration variable x, of type float.
+  Foreach array element of type float[4] not assignable to value iteration variable x, of type float.
+Compile: failure.

@@ -1,0 +1,5 @@
+Error, "project1/tests/p14c2.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "project1/tests/p14c2.rc": 
+  Value of type MYS not assignable to variable of type int.
+Compile: failure.

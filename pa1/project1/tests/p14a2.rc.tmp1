@@ -1,0 +1,4 @@
+  Type of expression referenced by "." (int) is not a struct.
+  Referenced field SomeField not found in type MYSTRUCT.
+  Referenced field SomeFunc not found in type MYSTRUCT.
+Compile: failure.

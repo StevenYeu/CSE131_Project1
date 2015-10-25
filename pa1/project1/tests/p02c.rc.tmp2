@@ -1,0 +1,6 @@
+  Value of type int not assignable to variable of type bool.
+  Operand to ++ is not a modifiable L-value.
+  Left-hand operand is not assignable (not a modifiable L-value).
+  Operand to ++ is not a modifiable L-value.
+  Operand to ++ is not a modifiable L-value.
+Compile: failure.

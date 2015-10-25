@@ -1,0 +1,4 @@
+  Incompatible type int to unary dereference operator *, pointer expected.
+  Incompatible type bool to unary dereference operator *, pointer expected.
+  Incompatible type float to unary dereference operator *, pointer expected.
+Compile: failure.

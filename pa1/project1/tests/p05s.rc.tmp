@@ -1,0 +1,29 @@
+Error, "project1/tests/p05s.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/p05s.rc": 
+  Number of arguments (2) differs from number of parameters (1).
+Error, "project1/tests/p05s.rc": 
+  Incompatible type int to unary operator !, equivalent to bool expected.
+Error, "project1/tests/p05s.rc": 
+  Argument of type bool not assignable to value parameter f, of type float.
+Error, "project1/tests/p05s.rc": 
+  Argument of type int not equivalent to reference parameter f, of type float.
+Error, "project1/tests/p05s.rc": 
+  Incompatible type int to unary operator !, equivalent to bool expected.
+Error, "project1/tests/p05s.rc": 
+  Argument passed to reference parameter f (type float) is not a modifiable L-value.
+Error, "project1/tests/p05s.rc": 
+  Argument of type float not assignable to value parameter a, of type int.
+Error, "project1/tests/p05s.rc": 
+  Argument of type int not equivalent to reference parameter b, of type float.
+Error, "project1/tests/p05s.rc": 
+  Argument passed to reference parameter c (type int) is not a modifiable L-value.
+Error, "project1/tests/p05s.rc": 
+  Number of arguments (1) differs from number of parameters (3).
+Error, "project1/tests/p05s.rc": 
+  Incompatible type int to unary operator !, equivalent to bool expected.
+Error, "project1/tests/p05s.rc": 
+  Number of arguments (1) differs from number of parameters (3).
+Error, "project1/tests/p05s.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Compile: failure.

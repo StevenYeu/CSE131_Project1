@@ -1,0 +1,5 @@
+  Incompatible type STRUCT to operator ->, pointer to struct expected.
+  Incompatible type STRUCT to unary dereference operator *, pointer expected.
+  Incompatible type int to operator ->, pointer to struct expected.
+  Incompatible type int* to operator ->, pointer to struct expected.
+Compile: failure.

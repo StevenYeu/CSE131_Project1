@@ -1,0 +1,8 @@
+  Index value of -99 is outside legal range [0,55).
+  Index value of 65 is outside legal range [0,55).
+  Index value of -9 is outside legal range [0,55).
+  Type of expression referenced by array subscript (int) is not of array or pointer type.
+  Index value of -9 is outside legal range [0,55).
+  Index value of 77 is outside legal range [0,55).
+  Value of type int[5][5] not assignable to variable of type int.
+Compile: failure.

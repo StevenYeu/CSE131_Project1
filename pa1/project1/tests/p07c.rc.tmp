@@ -1,0 +1,5 @@
+Error, "project1/tests/p07c.rc": 
+  Exit expression (type float) is not assignable to int.
+Error, "project1/tests/p07c.rc": 
+  Exit expression (type bool) is not assignable to int.
+Compile: failure.

@@ -1,0 +1,3 @@
+  Duplicate declaration of overloaded function foo.
+  Argument passed to reference parameter x (type int) is not a modifiable L-value.
+Compile: failure.

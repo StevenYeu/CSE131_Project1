@@ -1,0 +1,4 @@
+  Type of return expression (bool), not assignment compatible with function's return type (int).
+  Type of return expression (float*) is not equivalent to the function's return type (int).
+  Return expression is not a modifiable L-value for function that returns by reference.
+Compile: failure.

@@ -1,0 +1,7 @@
+  Initialization value of type float not assignable to constant/variable of type int.
+  Arithmetic exception occurred during constant folding.
+  Arithmetic exception occurred during constant folding.
+  Operand to ++ is not a modifiable L-value.
+  Left-hand operand is not assignable (not a modifiable L-value).
+  Initialization value of type bool not assignable to constant/variable of type int.
+Compile: failure.

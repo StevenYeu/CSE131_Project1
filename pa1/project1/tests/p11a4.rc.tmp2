@@ -1,0 +1,4 @@
+  Index value of 9 is outside legal range [0,2).
+  Type of index expression in array reference (float) not equivalent to int.
+  Index value of 9 is outside legal range [0,2).
+Compile: failure.

@@ -1,0 +1,3 @@
+Error, "project1/tests/p01n.rc": 
+  Incompatible type bool to binary operator >, numeric expected.
+Compile: failure.

@@ -1,0 +1,3 @@
+Error, "project1/tests/p00d.rc": 
+  Identifier x is undeclared in the global scope.
+Compile: failure.

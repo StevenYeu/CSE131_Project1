@@ -1,0 +1,3 @@
+Error, "project1/tests/NullPointerCheck.rc": 
+  Incompatible type int to unary dereference operator *, pointer expected.
+Compile: failure.

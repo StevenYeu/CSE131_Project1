@@ -1,0 +1,9 @@
+Error, "project1/tests/p13h.rc": 
+  Field x declared second time in struct.
+Error, "project1/tests/p13h.rc": 
+  Field x declared second time in struct.
+Error, "project1/tests/p13h.rc": 
+  Field y declared second time in struct.
+Error, "project1/tests/p13h.rc": 
+  Duplicate declaration of overloaded function foo.
+Compile: failure.

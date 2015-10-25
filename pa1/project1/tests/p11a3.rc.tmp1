@@ -1,0 +1,4 @@
+  Index value of 9 is outside legal range [0,5).
+  Index value of 9 is outside legal range [0,4).
+  Argument of type int[10] not assignable to value parameter intp, of type int*.
+Compile: failure.

@@ -1,0 +1,13 @@
+Error, "project1/tests/p11a2.rc": 
+  Type of expression referenced by array subscript (int) is not of array or pointer type.
+Error, "project1/tests/p11a2.rc": 
+  Index value of 3599 is outside legal range [0,10).
+Error, "project1/tests/p11a2.rc": 
+  Index value of -1 is outside legal range [0,10).
+Error, "project1/tests/p11a2.rc": 
+  Index value of 10 is outside legal range [0,5).
+Error, "project1/tests/p11a2.rc": 
+  Index value of 3599 is outside legal range [0,5).
+Error, "project1/tests/p11a2.rc": 
+  Argument of type int[10] not assignable to value parameter intp, of type int*.
+Compile: failure.

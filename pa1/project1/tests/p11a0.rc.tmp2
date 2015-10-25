@@ -1,0 +1,13 @@
+  Type of expression referenced by array subscript (int) is not of array or pointer type.
+  Type of index expression in array reference (float) not equivalent to int.
+  Index value of 55 is outside legal range [0,10).
+  Index value of -99 is outside legal range [0,10).
+  Index value of 13 is outside legal range [0,10).
+  Index value of 12 is outside legal range [0,10).
+  Index value of 17 is outside legal range [0,10).
+  Index value of -9 is outside legal range [0,10).
+  Index value of 7 is outside legal range [0,2).
+  Index value of -9 is outside legal range [0,10).
+  Index value of 14 is outside legal range [0,2).
+  Index value of -12 is outside legal range [0,10).
+Compile: failure.

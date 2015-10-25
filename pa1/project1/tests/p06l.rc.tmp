@@ -1,0 +1,17 @@
+Error, "project1/tests/p06l.rc": 
+  Type of return expression (bool), not assignment compatible with function's return type (float).
+Error, "project1/tests/p06l.rc": 
+  Return expression is not a modifiable L-value for function that returns by reference.
+Error, "project1/tests/p06l.rc": 
+  Type of return expression (int) is not equivalent to the function's return type (float).
+Error, "project1/tests/p06l.rc": 
+  Type of return expression (int) is not equivalent to the function's return type (float).
+Error, "project1/tests/p06l.rc": 
+  Return required in function, none found.
+Error, "project1/tests/p06l.rc": 
+  Return in function requires a result expression, none found.
+Error, "project1/tests/p06l.rc": 
+  Return required in function, none found.
+Error, "project1/tests/p06l.rc": 
+  Return in function requires a result expression, none found.
+Compile: failure.

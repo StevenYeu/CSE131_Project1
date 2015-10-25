@@ -1,0 +1,5 @@
+Error, "project1/tests/p04d.rc": 
+  bool required for conditional test, float found.
+Error, "project1/tests/p04d.rc": 
+  Value of type float not assignable to variable of type int.
+Compile: failure.

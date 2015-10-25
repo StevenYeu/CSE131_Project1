@@ -1,0 +1,2 @@
+  Initialization value of type int[4] not assignable to constant/variable of type bool*.
+Compile: failure.

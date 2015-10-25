@@ -1,0 +1,13 @@
+Error, "project1/tests/p15a0.rc": 
+  Incompatible type int to unary dereference operator *, pointer expected.
+Error, "project1/tests/p15a0.rc": 
+  Incompatible type int to unary dereference operator *, pointer expected.
+Error, "project1/tests/p15a0.rc": 
+  Value of type int* not assignable to variable of type float*.
+Error, "project1/tests/p15a0.rc": 
+  Value of type int* not assignable to variable of type float*.
+Error, "project1/tests/p15a0.rc": 
+  Value of type int not assignable to variable of type float*.
+Error, "project1/tests/p15a0.rc": 
+  Incompatible type int to unary dereference operator *, pointer expected.
+Compile: failure.

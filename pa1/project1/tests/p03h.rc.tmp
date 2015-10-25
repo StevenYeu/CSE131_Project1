@@ -1,0 +1,9 @@
+Error, "project1/tests/p03h.rc": 
+  Value of type float not assignable to variable of type int.
+Error, "project1/tests/p03h.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "project1/tests/p03h.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "project1/tests/p03h.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Compile: failure.

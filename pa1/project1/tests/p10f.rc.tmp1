@@ -1,0 +1,9 @@
+  Index value of 5 is outside legal range [0,5).
+  redeclared identifier 'e'.
+  Index expression type (bool) in array declaration not equivalent to int.
+  redeclared identifier 'e'.
+  Index expression type (bool) in array declaration not equivalent to int.
+  Index expression type (bool) in array declaration not equivalent to int.
+  Index expression type (bool) in array declaration not equivalent to int.
+  Index expression type (float) in array declaration not equivalent to int.
+Compile: failure.

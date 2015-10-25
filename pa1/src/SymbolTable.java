@@ -52,7 +52,20 @@ class SymbolTable
             }
         }
         return overloaded;
+    }
+
+    public Vector<STO> OverloadCheckFun(String funcName) {
+
+        Vector<STO> overloaded = new Vector<STO>();
+        for (int i =0; i < functions.size(); i++) {
+            
+            if (funcName.equals(functions.elementAt(i).getName())) {
+                  overloaded.add(functions.elementAt(i));
+            }
+        }
+        return overloaded;
     }  
+
 
 	//----------------------------------------------------------------
 	//

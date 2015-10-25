@@ -1,0 +1,11 @@
+Error, "project1/tests/p03b0.rc": 
+  Value of type float not assignable to variable of type int.
+Error, "project1/tests/p03b0.rc": 
+  Value of type bool not assignable to variable of type int.
+Error, "project1/tests/p03b0.rc": 
+  Value of type bool not assignable to variable of type float.
+Error, "project1/tests/p03b0.rc": 
+  Value of type int not assignable to variable of type bool.
+Error, "project1/tests/p03b0.rc": 
+  Value of type float not assignable to variable of type bool.
+Compile: failure.

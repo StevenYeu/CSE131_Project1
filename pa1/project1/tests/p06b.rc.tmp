@@ -1,0 +1,5 @@
+Error, "project1/tests/p06b.rc": 
+  Type of return expression (int), not assignment compatible with function's return type (void).
+Error, "project1/tests/p06b.rc": 
+  Type of return expression (int), not assignment compatible with function's return type (void).
+Compile: failure.

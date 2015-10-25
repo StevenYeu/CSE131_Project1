@@ -1,0 +1,7 @@
+  Referenced field missing_field not found in type TWO_INT_FIELDS.
+  Referenced field missing_field_2 not found in type TWO_INT_FIELDS.
+  Referenced field missing_function not found in type ONE_FUNCTION.
+  Initialization value of type bool not assignable to constant/variable of type int.
+  Initialization value of type int not assignable to constant/variable of type bool.
+  Initialization value of type float* not assignable to constant/variable of type float.
+Compile: failure.

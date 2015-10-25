@@ -1,0 +1,4 @@
+  Return required in function, none found.
+  Return required in function, none found.
+  Illegal call to overloaded function foo.
+Compile: failure.

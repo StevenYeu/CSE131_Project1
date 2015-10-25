@@ -1,0 +1,7 @@
+  Illegal call to overloaded function foo.
+  Referenced field y not found in type MYS_A.
+  Referenced field i not found in type MYS_A.
+  Referenced field boo not found in type MYS_B.
+  Referenced field t not found in type MYS_B.
+  Referenced field f not found in type MYS_B.
+Compile: failure.

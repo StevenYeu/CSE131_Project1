@@ -1115,7 +1115,7 @@ Designator3 ::=     T_LPAREN Expr:_2 T_RPAREN
                     :}
     |               T_THIS
                     {:
-                        RESULT = new ExprSTO ("this",new StructType("struct"));
+                        RESULT = new ExprSTO ("this",new StructType(((MyParser) parser).getStructName()));
                         RESULT.setIsModifiable(false);
                         RESULT.setIsAddressable(false); // fix me!
                     :}

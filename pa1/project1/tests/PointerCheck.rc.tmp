@@ -1,0 +1,3 @@
+Error, "project1/tests/PointerCheck.rc": 
+  Referenced field y not found in type MY.
+Compile: failure.

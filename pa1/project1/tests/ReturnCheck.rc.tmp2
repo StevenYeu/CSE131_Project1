@@ -1,0 +1,2 @@
+  Return expression is not a modifiable L-value for function that returns by reference.
+Compile: failure.

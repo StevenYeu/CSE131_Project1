@@ -1,0 +1,2 @@
+  Argument of type float not assignable to value parameter a, of type int.
+Compile: failure.

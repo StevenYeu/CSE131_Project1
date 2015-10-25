@@ -1,0 +1,9 @@
+  Field x declared second time in struct.
+  Field x declared second time in struct.
+  undeclared identifier 'MYS'.
+  Field y declared second time in struct.
+  Duplicate declaration of overloaded function foo.
+  Field bar declared second time in struct.
+  Field bar declared second time in struct.
+  Field bar declared second time in struct.
+Compile: failure.

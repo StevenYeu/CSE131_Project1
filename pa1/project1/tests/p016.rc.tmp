@@ -1,0 +1,21 @@
+Error, "project1/tests/p016.rc": 
+  Incompatible type bool to binary operator +, numeric expected.
+Error, "project1/tests/p016.rc": 
+  Incompatible type bool to binary operator -, numeric expected.
+Error, "project1/tests/p016.rc": 
+  Incompatible type bool to binary operator *, numeric expected.
+Error, "project1/tests/p016.rc": 
+  Incompatible type bool to binary operator /, numeric expected.
+Error, "project1/tests/p016.rc": 
+  Incompatible type float to binary operator %, equivalent to int expected.
+Error, "project1/tests/p016.rc": 
+  Incompatible type bool to binary operator +, numeric expected.
+Error, "project1/tests/p016.rc": 
+  Incompatible type float to binary operator %, equivalent to int expected.
+Error, "project1/tests/p016.rc": 
+  Incompatible type float to binary operator %, equivalent to int expected.
+Error, "project1/tests/p016.rc": 
+  Incompatible type float to binary operator %, equivalent to int expected.
+Error, "project1/tests/p016.rc": 
+  Incompatible type float to binary operator %, equivalent to int expected.
+Compile: failure.

@@ -1,0 +1,15 @@
+Error, "project1/tests/p11e.rc": 
+  Index value of -99 is outside legal range [0,55).
+Error, "project1/tests/p11e.rc": 
+  Index value of 65 is outside legal range [0,55).
+Error, "project1/tests/p11e.rc": 
+  Index value of -9 is outside legal range [0,55).
+Error, "project1/tests/p11e.rc": 
+  Type of expression referenced by array subscript (int) is not of array or pointer type.
+Error, "project1/tests/p11e.rc": 
+  Index value of -9 is outside legal range [0,55).
+Error, "project1/tests/p11e.rc": 
+  Index value of 77 is outside legal range [0,55).
+Error, "project1/tests/p11e.rc": 
+  Value of type int[5][5] not assignable to variable of type int.
+Compile: failure.

@@ -1,0 +1,2 @@
+  Type of return expression (bool), not assignment compatible with function's return type (int).
+Compile: failure.

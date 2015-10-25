@@ -1,0 +1,4 @@
+  Incompatible type int to binary operator &&, equivalent to bool expected.
+  Incompatible type float to binary operator &&, equivalent to bool expected.
+  Incompatible type int to binary operator &&, equivalent to bool expected.
+Compile: failure.

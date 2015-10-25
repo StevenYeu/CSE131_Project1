@@ -1,0 +1,3 @@
+Error, "project1/tests/p13c.rc": 
+  Field f2 declared second time in struct.
+Compile: failure.

@@ -1,0 +1,7 @@
+Error, "project1/tests/p14a2.rc": 
+  Type of expression referenced by "." (int) is not a struct.
+Error, "project1/tests/p14a2.rc": 
+  Referenced field SomeField not found in type MYSTRUCT.
+Error, "project1/tests/p14a2.rc": 
+  Referenced field SomeFunc not found in type MYSTRUCT.
+Compile: failure.

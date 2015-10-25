@@ -1,0 +1,3 @@
+Error, "project1/tests/p04b.rc": 
+  bool required for conditional test, float found.
+Compile: failure.

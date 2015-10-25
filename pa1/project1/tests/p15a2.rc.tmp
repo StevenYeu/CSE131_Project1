@@ -1,0 +1,7 @@
+Error, "project1/tests/p15a2.rc": 
+  Incompatible type int to unary dereference operator *, pointer expected.
+Error, "project1/tests/p15a2.rc": 
+  Incompatible type bool to unary dereference operator *, pointer expected.
+Error, "project1/tests/p15a2.rc": 
+  Incompatible type float to unary dereference operator *, pointer expected.
+Compile: failure.

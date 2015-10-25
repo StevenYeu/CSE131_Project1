@@ -1,0 +1,5 @@
+Error, "project1/tests/p08b0.rc": 
+  Initialization value of constant named k not known at compile time.
+Error, "project1/tests/p08b0.rc": 
+  Initialization value of constant named z not known at compile time.
+Compile: failure.

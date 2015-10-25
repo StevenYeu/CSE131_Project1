@@ -1,0 +1,2 @@
+  Field f2 declared second time in struct.
+Compile: failure.

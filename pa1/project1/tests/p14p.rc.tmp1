@@ -1,0 +1,7 @@
+  Left-hand operand is not assignable (not a modifiable L-value).
+  Value of type MYS not assignable to variable of type int.
+  Referenced field a not found in current struct.
+  Referenced field t not found in current struct.
+  Referenced field boo not found in current struct.
+  Referenced field foo2 not found in current struct.
+Compile: failure.

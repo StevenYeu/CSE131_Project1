@@ -1,0 +1,3 @@
+Error, "project1/tests/p11f.rc": 
+  Type of index expression in array reference (float) not equivalent to int.
+Compile: failure.

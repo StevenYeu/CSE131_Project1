@@ -1,0 +1,5 @@
+Error, "project1/tests/p13a.rc": 
+  Field b declared second time in struct.
+Error, "project1/tests/p13a.rc": 
+  Field d declared second time in struct.
+Compile: failure.

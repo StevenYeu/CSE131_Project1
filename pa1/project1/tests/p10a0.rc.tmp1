@@ -1,0 +1,14 @@
+  Initialization value of type float[10] not assignable to constant/variable of type float.
+  Initialization value of type float[10] not assignable to constant/variable of type bool.
+  Initialization value of type float[10] not assignable to constant/variable of type int.
+  Initialization value of type int[10] not assignable to constant/variable of type float.
+  Initialization value of type int[10] not assignable to constant/variable of type bool.
+  Initialization value of type int[10] not assignable to constant/variable of type int.
+  Initialization value of type bool[10] not assignable to constant/variable of type float.
+  Initialization value of type bool[10] not assignable to constant/variable of type bool.
+  Initialization value of type bool[10] not assignable to constant/variable of type int.
+  Left-hand operand is not assignable (not a modifiable L-value).
+  Left-hand operand is not assignable (not a modifiable L-value).
+  Left-hand operand is not assignable (not a modifiable L-value).
+  Left-hand operand is not assignable (not a modifiable L-value).
+Compile: failure.

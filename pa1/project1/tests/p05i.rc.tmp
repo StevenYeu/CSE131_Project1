@@ -1,0 +1,3 @@
+Error, "project1/tests/p05i.rc": 
+  Argument passed to reference parameter a (type float) is not a modifiable L-value.
+Compile: failure.

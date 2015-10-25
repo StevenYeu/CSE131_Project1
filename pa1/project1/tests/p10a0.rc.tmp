@@ -1,0 +1,27 @@
+Error, "project1/tests/p10a0.rc": 
+  Initialization value of type float[10] not assignable to constant/variable of type float.
+Error, "project1/tests/p10a0.rc": 
+  Initialization value of type float[10] not assignable to constant/variable of type bool.
+Error, "project1/tests/p10a0.rc": 
+  Initialization value of type float[10] not assignable to constant/variable of type int.
+Error, "project1/tests/p10a0.rc": 
+  Initialization value of type int[10] not assignable to constant/variable of type float.
+Error, "project1/tests/p10a0.rc": 
+  Initialization value of type int[10] not assignable to constant/variable of type bool.
+Error, "project1/tests/p10a0.rc": 
+  Initialization value of type int[10] not assignable to constant/variable of type int.
+Error, "project1/tests/p10a0.rc": 
+  Initialization value of type bool[10] not assignable to constant/variable of type float.
+Error, "project1/tests/p10a0.rc": 
+  Initialization value of type bool[10] not assignable to constant/variable of type bool.
+Error, "project1/tests/p10a0.rc": 
+  Initialization value of type bool[10] not assignable to constant/variable of type int.
+Error, "project1/tests/p10a0.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "project1/tests/p10a0.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "project1/tests/p10a0.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "project1/tests/p10a0.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Compile: failure.

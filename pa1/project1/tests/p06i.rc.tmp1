@@ -1,0 +1,2 @@
+  Type of return expression (float) is not equivalent to the function's return type (int).
+Compile: failure.

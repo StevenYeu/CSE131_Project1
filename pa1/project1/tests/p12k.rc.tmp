@@ -1,0 +1,15 @@
+Error, "project1/tests/p12k.rc": 
+  Initialization value of type float not assignable to constant/variable of type int.
+Error, "project1/tests/p12k.rc": 
+  Initialization value of type float not assignable to constant/variable of type bool.
+Error, "project1/tests/p12k.rc": 
+  Foreach array element of type int not assignable to value iteration variable x, of type bool.
+Error, "project1/tests/p12k.rc": 
+  Foreach array element of type int not equivalent to reference iteration variable x, of type float.
+Error, "project1/tests/p12k.rc": 
+  Foreach array element of type float* not assignable to value iteration variable x, of type float.
+Error, "project1/tests/p12k.rc": 
+  Foreach array element of type float[4] not assignable to value iteration variable x, of type float.
+Error, "project1/tests/p12k.rc": 
+  Foreach array element of type float[4] not assignable to value iteration variable x, of type float.
+Compile: failure.

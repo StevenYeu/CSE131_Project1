@@ -1,0 +1,5 @@
+  Value of type int not assignable to variable of type bool.
+  Value of type int not assignable to variable of type bool.
+  Value of type bool not assignable to variable of type int.
+  Value of type bool not assignable to variable of type int.
+Compile: failure.

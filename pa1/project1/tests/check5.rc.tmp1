@@ -1,0 +1,3 @@
+  Incompatible type bool to binary operator +, numeric expected.
+  Value of type void not assignable to variable of type int.
+Compile: failure.

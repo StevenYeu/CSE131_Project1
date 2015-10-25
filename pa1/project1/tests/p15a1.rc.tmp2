@@ -1,0 +1,3 @@
+  Incompatible type int to unary dereference operator *, pointer expected.
+  Incompatible type int to operator ->, pointer to struct expected.
+Compile: failure.

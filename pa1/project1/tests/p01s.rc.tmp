@@ -1,0 +1,4 @@
+Error, "project1/tests/p01s.rc": 
+  Incompatible types to operator: bool != float;
+  both must be numeric, or both equivalent to bool.
+Compile: failure.

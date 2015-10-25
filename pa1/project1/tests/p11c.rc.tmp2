@@ -1,0 +1,3 @@
+  Index value of 42 is outside legal range [0,10).
+  Index value of -42 is outside legal range [0,10).
+Compile: failure.

@@ -1,0 +1,3 @@
+Error, "project1/tests/p03d.rc": 
+  Value of type bool not assignable to variable of type int.
+Compile: failure.

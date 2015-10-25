@@ -1,0 +1,23 @@
+Error, "project1/tests/p08k.rc": 
+  Arithmetic exception occurred during constant folding.
+Error, "project1/tests/p08k.rc": 
+  Initialization value of type float not assignable to constant/variable of type int.
+Error, "project1/tests/p08k.rc": 
+  Initialization value of constant named f not known at compile time.
+Error, "project1/tests/p08k.rc": 
+  Arithmetic exception occurred during constant folding.
+Error, "project1/tests/p08k.rc": 
+  Arithmetic exception occurred during constant folding.
+Error, "project1/tests/p08k.rc": 
+  redeclared identifier 'h'.
+Error, "project1/tests/p08k.rc": 
+  Arithmetic exception occurred during constant folding.
+Error, "project1/tests/p08k.rc": 
+  Initialization value of type bool not assignable to constant/variable of type int.
+Error, "project1/tests/p08k.rc": 
+  redeclared identifier 'c'.
+Error, "project1/tests/p08k.rc": 
+  Initialization value of type float not assignable to constant/variable of type int.
+Error, "project1/tests/p08k.rc": 
+  Initialization value of type int not assignable to constant/variable of type bool.
+Compile: failure.

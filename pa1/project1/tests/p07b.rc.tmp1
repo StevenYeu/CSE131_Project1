@@ -1,0 +1,4 @@
+  Exit expression (type float) is not assignable to int.
+  Exit expression (type bool) is not assignable to int.
+  Exit expression (type bool) is not assignable to int.
+Compile: failure.

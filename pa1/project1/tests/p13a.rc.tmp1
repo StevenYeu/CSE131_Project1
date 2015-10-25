@@ -1,0 +1,3 @@
+  Field b declared second time in struct.
+  Field d declared second time in struct.
+Compile: failure.

@@ -1,0 +1,5 @@
+  Number of arguments (2) differs from number of parameters (0).
+  Number of arguments (0) differs from number of parameters (1).
+  Number of arguments (0) differs from number of parameters (1).
+  Illegal call to overloaded function MYS_C.
+Compile: failure.

@@ -1,0 +1,4 @@
+  Type of expression referenced by array subscript (int) is not of array or pointer type.
+  Type of expression referenced by array subscript (float) is not of array or pointer type.
+  Type of index expression in array reference (float) not equivalent to int.
+Compile: failure.

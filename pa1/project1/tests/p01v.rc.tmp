@@ -1,0 +1,3 @@
+Error, "project1/tests/p01v.rc": 
+  Incompatible type float to binary operator ||, equivalent to bool expected.
+Compile: failure.
