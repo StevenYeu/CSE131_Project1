@@ -18,12 +18,13 @@ class MyParser extends parser
 	private boolean m_bSyntaxError = true;
 	private int m_nSavedLineNum;
     private boolean paramAmp = false;
-    private boolean isInLoop = false;
+    private int isInLoop = 0;
     private boolean isInStruct = false;
     private boolean isMultiError = false;
     private Scope scope;
     private String StructName;
     private String name;
+
 
 	private SymbolTable m_symtab;
 	//----------------------------------------------------------------
@@ -382,6 +383,12 @@ class MyParser extends parser
         {
             for(int i = 0; i < numDim; i++){
                 STO arrayDim = arraylist.elementAt(i);
+                
+                if(arrayDim instanceof ErrorSTO || arrayDim.getType() instanceof ErrorType) {
+                   return;
+                }
+
+ 
                 if(! arrayDim.getType().isEquivalent(new IntType("int"))) {
                     m_nNumErrors++;
 			        m_errors.print(Formatter.toString(ErrorMsg.error10i_Array, arrayDim.getType().getName()));
@@ -392,7 +399,7 @@ class MyParser extends parser
                     m_errors.print(ErrorMsg.error10c_Array);
                     return;
                 }
-                else if(((ConstSTO)arrayDim).getIntValue() < 0){
+                else if(((ConstSTO)arrayDim).getIntValue() <=0){
                     m_nNumErrors++;
 			        m_errors.print(Formatter.toString(ErrorMsg.error10z_Array, (((ConstSTO)arrayDim).getIntValue())));
                     return;
@@ -401,7 +408,8 @@ class MyParser extends parser
             }
 
             STO sizeStoTop = arraylist.elementAt(0);
-            ArrayType aTopType = new ArrayType(t.getName()+"["+ ((ConstSTO)sizeStoTop).getIntValue() +"]", ((ConstSTO)sizeStoTop).getIntValue(), numDim);
+            String arr = this.CreateArray(arraylist);
+            ArrayType aTopType = new ArrayType(t.getName() + arr, ((ConstSTO)sizeStoTop).getIntValue(), numDim);
 
 
             
@@ -412,7 +420,13 @@ class MyParser extends parser
                 }
                 else{  
                   STO sizeSto = arraylist.elementAt(i);
-                  ArrayType typ = new ArrayType(t.getName()+"["+ ((ConstSTO)sizeSto).getIntValue() +"]", ((ConstSTO)sizeSto).getIntValue(),numDim-i);
+                  if((arr.indexOf("]")+1) != -1){
+                     arr = arr.substring(arr.indexOf("]")+1);
+                  }
+                 // else {
+                    // arr = arr;
+                 // }
+                  ArrayType typ = new ArrayType(t.getName()+arr, ((ConstSTO)sizeSto).getIntValue(),numDim-i);
                   aTopType.addNext(typ);
                 }
                         
@@ -475,6 +489,14 @@ class MyParser extends parser
         
 	}
 
+    String CreateArray(Vector<STO> list) {
+        String s = "";
+        for(int i = 0; i < list.size(); i++){
+            s =s.concat("[" + ((ConstSTO)list.get(i)).getIntValue() + "]");
+        }
+        return s;
+        
+    }
 
     //----------------------------------------------------------------
 	//
@@ -482,7 +504,6 @@ class MyParser extends parser
 	void DoForEachDecl(Type iterType, Object opRef, String id, STO expr)
 	{ 
 
-        isInLoop = true;
 
         String s = opRef.toString();
         
@@ -573,10 +594,10 @@ class MyParser extends parser
         else{
             ConstSTO sto;
             if (t instanceof IntType) {
-                sto = new ConstSTO(id, t, Integer.parseInt(constexpr.getName()));   // fix me Done
+                sto = new ConstSTO(id, t, ((ConstSTO)constexpr).getIntValue());   // fix me Done
             }
             else if (t instanceof FloatType) {
-                sto = new ConstSTO(id, t, Float.parseFloat(constexpr.getName()));   // fix me Done
+                sto = new ConstSTO(id, t, ((ConstSTO)constexpr).getFloatValue());   // fix me Done
 
             }
             else {
@@ -797,6 +818,9 @@ class MyParser extends parser
 
 		m_symtab.openScope();
 		m_symtab.setFunc(sto);
+
+
+
 	}
 
 
@@ -817,6 +841,7 @@ class MyParser extends parser
 	//----------------------------------------------------------------
 	void DoFormalParams(Vector<String> params)
 	{
+        Vector<STO> over = new Vector<STO>();
 		if (m_symtab.getFunc() == null)
 		{
 			m_nNumErrors++;
@@ -826,26 +851,50 @@ class MyParser extends parser
 		// insert parameters here
         FuncSTO sto = m_symtab.getFunc();
         for(int i = 0; i < params.size(); i++){
-            STO s = this.ProcessParams(params.get(i));
-            //if(s.getType() instanceof ArrayType){  //add array type check
-              //  paramAmp = true;
-            //}
-
+        
             sto.addParam(this.ProcessParams(params.get(i)));
         }
+        sto.setTag(true);
 
         boolean overloadErr = false;
-        Vector<STO> over = m_symtab.OverloadCheck(sto.getName());
-        if (!over.isEmpty()) {
+
+        //int comp;
+
+        //struct case
+        if(isInStruct){
+
+            Scope localScope = m_symtab.getAboveScope();
+            over = overloadFuncs(localScope.getLocals(), sto.getName());
+
+            sto.setTag(false);
+          // comp = 1;
+
+        }
+        //general case
+        else{
+         
+            over = m_symtab.OverloadCheck(sto.getName());
+            sto.setTag(false);
+        }
+
+
+        if (over.size() > 0) {
+
             for (int i = 0; i < over.size(); i++) {
+                           
+
 
                 Vector<STO> par = ((FuncSTO)over.elementAt(i)).getParams();
                 if (par.size() == sto.getParams().size()) {
+
+
                     for(int curParam = 0; curParam < par.size(); curParam++) {
                         Type parType = par.elementAt(curParam).getType();
                         Type curType = sto.getParams().elementAt(curParam).getType();
                         if(!parType.isEquivalent(curType)) {
-                            m_symtab.addFunc(sto);
+                            if(!isInStruct) {
+                              m_symtab.addFunc(sto);
+                            }
                             overloadErr = true;
                             break;
                         }
@@ -858,7 +907,9 @@ class MyParser extends parser
                     }
                 }
                 else {
-                    m_symtab.addFunc(sto);
+                   if(!isInStruct) {
+                      m_symtab.addFunc(sto);
+                   }
                 }
                
             }
@@ -866,13 +917,29 @@ class MyParser extends parser
         
         }
         else {
-            m_symtab.addFunc(sto);
+             if(!isInStruct) {
+               m_symtab.addFunc(sto);
+             }
         }
 
         isMultiError = false;
         
         m_symtab.setFunc(sto);
 	}
+
+
+    public Vector<STO> overloadFuncs(Vector<STO> functions,String funcName) {
+        Vector<STO> overloaded = new Vector<STO>();
+        for (int i =0; i < functions.size(); i++) {
+            
+            if (funcName.equals(functions.elementAt(i).getName()) && functions.get(i) instanceof FuncSTO   ) {
+                if(((FuncSTO)functions.get(i)).isTag() == false) {
+                  overloaded.add(functions.elementAt(i));
+                }
+            }
+        }
+        return overloaded;    
+    }
 
 	//----------------------------------------------------------------
 	//
@@ -915,8 +982,6 @@ class MyParser extends parser
             m_nNumErrors++;
             return new ErrorSTO(stoDes.getName());
 		}
-        //stoDes.setIsAddressable(false);
-        //stoDes.setIsModifiable(false);
 
 		
 		return stoDes;
@@ -932,8 +997,17 @@ class MyParser extends parser
         else if (b instanceof ErrorSTO) {
             return b;
         }
+
         
         
+        if ((!a.isModLValue()) && !( a instanceof StructdefSTO )) 
+		{
+			// Good place to do the assign checks
+            m_errors.print(ErrorMsg.error3a_Assign);
+            m_nNumErrors++;
+            return new ErrorSTO(a.getName());
+		}
+
 
         STO result;
         if (!b.getType().isAssignable(a.getType())) {
@@ -945,7 +1019,10 @@ class MyParser extends parser
         }
 
 
-        result = a;
+        result = new ExprSTO(a.getName() + "=" + b.getName(), a.getType());
+        result.setIsAddressable(false);
+        result.setIsModifiable(false);
+
         return result;
     
     }
@@ -966,23 +1043,23 @@ class MyParser extends parser
 	{
        
 
-
         boolean isStruct = false;
         if(sto instanceof ErrorSTO){
             return sto;
         }
 
-        if(sto instanceof StructdefSTO) {
-            isStruct = true;
-        }
-
-		if ((!sto.isFunc()) && (!sto.isStructdef()))
+     	if ((!sto.isFunc()) && (!sto.isStructdef()))
 		{
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.not_function, sto.getName()));
 			return new ErrorSTO(sto.getName());
 		}
-        else {            
+        else {
+
+
+             if(((FuncSTO)sto).getIsStruct() == true) {
+                isStruct = true;
+             }
           
             if (m_symtab.access(sto.getName()) == null) { // checks if functions exists
                 m_nNumErrors++;
@@ -993,18 +1070,22 @@ class MyParser extends parser
                 Vector<STO> fsto;
                 Vector<STO> ovldList;
                 if(isStruct) {
-                  Vector<STO> funone = ((StructdefSTO)sto).OverloadCheck(name);
+
+                  STO str = m_symtab.getStruct();  
+                  Vector<STO> funone = ((StructdefSTO)str).OverloadCheck(sto.getName());
                   fsto = funone.get(0).getParams();
-                  ovldList = ((StructdefSTO)sto).OverloadCheck(name);
+                  ovldList = ((StructdefSTO)str).OverloadCheck(sto.getName());
                 }
                 else {
                   fsto = m_symtab.access(sto.getName()).getParams(); // get function from sym tab
                   ovldList = m_symtab.OverloadCheck(sto.getName()); // get overload
+
                 
                 }
                 if(ovldList.size() < 2){
 
                    
+                    STO function;
                     if( params.size() != fsto.size()){
                         m_nNumErrors++;
                         m_errors.print(Formatter.toString(ErrorMsg.error5n_Call, params.size(), fsto.size()));
@@ -1013,21 +1094,36 @@ class MyParser extends parser
                     else if( params.size() == fsto.size()){
 
                         if(params.size()==0 ){
-                           return sto;
+                            function = ovldList.elementAt(0);
+                           if(function.flag == true){
+                              function.setIsAddressable(true);
+                              function.setIsModifiable(true);
+                           }
+                             // pass by value
+                           else {
+                              function.setIsAddressable(false);
+                              function.setIsModifiable(false);
+                           }
+
+                           return function;
                         } 
    
-
+                         
                         for(int i = 0; i < fsto.size(); i++){
 
-                          if(params.size() != 0) {if(params.get(i) instanceof ErrorSTO) {return params.get(i);} }//Nasty Error check for indexoutofbound  
-                            if(fsto.get(i).flag == true || params.get(i).getType() instanceof ArrayType){ // added Array Type check 10/17 changed from flag to old way
+                          if(params.size() != 0) {if(params.get(i) instanceof ErrorSTO) {return params.get(i);} }//Nasty Error check for indexoutofbound 
+
+
+                            if(fsto.get(i).flag == true || fsto.get(i).getType() instanceof ArrayType){ // added Array Type check 10/17 changed from flag to old way
                                 if(!(params.get(i).getType().isEquivalent(fsto.get(i).getType()))){
                                     m_nNumErrors++;
                                     m_errors.print(Formatter.toString(ErrorMsg.error5r_Call, params.get(i).getType().getName(), fsto.get(i).getName(), fsto.get(i).getType().getName()));
+                                    sto = new ErrorSTO("Error");
                                 }
                                 else if(!(params.get(i).isModLValue()) && !(params.get(i).getType() instanceof ArrayType)){
                                     m_nNumErrors++;
                                     m_errors.print(Formatter.toString(ErrorMsg.error5c_Call, fsto.get(i).getName(), fsto.get(i).getType().getName()));
+                                    sto = new ErrorSTO("Error");
                                 }
 
                             }
@@ -1036,23 +1132,64 @@ class MyParser extends parser
                                  if(!(params.get(i).getType().isAssignable(fsto.get(i).getType()))){
                                     m_nNumErrors++;
                                     m_errors.print(Formatter.toString(ErrorMsg.error5a_Call, params.get(i).getType().getName(), fsto.get(i).getName(), fsto.get(i).getType().getName()));
+                                    sto = new ErrorSTO("Error");
                                 }
                             
                             }
                                                    
                         }
-                        return new ErrorSTO("Error");
+                        if(sto instanceof ErrorSTO) {
+                           return sto;
+                        }
+
+                        function = ovldList.elementAt(0);
+                        if(function.flag == true){
+                           function.setIsAddressable(true);
+                           function.setIsModifiable(true);
+                        }
+                          // pass by value
+                        else {
+                           function.setIsAddressable(false);
+                           function.setIsModifiable(false);
+                        }
+                        return function;
+
                     }
                 }
                 else{ // overload check
                     int OverloadCnt = 0;
+                    STO function;
                     for(int i = 0; i < ovldList.size(); i++){
                         Vector<STO> curPar = ovldList.elementAt(i).getParams();
-
                         if(curPar.size() == params.size()){
+                            if(curPar.size() == 0 ) {
+                               function = ovldList.elementAt(i);
+                               if(function.flag == true){
+                                  function.setIsAddressable(true);
+                                  function.setIsModifiable(true);
+                               }
+                               // pass by value
+                               else {
+                                  function.setIsAddressable(false);
+                                  function.setIsModifiable(false);
+                               }
+                               return function;
+                            }
+
+
                             int ParamCnt = 0;
                             for(int j = 0; j < params.size(); j++){
-                                if(params.size() != 0) {if(params.get(j) instanceof ErrorSTO) {return params.get(j);} }//Nasty Error check for indexoutofbound      
+
+                                //if(params.size() != 0) {
+                                    if(params.get(j) instanceof ErrorSTO) {
+                                        m_nNumErrors++;
+                                        m_errors.print(Formatter.toString(ErrorMsg.error9_Illegal, sto.getName()));
+                                        return new ErrorSTO("Error");
+                                        //return params.get(j);
+                                    } 
+                                //}//Nasty Error check for indexoutofbound
+
+
                                 Type parType = params.elementAt(j).getType();
                                 Type curParType = curPar.elementAt(j).getType();
                                 if(!parType.isEquivalent(curParType)){
@@ -1063,12 +1200,25 @@ class MyParser extends parser
                                     ParamCnt++;
                                 }
                             }
-                            if(ParamCnt == (params.size()))
-                                return sto;
+                            if(ParamCnt == (params.size())) { // found match
+                               function = ovldList.elementAt(i);
+                               if(function.flag == true){
+                                  function.setIsAddressable(true);
+                                  function.setIsModifiable(true);
+                               }
+                               // pass by value
+                               else {
+                                  function.setIsAddressable(false);
+                                  function.setIsModifiable(false);
+                               }
+                               return function;
+
+                            }
                         }
                         else{
                             OverloadCnt++;
                         }
+
                         
                     }
                     if(OverloadCnt == (ovldList.size())){
@@ -1142,7 +1292,8 @@ class MyParser extends parser
                    if(fun.get(i).getName().equals(strID)){
                        fun.get(i).setIsModifiable(true);
                        fun.get(i).setIsAddressable(true);
-
+                       ((FuncSTO)fun.get(i)).setIsStruct(true);
+                       m_symtab.setStruct((StructdefSTO)sto); // add
                        return fun.get(i);
                    }
                 }
@@ -1162,7 +1313,6 @@ class MyParser extends parser
                 m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, sto.getType().getName()));
                 return new ErrorSTO("error");
         }
-
 	    return sto;
 	}
 
@@ -1210,7 +1360,6 @@ class MyParser extends parser
             }
         }
         if(sto.getType() instanceof ArrayType) {
-            
             VarSTO v = new VarSTO(sto.getName(), ((ArrayType)sto.getType()).getNext());
             v.setIsModifiable(true);
             v.setIsAddressable(true);
@@ -1335,7 +1484,7 @@ class MyParser extends parser
             }
 
             else if(o.getOp().equals("<") || o.getOp().equals("<=") || o.getOp().equals(">") || o.getOp().equals(">=")) {
-                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getType().getName(),o.getOp())); 
+                 m_errors.print(Formatter.toString(ErrorMsg.error1n_Expr,result.getName(),o.getOp())); 
             }
             else if(o.getOp().equals("==") || o.getOp().equals("!=")) {
                 
@@ -1405,7 +1554,7 @@ class MyParser extends parser
         }
         else if (!(a.isModLValue())){
             m_nNumErrors++;
-            m_errors.print(Formatter.toString(ErrorMsg.error2_Lval,a.getName()));
+            m_errors.print(Formatter.toString(ErrorMsg.error2_Lval,s1));
             result = new ErrorSTO("Error");
             return result;
         }
@@ -1577,6 +1726,9 @@ class MyParser extends parser
     }
 
 
+
+
+
    
     STO DoReturnStmt(STO expr){
         if(expr instanceof ErrorSTO)
@@ -1613,7 +1765,8 @@ class MyParser extends parser
                     m_errors.print(Formatter.toString(ErrorMsg.error6a_Return_type, expr.getType().getName(), m_symtab.getFunc().getReturnType().getName()));
                     return new ErrorSTO("Error");
         }
-        return expr;
+
+        return new ExprSTO("return", m_symtab.getFunc().getReturnType() );
         
     }
 
@@ -1624,20 +1777,45 @@ class MyParser extends parser
                 m_errors.print(ErrorMsg.error6a_Return_expr);
                 return new ErrorSTO("Error");
         }
-        return m_symtab.getFunc();
+
+        return new ExprSTO("return", m_symtab.getFunc().getReturnType() );
 
     }
 
-    STO MissingReturnStmt(Object o, Type typ){
-        if (!(typ instanceof VoidType) ) {
-            if(o == null){
+    STO MissingReturnStmt(Type typ, Vector<STO> stmtlist){
+        int returncnt = 0;
+
+        //if(stmtlist.isEmpty()) {
+          //System.out.println(stmtlist.size());
+        //}
+
+        for(int i = 0; i < stmtlist.size(); i++){
+           
+            if(stmtlist.get(i) == null) {
+                returncnt++;
+                continue;
+            }
+            else if(stmtlist.get(i).getName().equals("return")){
+                return stmtlist.get(i);
+            }
+           // else{
+              //  returncnt++;
+            //}
+        }
+        if(returncnt == stmtlist.size()){
+            if (!(typ instanceof VoidType) ) {
+
                m_nNumErrors++;
                m_errors.print(ErrorMsg.error6c_Return_missing);
                return new ErrorSTO("Error");
-            }   
+
+            }
+    
         }
-        return new ExprSTO("return");
+        return new ExprSTO("return", typ);
     }
+
+
 
     STO DoExit(STO expr) {
 
@@ -1686,15 +1864,15 @@ class MyParser extends parser
 
     
     void DoInLoop(){
-        isInLoop = true;
+        isInLoop += 1;
     }
 
     void DoExitLoop(){
-        isInLoop = false;
+        isInLoop -= 1;
     }
 
     void DoBreak(){
-        if(!isInLoop){
+        if(isInLoop <= 0){
             m_nNumErrors++;
             m_errors.print(ErrorMsg.error12_Break);
             return;
@@ -1702,7 +1880,7 @@ class MyParser extends parser
     }
 
     void DoContinue(){
-         if(!isInLoop){
+         if(isInLoop <= 0){
             m_nNumErrors++;
             m_errors.print(ErrorMsg.error12_Continue);
             return;
@@ -1851,7 +2029,6 @@ class MyParser extends parser
         }
 
         if(sto.getType() instanceof PointerType) {
-            //System.out.println(sto.getName());
             if(params.size() == 0){
                 if(!(((PointerType)sto.getType()).getNext() instanceof StructType)) {
                     return sto;
@@ -2049,6 +2226,9 @@ class MyParser extends parser
                     float val = ((ConstSTO)sto).getFloatValue();
                     //float floatVal = (float)val;
                     res = new ConstSTO(sto.getName(), t, val);
+               }
+               else if(t instanceof PointerType && typ instanceof BasicType){
+                    res = new ExprSTO(sto.getName(), t);
                }
             
             

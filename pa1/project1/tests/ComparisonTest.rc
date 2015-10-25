@@ -1,0 +1,10 @@
+
+function : void main() {
+   int x;
+   int y;
+   bool z;
+   x = 3;
+   y = 2;
+   (true+2 > y);
+   (false - 3 < x);
+}

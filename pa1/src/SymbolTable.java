@@ -46,7 +46,9 @@ class SymbolTable
         for (int i =0; i < functions.size(); i++) {
             
             if (funcName.equals(functions.elementAt(i).getName())) {
-                overloaded.add(functions.elementAt(i));
+                 if(((FuncSTO)functions.get(i)).isTag() == false) {
+                  overloaded.add(functions.elementAt(i));
+                }
             }
         }
         return overloaded;

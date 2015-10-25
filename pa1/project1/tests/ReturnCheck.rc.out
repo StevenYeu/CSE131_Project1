@@ -1,0 +1,3 @@
+Error, "/tmp/cs131_testrunner_CRarMF/file.rc": 
+  Return expression is not a modifiable L-value for function that returns by reference.
+Compile: failure.

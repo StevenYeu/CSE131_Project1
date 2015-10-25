@@ -52,7 +52,7 @@ class GTOp extends ComparisonOp {
             return new ExprSTO(a.getName(), new BoolType("bool")); 
  
         }
-        
+
         return new ErrorSTO(a.getName());
         
     }

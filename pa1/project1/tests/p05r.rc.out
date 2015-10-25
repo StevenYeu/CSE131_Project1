@@ -1,0 +1,3 @@
+Error, "/tmp/cs131_testrunner_zOarMF/file.rc": 
+  Initialization value of type float not assignable to constant/variable of type int.
+Compile: failure.

@@ -14,6 +14,7 @@ class StructdefSTO extends STO
     Vector<STO> funcs = new Vector<STO>();
     Vector<STO> overload = new Vector<STO>();
     Vector<STO> ctors = new Vector<STO>();
+    Scope structScope;
 
 	//----------------------------------------------------------------
 	//

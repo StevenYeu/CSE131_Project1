@@ -9,8 +9,9 @@ import java.util.Vector;
 class FuncSTO extends STO
 {
 	private Type m_returnType;
-    private Vector<STO> params = new Vector();
-    
+    private Vector<STO> params = new Vector<STO>();
+    boolean isStruct = false;
+    boolean tag = false;
 
 	//----------------------------------------------------------------
 	//
@@ -28,6 +29,14 @@ class FuncSTO extends STO
     {
         super (strName, t);
         setReturnType(null);
+    }
+
+    public boolean isTag() {
+       return tag;
+    }
+
+    public void setTag(boolean b) {
+       tag = b;
     }
 
 	//----------------------------------------------------------------
@@ -65,4 +74,12 @@ class FuncSTO extends STO
     public Vector<STO> getParams() {
         return params;
     } 
+
+    public boolean getIsStruct() {
+       return isStruct;
+    }
+
+    public void setIsStruct(boolean b) {
+       isStruct = b;
+    }
 }

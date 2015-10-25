@@ -120,8 +120,8 @@ non terminal
     OptFieldFuncsList,
     FieldFuncsList,
     FieldFuncDecl,
-    OptStmtList,
-    StmtList,
+    // moved OptStmtList,
+    // moved StmtList,
     Stmt,
     CodeBlock,
     // moved optExprList
@@ -196,7 +196,9 @@ non terminal Vector
     OptArrayList,
     FieldVarsList,
     OptPointerList,
-    PointerList
+    PointerList,
+    OptStmtList,
+    StmtList
     ;
 
 //--------------------------------------------------------------------
@@ -288,8 +290,6 @@ StructdefDecl ::=   T_STRUCTDEF T_ID_U:_1 T_LBRACE
                     {:
                         // Put logic here to create default ctor if needed
                         ((MyParser) parser).DoDefaultConstructor();
-                        //((MyParser) parser).DoFormalParams(new Vector<String>());
-                        //((MyParser) parser).DoFuncDecl_2();
 
                     :}
                     OptFieldFuncsList
@@ -385,7 +385,9 @@ FuncDef ::=         T_FUNCTION T_COLON ReturnType:_1 OptRef:_2 T_ID:_3
                     :}
                     T_LBRACE OptStmtList:_5
                     {:
-                        ((MyParser) parser).MissingReturnStmt(_5,_1);
+                        
+                        RESULT =((MyParser) parser).MissingReturnStmt(_1, _5);
+
                         ((MyParser) parser).DoFuncDecl_2();
                     :}
                     T_RBRACE
@@ -462,7 +464,7 @@ ReturnType ::=      Type:_1
                     :}
     |               T_VOID
                     {:
-                        RESULT = new VoidType("Void",0);
+                        RESULT = new VoidType("void",0);
                     :}
     ;
 
@@ -530,9 +532,8 @@ CodeBlock ::=       T_LBRACE
                     {: ((MyParser) parser).DoBlockOpen(); :}
                     OptStmtList
                     {: 
-                        //((MyParser) parser).DoBreak();
-                        //((MyParser) parser).DoContinue();
-                        ((MyParser) parser).DoExitLoop();
+
+                      //  ((MyParser) parser).DoExitLoop();
                         ((MyParser) parser).DoBlockClose();
                     :}
                     T_RBRACE
@@ -545,16 +546,21 @@ OptStmtList ::=     StmtList:_1
                     :}
 
     |               /* empty */
+                    {:
+                        RESULT = new Vector();
+                    :}
     ;
 
 
 StmtList ::=        Stmt:_1
                     {:
-                        RESULT = _1;
+                        RESULT = new Vector();
+                        RESULT.addElement(_1);
                     :}
-    |               StmtList Stmt:_1
+    |               StmtList:_1 Stmt:_2
                     {:
                         RESULT = _1;
+                        RESULT.addElement(_2);
                     :}
     ;
 
@@ -650,10 +656,12 @@ CtorCall ::=        T_COLON T_LPAREN OptExprList:_1 T_RPAREN
     ;
 
 
-IfStmt ::=          T_IF Expr:_1 CodeBlock OptElse
+IfStmt ::=          T_IF Expr:_1 
                     {:
-                        ((MyParser) parser).DoIfAndWhile(_1);
+                        RESULT =((MyParser) parser).DoIfAndWhile(_1);
                     :}
+                    CodeBlock OptElse
+
     ;
 
 
@@ -662,11 +670,17 @@ OptElse ::=         T_ELSE CodeBlock
     ;
 
 
-WhileStmt ::=       T_WHILE Expr:_1 CodeBlock
+WhileStmt ::=       T_WHILE Expr:_1                   
                     {:
+                        RESULT =((MyParser) parser).DoIfAndWhile(_1);
+
                         ((MyParser) parser).DoInLoop();
-                        ((MyParser) parser).DoIfAndWhile(_1);
                     :}
+                    CodeBlock
+                    {:
+                        ((MyParser) parser).DoExitLoop();
+                    :}
+
     ;
 
 
@@ -678,6 +692,8 @@ ForeachStmt ::=     T_FOREACH T_LPAREN Type:_1 OptRef:_2 T_ID:_3 T_COLON Expr:_4
                     :}
                     CodeBlock
                     {:
+
+                        ((MyParser) parser).DoExitLoop();
                         ((MyParser) parser).DoBlockClose();
                     :}
     ;
@@ -706,13 +722,14 @@ ExitStmt ::=        T_EXIT T_LPAREN Expr:_1 T_RPAREN T_SEMI
 
 ReturnStmt ::=      T_RETURN T_SEMI 
                     {:
-                       ((MyParser)parser).DoReturnStmt();
+                       RESULT = ((MyParser)parser).DoReturnStmt();
                     :}
     |               T_RETURN:_1 Expr:_2 T_SEMI
                     {:
-                        RESULT = "return"; // changed
-                       ((MyParser)parser).DoReturnStmt(_2);
+                        //RESULT = "return"; // changed
+                       RESULT = ((MyParser)parser).DoReturnStmt(_2);
                     :}
+
     ;
 
 
@@ -769,8 +786,8 @@ ExprList ::=        Expr:_1
 Expr ::=            Designator:_1 T_ASSIGN Expr:_2
                     {:
                         
-                        RESULT = ((MyParser) parser).DoAssignExpr (_1);
-                        RESULT = ((MyParser) parser).DoAssignTypeCheck(RESULT,_2);
+                        RESULT = ((MyParser) parser).DoAssignTypeCheck(_1,_2);
+                        //RESULT = ((MyParser) parser).DoAssignExpr (RESULT);
                        
                     :}
     |               Expr0:_1

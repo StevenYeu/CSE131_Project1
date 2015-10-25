@@ -1,0 +1,29 @@
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Number of arguments (2) differs from number of parameters (1).
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Incompatible type int to unary operator !, equivalent to bool expected.
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Argument of type bool not assignable to value parameter f, of type float.
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Argument of type int not equivalent to reference parameter f, of type float.
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Incompatible type int to unary operator !, equivalent to bool expected.
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Argument passed to reference parameter f (type float) is not a modifiable L-value.
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Argument of type float not assignable to value parameter a, of type int.
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Argument of type int not equivalent to reference parameter b, of type float.
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Argument passed to reference parameter c (type int) is not a modifiable L-value.
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Number of arguments (1) differs from number of parameters (3).
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Incompatible type int to unary operator !, equivalent to bool expected.
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Number of arguments (1) differs from number of parameters (3).
+Error, "/tmp/cs131_testrunner_d8frMF/file.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Compile: failure.

@@ -1,0 +1,5 @@
+Error, "/tmp/cs131_testrunner_9c8qMF/file.rc": 
+  Incompatible type bool to binary operator +, numeric expected.
+Error, "/tmp/cs131_testrunner_9c8qMF/file.rc": 
+  Incompatible type bool to binary operator -, numeric expected.
+Compile: failure.
