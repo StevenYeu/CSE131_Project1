@@ -283,12 +283,16 @@ StructdefDecl ::=   T_STRUCTDEF T_ID_U:_1 T_LBRACE
                     {:
                         ((MyParser) parser).DoBlockOpen();
                         ((MyParser) parser).IsInStruct();
+                        ((MyParser) parser).SelfStruct(_1);
+                        ((MyParser) parser).getStructScope();
                         ((MyParser) parser).DoStructName(_1);
                     :}
                     FieldVarsList
                     OptCtorDtorList
                     {:
                         // Put logic here to create default ctor if needed
+
+                        ((MyParser) parser).getStructScope();
                         ((MyParser) parser).DoDefaultConstructor();
 
                     :}
@@ -1115,7 +1119,8 @@ Designator3 ::=     T_LPAREN Expr:_2 T_RPAREN
                     :}
     |               T_THIS
                     {:
-                        RESULT = new ExprSTO ("this",new StructType(((MyParser) parser).getStructName()));
+                        ((MyParser) parser).toggleInThisFlag();
+                        RESULT = ((MyParser) parser).getCurrentStruct();
                         RESULT.setIsModifiable(false);
                         RESULT.setIsAddressable(false); // fix me!
                     :}

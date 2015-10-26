@@ -13,6 +13,7 @@ abstract class STO
 	private boolean m_isAddressable;
 	private boolean m_isModifiable;
     public boolean flag = false;
+    private boolean thisTag = false;
 
 	//----------------------------------------------------------------
 	//
@@ -109,6 +110,14 @@ abstract class STO
 	{
 		return getIsModifiable() && getIsAddressable();
 	}
+
+    public boolean isThis() {
+       return thisTag;
+    }
+
+    public void setIsThis(boolean b) {
+      thisTag = b;
+    }
 
 	//----------------------------------------------------------------
 	//	It will be helpful to ask a STO what specific STO it is.

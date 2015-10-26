@@ -1,1 +1,30 @@
+Error, "project1/tests/p15d.rc": 
+  Value of type bool** not assignable to variable of type int**.
+Error, "project1/tests/p15d.rc": 
+  Value of type bool* not assignable to variable of type int*.
+Error, "project1/tests/p15d.rc": 
+  Value of type int** not assignable to variable of type bool**.
+Error, "project1/tests/p15d.rc": 
+  Value of type bool** not assignable to variable of type int**.
+Error, "project1/tests/p15d.rc": 
+  Value of type int** not assignable to variable of type float**.
+Error, "project1/tests/p15d.rc": 
+  Value of type int* not assignable to variable of type float*.
+Error, "project1/tests/p15d.rc": 
+  Value of type float** not assignable to variable of type int**.
+Error, "project1/tests/p15d.rc": 
+  Incompatible types to operator: float*** == bool**;
+  both must be numeric, or both equivalent to bool.
+Error, "project1/tests/p15d.rc": 
+  Incompatible types to operator: float*** != bool**;
+  both must be numeric, or both equivalent to bool.
+Error, "project1/tests/p15d.rc": 
+  Incompatible types to operator: float** == bool**;
+  both must be numeric, or both equivalent to bool.
+Error, "project1/tests/p15d.rc": 
+  Incompatible types to operator: int** == int*;
+  both must be numeric, or both equivalent to bool.
+Error, "project1/tests/p15d.rc": 
+  Incompatible types to operator: float** == int**;
+  both must be numeric, or both equivalent to bool.
 Compile: failure.

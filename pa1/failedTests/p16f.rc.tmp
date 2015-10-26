@@ -1,0 +1,13 @@
+Error, "project1/tests/p16f.rc": 
+  Type of new's operand must be of pointer type, int found.
+Error, "project1/tests/p16f.rc": 
+  Type of delete's operand must be of pointer type, int found.
+Error, "project1/tests/p16f.rc": 
+  Operand to "new" is not a modifiable L-value.
+Error, "project1/tests/p16f.rc": 
+  Operand to "delete" is not a modifiable L-value.
+Error, "project1/tests/p16f.rc": 
+  Operand to "new" is not a modifiable L-value.
+Error, "project1/tests/p16f.rc": 
+  Operand to "delete" is not a modifiable L-value.
+Compile: failure.

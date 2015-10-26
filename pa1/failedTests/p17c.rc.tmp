@@ -1,0 +1,9 @@
+Error, "project1/tests/p17c.rc": 
+  Initialization value of constant named cb not known at compile time.
+Error, "project1/tests/p17c.rc": 
+  Incompatible types to operator: float* != int*;
+  both must be numeric, or both equivalent to bool.
+Error, "project1/tests/p17c.rc": 
+  Incompatible types to operator: int* == float*;
+  both must be numeric, or both equivalent to bool.
+Compile: failure.

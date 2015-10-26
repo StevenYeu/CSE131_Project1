@@ -4,6 +4,7 @@
 
 
 class StructType extends CompositeType {
+    Scope local;
     public StructType(String strName){
         super(strName,0);
     }
@@ -21,6 +22,14 @@ class StructType extends CompositeType {
 
     public boolean isAssignable(Type t){
         return this.isEquivalent(t);
+    }
+
+    public void setScope(Scope s) {
+       local = s;
+    }
+
+    public Scope getScope() {
+       return local;
     }
  
 }

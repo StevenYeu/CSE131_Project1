@@ -1,9 +1,17 @@
 Error, "project1/tests/p14o.rc": 
-  Illegal call to overloaded function foo.
+  undeclared identifier 'foo'.
+Error, "project1/tests/p14o.rc": 
+  undeclared identifier 'foo'.
+Error, "project1/tests/p14o.rc": 
+  undeclared identifier 'foo'.
 Error, "project1/tests/p14o.rc": 
   Referenced field y not found in type MYS_A.
 Error, "project1/tests/p14o.rc": 
   Referenced field i not found in type MYS_A.
+Error, "project1/tests/p14o.rc": 
+  undeclared identifier 'foo'.
+Error, "project1/tests/p14o.rc": 
+  undeclared identifier 'foo2'.
 Error, "project1/tests/p14o.rc": 
   Referenced field boo not found in type MYS_B.
 Error, "project1/tests/p14o.rc": 

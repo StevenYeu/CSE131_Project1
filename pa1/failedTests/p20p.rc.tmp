@@ -1,0 +1,13 @@
+Error, "project1/tests/p20p.rc": 
+  Invalid type cast. Type MY to type bool* is not supported.
+Error, "project1/tests/p20p.rc": 
+  Arithmetic exception occurred during constant folding.
+Error, "project1/tests/p20p.rc": 
+  Value of index expression not known at compile time.
+Error, "project1/tests/p20p.rc": 
+  Value of index expression not known at compile time.
+Error, "project1/tests/p20p.rc": 
+  Value of index expression not known at compile time.
+Error, "project1/tests/p20p.rc": 
+  Return required in function, none found.
+Compile: failure.

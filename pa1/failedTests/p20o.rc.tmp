@@ -1,0 +1,9 @@
+Error, "project1/tests/p20o.rc": 
+  Initialization value of type float not assignable to constant/variable of type int.
+Error, "project1/tests/p20o.rc": 
+  Initialization value of type bool not assignable to constant/variable of type int.
+Error, "project1/tests/p20o.rc": 
+  Initialization value of type float not assignable to constant/variable of type int.
+Error, "project1/tests/p20o.rc": 
+  Initialization value of type bool not assignable to constant/variable of type int.
+Compile: failure.

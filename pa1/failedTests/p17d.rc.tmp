@@ -1,0 +1,53 @@
+Error, "project1/tests/p17d.rc": 
+  Incompatible types to operator: int* == bool*;
+  both must be numeric, or both equivalent to bool.
+Error, "project1/tests/p17d.rc": 
+  Incompatible types to operator: int* == int**;
+  both must be numeric, or both equivalent to bool.
+Error, "project1/tests/p17d.rc": 
+  Incompatible types to operator ==:
+    int*,
+    int;
+  both must be of equivalent pointer type.
+Error, "project1/tests/p17d.rc": 
+  Incompatible types to operator ==:
+    int*,
+    int;
+  both must be of equivalent pointer type.
+Error, "project1/tests/p17d.rc": 
+  Incompatible types to operator ==:
+    nullptr,
+    int;
+  both must be of equivalent pointer type.
+Error, "project1/tests/p17d.rc": 
+  Incompatible types to operator: int* != bool*;
+  both must be numeric, or both equivalent to bool.
+Error, "project1/tests/p17d.rc": 
+  Incompatible types to operator: int* != int**;
+  both must be numeric, or both equivalent to bool.
+Error, "project1/tests/p17d.rc": 
+  Incompatible types to operator !=:
+    int*,
+    int;
+  both must be of equivalent pointer type.
+Error, "project1/tests/p17d.rc": 
+  Incompatible types to operator !=:
+    int*,
+    int;
+  both must be of equivalent pointer type.
+Error, "project1/tests/p17d.rc": 
+  Incompatible types to operator !=:
+    nullptr,
+    int;
+  both must be of equivalent pointer type.
+Error, "project1/tests/p17d.rc": 
+  Operand to ++ is not a modifiable L-value.
+Error, "project1/tests/p17d.rc": 
+  Operand to -- is not a modifiable L-value.
+Error, "project1/tests/p17d.rc": 
+  Non-addressable argument of type int to address-of operator.
+Error, "project1/tests/p17d.rc": 
+  Non-addressable argument of type int to address-of operator.
+Error, "project1/tests/p17d.rc": 
+  Return required in function, none found.
+Compile: failure.

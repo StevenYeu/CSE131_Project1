@@ -24,6 +24,8 @@ class MyParser extends parser
     private Scope scope;
     private String StructName;
     private String name;
+    private boolean isThis = false;
+    private boolean inThisFlag = false;
 
 
 	private SymbolTable m_symtab;
@@ -450,13 +452,15 @@ class MyParser extends parser
         }
         else {
 		   sto = new VarSTO(id,t);
-            sto.setIsAddressable(false);
-            sto.setIsModifiable(false);
+            sto.setIsAddressable(true);
+            sto.setIsModifiable(true);
 
         
         }
         // set var in struct to mod-lval
 		m_symtab.insert(sto);
+        Scope var = m_symtab.getCurrScope();
+        ((StructType)m_symtab.getStruct().getType()).setScope(var);
 	}
 
 
@@ -480,7 +484,7 @@ class MyParser extends parser
 
         if(numDim > 0)
         {
-            for(int i = 0; i < numDim; i++){
+            for(int i = 0; i < numDim; i++){ // for arrays
                 STO arrayDim = arraylist.elementAt(i);
                 
                 if(arrayDim instanceof ErrorSTO || arrayDim.getType() instanceof ErrorType) {
@@ -575,7 +579,6 @@ class MyParser extends parser
                 }
                 sto = new VarSTO(id,t);
                 
-                // r-val for var why
                 sto.setIsAddressable(true);
                 sto.setIsModifiable(true);
                 
@@ -749,6 +752,13 @@ class MyParser extends parser
 	}
 
 
+    //------------------------
+    //
+    //------------------------
+    void SelfStruct(String id){
+        StructdefSTO sto = new StructdefSTO(id, new StructType(id));
+        m_symtab.setStruct(sto);
+    }
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
@@ -759,8 +769,10 @@ class MyParser extends parser
 			m_nNumErrors++;
 			m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
 		}
-
-       	StructdefSTO sto = new StructdefSTO(id, new StructType(id));
+         
+        StructType scopeStruct = new StructType(id);
+        scopeStruct.setScope(scope);
+       	StructdefSTO sto = new StructdefSTO(id, scopeStruct);
         Vector<STO> locals = scope.getLocals();
         int size = 0;
         
@@ -784,6 +796,7 @@ class MyParser extends parser
         sto.getType().setSize(size);
 
 		m_symtab.insert(sto);
+        ///m_symtab.setStruct(sto);
 	}
 
     //----------------------------------------------------------------
@@ -805,7 +818,8 @@ class MyParser extends parser
         {
             FuncSTO sto = new FuncSTO(StructName, new StructType(StructName));
             m_symtab.insert(sto);
-
+            Scope def = m_symtab.getCurrScope();
+            ((StructType)m_symtab.getStruct().getType()).setScope(def);
 		    m_symtab.openScope();
 		    m_symtab.setFunc(sto);
             this.DoFormalParams(new Vector<String>());
@@ -849,6 +863,8 @@ class MyParser extends parser
 			
 		FuncSTO sto = new FuncSTO(id,new StructType(id));
 		m_symtab.insert(sto);
+        Scope ctor = m_symtab.getCurrScope();
+        ((StructType)m_symtab.getStruct().getType()).setScope(ctor);
         sto.setReturnType(new VoidType("void",0));
 		m_symtab.openScope();
 		m_symtab.setFunc(sto);
@@ -918,7 +934,13 @@ class MyParser extends parser
             sto.flag = true;
         }
         sto.setReturnType(t);
-        m_symtab.insert(sto); 
+        m_symtab.insert(sto);
+
+        if(isInStruct) {
+           Scope fun = m_symtab.getCurrScope();
+           ((StructType)m_symtab.getStruct().getType()).setScope(fun);
+        }
+
 
 		m_symtab.openScope();
 		m_symtab.setFunc(sto);
@@ -1069,7 +1091,7 @@ class MyParser extends parser
         scope = m_symtab.getCurrScope();
     }
 	//----------------------------------------------------------------
-	//
+	// NOT IN USE
 	//----------------------------------------------------------------
 	STO DoAssignExpr(STO stoDes)
 	{
@@ -1094,6 +1116,7 @@ class MyParser extends parser
     STO DoAssignTypeCheck(STO a, STO b) {
       
 
+
         
         if(a instanceof ErrorSTO) {
             return a;
@@ -1102,9 +1125,10 @@ class MyParser extends parser
             return b;
         }
 
+       
+ 
         
-        
-        if ((!a.isModLValue()) && !( a instanceof StructdefSTO )) 
+        if ((!a.isModLValue())) 
 		{
 			// Good place to do the assign checks
             m_errors.print(ErrorMsg.error3a_Assign);
@@ -1185,7 +1209,10 @@ class MyParser extends parser
 
                   STO str = m_symtab.getStruct();  
                   Vector<STO> funone = ((StructdefSTO)str).OverloadCheck(sto.getName());
-                  fsto = funone.get(0).getParams();
+
+                  if(funone.size() != 0){ fsto = funone.get(0).getParams(); }
+                  else{ return new ErrorSTO("Error"); }
+
                   ovldList = ((StructdefSTO)str).OverloadCheck(sto.getName());
                   //comp = 2;
 
@@ -1366,43 +1393,95 @@ class MyParser extends parser
 		return sto;
 	}
 
+    void toggleInThisFlag()
+    {
+        inThisFlag = !inThisFlag;
+    }
+
+    public STO getCurrentStruct() {
+       return m_symtab.getStruct();
+    }
 	//----------------------------------------------------------------
 	//
 	//----------------------------------------------------------------
 	STO DoDesignator2_Dot(STO sto, String strID)
 	{
+        
         if( sto instanceof ErrorSTO){
+            inThisFlag = false;
             return sto;
         }
         
 
 		// Good place to do the struct checks
         if(!(sto.getType() instanceof StructType) ){
+            inThisFlag = false;
             m_nNumErrors++;
             m_errors.print(Formatter.toString(ErrorMsg.error14t_StructExp, sto.getType().getName()));
             return new ErrorSTO("error");
    
         }
 
-        if((sto.getName().equals("this"))){
+
+        if(inThisFlag == true){
+
+            Scope curr = m_symtab.getAboveScope();
+            Vector<STO> locals = curr.getLocals();
+            for(int i = 0 ; i < locals.size(); i++){
+                if(locals.get(i).getName().equals(strID)){
+                    toggleInThisFlag();
+                    return locals.get(i);
+                }
+             }
+             m_nNumErrors++;
+             m_errors.print(Formatter.toString(ErrorMsg.error14c_StructExpThis ,strID));
+             toggleInThisFlag();
+             return new ErrorSTO("error"); 
+ 
+        }
+        else{
+
+            Scope curr = ((StructType)sto.getType()).getScope();
+            Vector<STO> locals = curr.getLocals();
+            for(int i = 0 ; i < locals.size(); i++){
+                if(locals.get(i).getName().equals(strID)){
+                    return locals.get(i);
+                }
+             }
+             m_nNumErrors++;
+             m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp ,strID, sto.getType().getName()));
+             return new ErrorSTO("error"); 
+
+        
+        }
+        
+        
+
+/*
+        if((sto.getName().equals("this")) && sto.getType() instanceof StructType){
+           // isThis = true;
             Scope scope = m_symtab.getAboveScope();
             Vector<STO> locals = scope.getLocals();
             for(int j = 0; j < locals.size(); j++){
                 if(locals.get(j).getName().equals(strID)){
                     locals.get(j).setIsModifiable(true);
                     locals.get(j).setIsAddressable(true);
+                    locals.get(j).setIsThis(true);
+                    if(locals.get(j) instanceof FuncSTO){
+                         ((FuncSTO)locals.get(j)).setIsStruct(true);
+                    }
+                    m_symtab.setStruct((StructdefSTO)sto); // add
+                    m_symtab.insert(locals.get(j));
                     return locals.get(j);
                 }
 
             }
-            m_nNumErrors++;
-            m_errors.print(Formatter.toString(ErrorMsg.error14c_StructExpThis ,strID));
-            return new ErrorSTO("error"); 
 
         }
        
        
         if((sto.getType() instanceof StructType) && (!sto.getName().equals("this"))) {
+               // isThis = false;
 
                 Vector<STO> fun = ((StructdefSTO)sto).getFuncs();
                 Vector<STO> var = ((StructdefSTO)sto).getVars();
@@ -1429,13 +1508,12 @@ class MyParser extends parser
                    }
                 }
 
-
-
                 m_nNumErrors++;
                 m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, sto.getType().getName()));
                 return new ErrorSTO("error");
         }
-	    return sto;
+        //isThis = false;
+	    return sto;*/
 	}
 
 	//----------------------------------------------------------------
@@ -1507,19 +1585,6 @@ class MyParser extends parser
 	STO DoDesignator3_ID(String strID)
 	{
 		STO sto;
-        if(isInStruct){
-            Scope s = m_symtab.getAboveScope();
-            Vector<STO> locals = s.getLocals();
-            for(int i = 0; i < locals.size(); i++){
-                if(strID.equals(locals.get(i).getName()))
-                        return locals.get(i);
-            }
-                m_nNumErrors++;
-		        m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
-		        sto = new ErrorSTO(strID);
-                return sto;
-
-        }
 
         //change accesslocal to access might break things
 		if ((sto = m_symtab.access(strID)) == null )
@@ -1529,16 +1594,12 @@ class MyParser extends parser
                 m_nNumErrors++;
 		        m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
 		        sto = new ErrorSTO(strID);
+
                 return sto;
            // }
         }
-
-        //if(sto instanceof StructdefSTO){
-        //    if 
-       // }
         return sto;
-      
-            
+              
 	}
 
     STO DoDes3_GlobalID(String strID)
