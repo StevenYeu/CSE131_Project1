@@ -1028,9 +1028,8 @@ class MyParser extends parser
         }
         else{
             over = m_symtab.OverloadCheckParam(sto.getName()); // get all function with same name, excludes itself
-        }//sto.setTag(false); figure out
-  
-
+            m_symtab.TagOff();
+        }
 
         if (over.isEmpty()) { // non overload case
            m_symtab.TagOff(); // turn off tag to exclude current function
@@ -1048,8 +1047,6 @@ class MyParser extends parser
 
                      Type newPar = newParams.get(j).getType();
                      Type storePar = storedParams.get(j).getType();
-                    // System.out.println("Store Parms:" + storedParams.get(j).getType().getName());
-                    // System.out.println("new Parms:" + newParams.get(j).getType().getName());
 
                      if(!newPar.isEquivalent(storePar)) { // if params are not equivalent then OK
 
@@ -1074,7 +1071,6 @@ class MyParser extends parser
 
            if(isMultiError){//check if there is error prev to overload check 
               isMultiError = false;
-
               return;  
            }
 
@@ -1084,11 +1080,10 @@ class MyParser extends parser
              m_symtab.removeFunc(sto);
              m_symtab.TagOff();
              //((StructType)sto.getType()).OffStructTag(); //turn of struct tag for self
-             
              return;
            }
         }
-        
+
 	}
 
 
