@@ -12,6 +12,7 @@ class FuncSTO extends STO
     private Vector<STO> params = new Vector<STO>();
     boolean isStruct = false;
     boolean tag = false;
+    boolean isOver = false; // if func is Overloaded
 
 	//----------------------------------------------------------------
 	//

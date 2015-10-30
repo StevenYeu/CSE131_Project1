@@ -2,9 +2,13 @@
 //
 //----------
 
+import java.util.Vector;
 
 class StructType extends CompositeType {
     Scope local;
+
+    Vector<STO> functions = new Vector<STO>();
+
     public StructType(String strName){
         super(strName,0);
     }
@@ -26,10 +30,42 @@ class StructType extends CompositeType {
 
     public void setScope(Scope s) {
        local = s;
+       functions = local.getLocals();
     }
 
     public Scope getScope() {
        return local;
+    }
+
+    public Vector<STO> OverloadCheckStruct(String funcName) { // for do formal params
+
+        Vector<STO> overloaded = new Vector<STO>();
+        for (int i =0; i < functions.size(); i++) {
+
+            if(functions.get(i) instanceof FuncSTO){
+            
+                if (funcName.equals(functions.elementAt(i).getName())) {
+                    if(functions.get(i).getOTag() == false) {
+                        overloaded.add(functions.elementAt(i));
+                    }
+                }
+            }
+        }
+        return overloaded;
+    }
+
+    public void OffStructTag(){
+        if(functions.isEmpty()){
+            return;
+        }
+
+        for(int i = 0; i < functions.size(); i++){
+            if(functions.get(i) instanceof FuncSTO){
+                if(functions.get(i).getOTag())
+                    functions.get(i).setOTag(false);
+            }
+        }
+        
     }
  
 }

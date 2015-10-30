@@ -35,31 +35,11 @@ Error, "project1/tests/p13g.rc":
 Error, "project1/tests/p13g.rc": 
   Referenced field a not found in type MYS1.
 Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'bar'.
+  Value of type void not assignable to variable of type int.
 Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'foo'.
+  Value of type void not assignable to variable of type float.
 Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'bar'.
+  Value of type void not assignable to variable of type int.
 Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'foo'.
-Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'bar'.
-Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'bar'.
-Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'bar'.
-Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'bar'.
-Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'bar'.
-Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'bar'.
-Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'bar'.
-Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'bar'.
-Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'barf'.
-Error, "project1/tests/p13g.rc": 
-  undeclared identifier 'barf'.
+  Value of type void not assignable to variable of type int.
 Compile: failure.

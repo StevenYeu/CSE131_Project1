@@ -12,8 +12,9 @@ abstract class STO
 	private Type m_type;
 	private boolean m_isAddressable;
 	private boolean m_isModifiable;
-    public boolean flag = false;
+    public boolean flag = false; // check if parameter is by reference  or value
     private boolean thisTag = false;
+    private boolean oTag = false;
 
 	//----------------------------------------------------------------
 	//
@@ -118,6 +119,17 @@ abstract class STO
     public void setIsThis(boolean b) {
       thisTag = b;
     }
+
+    public boolean getOTag() {
+       return thisTag;
+    }
+
+    public void setOTag(boolean b) {
+      thisTag = b;
+    }
+
+
+
 
 	//----------------------------------------------------------------
 	//	It will be helpful to ask a STO what specific STO it is.

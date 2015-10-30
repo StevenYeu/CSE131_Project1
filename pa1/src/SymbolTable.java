@@ -54,7 +54,7 @@ class SymbolTable
         return overloaded;
     }
 
-    public Vector<STO> OverloadCheckFun(String funcName) {
+    public Vector<STO> OverloadCheckFun(String funcName) { // for dofuncall
 
         Vector<STO> overloaded = new Vector<STO>();
         for (int i =0; i < functions.size(); i++) {
@@ -64,7 +64,30 @@ class SymbolTable
             }
         }
         return overloaded;
-    }  
+    }
+
+    public Vector<STO> OverloadCheckParam(String funcName) { // for do formal params
+
+        Vector<STO> overloaded = new Vector<STO>();
+        for (int i =0; i < functions.size(); i++) {
+            
+            if (funcName.equals(functions.elementAt(i).getName())) {
+                if(functions.get(i).getOTag() == false) {
+                  overloaded.add(functions.elementAt(i));
+                }
+            }
+        }
+        return overloaded;
+    }
+
+    public void TagOff() {
+       for (int i =0; i < functions.size(); i++) {
+          if(functions.get(i).getOTag() == true) {
+             functions.get(i).setOTag(false);
+          }
+        }
+    }
+
 
 
 	//----------------------------------------------------------------
@@ -178,6 +201,12 @@ class SymbolTable
         if( f instanceof FuncSTO){
             functions.add(f);
         }
+    }
+
+    public void removeFunc(STO f) {
+       if(f instanceof FuncSTO) {
+          functions.remove(f);
+       }
     }
 
 	public FuncSTO getFunc() { return m_func; }

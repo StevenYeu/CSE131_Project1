@@ -1,0 +1,5 @@
+Error, "project1/tests/p09e.rc": 
+  redeclared identifier 'foo2'.
+Error, "project1/tests/p09e.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Compile: failure.
