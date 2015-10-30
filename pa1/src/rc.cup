@@ -1052,8 +1052,12 @@ Designator ::=      T_STAR Designator:_1
 
 Designator2 ::=     Designator2:_1 T_DOT T_ID:_3
                     {:
+                        //((MyParser) parser).setStructFunCall(true); // add 10/29
                         ((MyParser) parser).getName(_3);
+                        ((MyParser) parser).setCallingStruct(_1); // add 10/29
                         RESULT = ((MyParser) parser).DoDesignator2_Dot (_1, _3);
+                        //((MyParser) parser).setStructFunCall(false); // add 10/29
+
                     :}
     |               Designator2:_1 T_LBRACKET Expr:_2 T_RBRACKET
                     {:

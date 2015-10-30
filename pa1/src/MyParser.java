@@ -19,13 +19,15 @@ class MyParser extends parser
 	private int m_nSavedLineNum;
     private boolean paramAmp = false;
     private int isInLoop = 0;
-    private boolean isInStruct = false;
-    private boolean isMultiError = false;
+    private boolean isInStruct = false; // if inside structdef decl
+    private boolean isMultiError = false; 
     private Scope scope;
     private String StructName;
     private String name;
     private boolean isThis = false;
     private boolean inThisFlag = false;
+    private boolean structFuncCall = false; // if function called belongs to a struct
+    private STO callingStruct; // used for funcall woth dot operator outisde of struct
 
 
 	private SymbolTable m_symtab;
@@ -197,6 +199,12 @@ class MyParser extends parser
   		m_symtab.insert(sto);
 	}
 
+
+
+    //-------------------------------------------------------------------
+    // Prints list of STOs
+    //
+    //-------------------------------------------------------------------
     public void printList(Vector<STO> l) {
        
         for(int i = 0; i < l.size(); i++) {
@@ -204,6 +212,10 @@ class MyParser extends parser
         }
     }
 
+    //--------------------------------------------------------------------
+    // 
+    //
+    //--------------------------------------------------------------------
     public Vector<STO> OverloadCheck(String funcName, Vector<STO> funcs) {
 
         Vector<STO> overload = new Vector<STO>();
@@ -240,6 +252,15 @@ class MyParser extends parser
 
         }
         return funcs;
+    }
+
+
+    public boolean getStructFunCall() {
+    	return structFuncCall;
+    }
+
+    public void setStructFunCall(boolean b) {
+    	structFuncCall = b;
     }
 
 
@@ -905,6 +926,10 @@ class MyParser extends parser
     //----------------------------------------------------------------
     void IsInStruct(){ isInStruct = !isInStruct;}
 
+    public boolean getIsInStruct() {
+    	return isInStruct;
+    }
+
     //---------------------------------------------------------------
     // helper method that resolves multi-errors in same line for struct
     //---------------------------------------------------------------
@@ -940,7 +965,6 @@ class MyParser extends parser
         sto.setReturnType(t);
         sto.setOTag(true); // tag to exclude self from overload check
         m_symtab.insert(sto);
-
         //handle struct func declaration
         if(isInStruct){ //  check if func is in struct decl
             Scope fun = m_symtab.getCurrScope();
@@ -998,8 +1022,7 @@ class MyParser extends parser
         Vector<STO> over = new Vector<STO>();
         boolean overloadErr = false;
         boolean next;
-        if(isInStruct) {  //check in struct decl
-            
+        if(isInStruct) {  //check in struct decl  
             over = ((StructType)m_symtab.getStruct().getType()).OverloadCheckStruct( sto.getName() );// grab all func with same name, excludes itself
            ((StructType)m_symtab.getStruct().getType()).OffStructTag();//tag of struct tag for self
         }
@@ -1011,17 +1034,16 @@ class MyParser extends parser
 
         if (over.isEmpty()) { // non overload case
            m_symtab.TagOff(); // turn off tag to exclude current function
-
            return;
         }
         else { // overload case 
            Vector<STO> newParams = sto.getParams(); // the new params to be checked
 
-           for (int i = 0; i < over.size();i++) {
+           for (int i = 0; i < over.size();i++) { // loop thru functions
                overloadErr = false; //if first iter doesn't find a match, the flag should reset for the sec iter
               Vector<STO> storedParams = ((FuncSTO)over.get(i)).getParams(); // params currently in table
               if(newParams.size() == storedParams.size() ) { // if same number params need to check each one
-                  for (int j = 0; j < newParams.size(); j++ ) {
+                  for (int j = 0; j < newParams.size(); j++ ) { // loop thru params
                //overloadErr = false;
 
                      Type newPar = newParams.get(j).getType();
@@ -1117,19 +1139,18 @@ class MyParser extends parser
         }      
 
 
-		if (!stoDes.isModLValue()) 
-		{
-			// Good place to do the assign checks
-            m_errors.print(ErrorMsg.error3a_Assign);
-            m_nNumErrors++;
-            return new ErrorSTO(stoDes.getName());
-		}
+		    if (!stoDes.isModLValue()) {
+			   // Good place to do the assign checks
+           m_errors.print(ErrorMsg.error3a_Assign);
+          m_nNumErrors++;
+          return new ErrorSTO(stoDes.getName());
+		    }
 
 		
 		return stoDes;
 	}
 
-    STO DoAssignTypeCheck(STO a, STO b) {
+  STO DoAssignTypeCheck(STO a, STO b) {
       
 
 
@@ -1145,13 +1166,12 @@ class MyParser extends parser
  
         
         if ((!a.isModLValue())) 
-		{
+		    {
 			// Good place to do the assign checks
             m_errors.print(ErrorMsg.error3a_Assign);
             m_nNumErrors++;
             return new ErrorSTO(a.getName());
-		}
-
+		    }
 
         STO result;
         if (!b.getType().isAssignable(a.getType())) {
@@ -1171,6 +1191,16 @@ class MyParser extends parser
     
     }
 
+    //----------------------------------------------------------------
+    // Helper method to get struct info for FuncCall
+    // Added 10/29
+    //----------------------------------------------------------------
+     
+    public void setCallingStruct(STO name) {
+    	//callingStruct = m_symtab.accessGlobal(name.getType().getName());
+      callingStruct = name;
+    }
+
 
     //----------------------------------------------------------------
 	// 
@@ -1181,7 +1211,7 @@ class MyParser extends parser
         name = s;
     }
 	//----------------------------------------------------------------
-	//
+	// 
 	//----------------------------------------------------------------
 	STO DoFuncCall(STO sto, Vector<STO> params)
 	{
@@ -1190,11 +1220,21 @@ class MyParser extends parser
        }
        else if ( !sto.isFunc() ) {
 	      m_nNumErrors++;
-		  m_errors.print(Formatter.toString(ErrorMsg.not_function, sto.getName()));
-		  return new ErrorSTO(sto.getName());
-	   }
+		    m_errors.print(Formatter.toString(ErrorMsg.not_function, sto.getName()));
+		    return new ErrorSTO(sto.getName());
+	     }
        else {
-           Vector<STO> overloaded = m_symtab.OverloadCheckFun(sto.getName()); //checks if func exists in table, also gets overload if any
+       	   Vector<STO> overloaded;
+            
+           if(this.getStructFunCall() == true) {
+              //overloaded = ((StructType)m_symtab.getStruct().getType()).OverloadCheckStructCall(sto.getName());
+              overloaded = ((StructType)callingStruct.getType()).OverloadCheckStructCall(sto.getName());
+              this.setStructFunCall(false);	
+           }
+           else {
+              overloaded = m_symtab.OverloadCheckFun(sto.getName()); //checks if func exists in table, also gets overload if any
+           } 
+
            STO fun; // var for current func
            Vector<STO> funPar; // vector for current funcs params
            STO curPar; // calling param being check
@@ -1233,7 +1273,7 @@ class MyParser extends parser
                   }
               }
            }
-           else {
+           else { // overloadcase
                return this.DoOverloadCall(sto,params,overloaded);
            
            }
@@ -1284,7 +1324,7 @@ class MyParser extends parser
            for(int i = 0; i < overloaded.size();i++) { // loop thru overloaded funcs
               fun = overloaded.get(i);
               funPar = fun.getParams();
-
+              match = 0;
               for(int j = 0; j < params.size();j++) { // loop thru params check if they match
                  curPar = params.get(j);
                  curType = curPar.getType();
@@ -1361,63 +1401,92 @@ class MyParser extends parser
        for(int i = 0; i < overloaded.size();i++) { // loop thru overloaded funcs
               fun = overloaded.get(i);
               funPar = fun.getParams();
+              match = 0;
+              overParSize = ((FuncSTO)overloaded.get(i)).getParams().size();
 
-              for(int j = 0; j < params.size();j++) { // loop thru params check if they match
-                 curPar = params.get(j);
-                 curType = curPar.getType();
-                 funsCurPar = funPar.get(j);
-                 funsCurType = funsCurPar.getType();
+              // case with no params
+              if(parSize == overParSize) {
+              	if(overParSize == 0 && parSize == 0) { // case if calling function has no params
+              	  result =  new ExprSTO(fun.getName(),fun.getType());
+              	  if(fun.flag == true) { // return by ref set to Mod L
+              	     result.setIsModifiable(true);
+              	     result.setIsAddressable(true);
+              	     return result;
+              	  }
+              	  else { // if return by value set to R val
+              	     result.setIsModifiable(false);
+              	     result.setIsAddressable(false);
+              	     return result;
+              	       
+              	  }
+              	  /* End of no param case */
+              	}
+              	else {
 
-                 
-                 /* Begin Error checks  */
-                 if(funsCurPar.flag == true) { //if param if pass by ref
-                    if(!curType.isEquivalent(funsCurType)) { // if params are not equivalent then error since pass by ref
-                       match = 0; 
-                       m_nNumErrors++;
-                       m_errors.print(Formatter.toString(ErrorMsg.error9_Illegal,func.getName()));
-                       result = new ErrorSTO("error");
-                    }
-                    else if(!curPar.isModLValue() && !(curType instanceof ArrayType)) { // pass in arg is not L val then error
-                       match = 0;
-                       m_nNumErrors++;
-                       m_errors.print(Formatter.toString(ErrorMsg.error9_Illegal,func.getName()));
-                       result = new ErrorSTO("error");
-               
-                    }
+              		for(int j = 0; j < params.size();j++) { // loop thru params check if they match
+              		   curPar = params.get(j);
+              		   curType = curPar.getType();
+              		   funsCurPar = funPar.get(j);
+              		   funsCurType = funsCurPar.getType();
 
-                    else {
-                        match++; // success case
-                    }
-                 }
-                 else { // if param is pass by val
-                    if(!curType.isAssignable(funsCurType)) { // if params are not equivalent then error since pass by ref
-                       match = 0;
-                       m_nNumErrors++;
-                       m_errors.print(Formatter.toString(ErrorMsg.error9_Illegal,func.getName()));
-                       result =  new ErrorSTO("error");
-                    }
-                    else {
-                        match++; // sucess case
-                    }
-                 }
-                 /* End of ErrorChecks */                     
+              		   
+              		   /* Begin Error checks  */
+              		   if(funsCurPar.flag == true) { //if param if pass by ref
+              		      if(!curType.isEquivalent(funsCurType)) { // if params are not equivalent then error since pass by ref
+              		         match = 0; 
+              		         m_nNumErrors++;
+              		         m_errors.print(Formatter.toString(ErrorMsg.error9_Illegal,func.getName()));
+              		         result = new ErrorSTO("error");
+              		         return result; // maybe ?
+              		      }
+              		      else if(!curPar.isModLValue() && !(curType instanceof ArrayType)) { // pass in arg is not L val then error
+              		         match = 0;
+              		         m_nNumErrors++;
+              		         m_errors.print(Formatter.toString(ErrorMsg.error9_Illegal,func.getName()));
+              		         result = new ErrorSTO("error");
+              		         return result;
+              		 
+              		      }
+
+              		      else {
+              		          match++; // success case
+              		      }
+              		   }
+              		   else { // if param is pass by val
+              		      if(!curType.isEquivalent(funsCurType)) { // if params are not equivalent then error since pass by ref
+              		         match = 0;
+              		         m_nNumErrors++;
+              		         m_errors.print(Formatter.toString(ErrorMsg.error9_Illegal,func.getName()));
+              		         result =  new ErrorSTO("error");
+              		         return result;
+              		      }
+              		      else {
+              		          match++; // sucess case
+              		      }
+              		   }
+              		   /* End of ErrorChecks */                     
+              		}
+              		if(match == params.size()) {
+              		   result = new ExprSTO(fun.getName(),fun.getType());
+              		   if(fun.flag == true) { // return by ref set to Mod L
+              		      result.setIsModifiable(true);
+              		      result.setIsAddressable(true);
+              		      return result;
+              		   }
+              		  else { // if return by value set to R val
+              		      result.setIsModifiable(false);
+              		      result.setIsAddressable(false);
+              		      return result;              		       
+              		  }
+
+              		}
+
+              	}
+
               }
-              if(match == params.size()) {
-                 result = new ExprSTO(fun.getName(),fun.getType());
-                 if(fun.flag == true) { // return by ref set to Mod L
-                    result.setIsModifiable(true);
-                    result.setIsAddressable(true);
-                    return result;
-                 }
-                else { // if return by value set to R val
-                    result.setIsModifiable(false);
-                    result.setIsAddressable(false);
-                    return result;
-                     
-                }
-
-              }
-
+              else {
+              	continue;
+              }          
            }
 
        return result;
@@ -1456,12 +1525,18 @@ class MyParser extends parser
 
 
         if(inThisFlag == true){
+            Scope curr =  ((StructType)sto.getType()).getScope();
 
-            Scope curr = m_symtab.getAboveScope();
+
+
+            //Scope curr = ((StructType)m_symtab.getStruct().getType()).getScope();
             Vector<STO> locals = curr.getLocals();
             for(int i = 0 ; i < locals.size(); i++){
                 if(locals.get(i).getName().equals(strID)){
                     toggleInThisFlag();
+                    if(locals.get(i) instanceof FuncSTO) {
+                      this.setStructFunCall(true);
+                    }
                     return locals.get(i);
                 }
              }
@@ -1477,6 +1552,9 @@ class MyParser extends parser
             Vector<STO> locals = curr.getLocals();
             for(int i = 0 ; i < locals.size(); i++){
                 if(locals.get(i).getName().equals(strID)){
+                    if(locals.get(i) instanceof FuncSTO) {
+                      this.setStructFunCall(true);
+                    }
                     return locals.get(i);
                 }
              }
@@ -1617,18 +1695,26 @@ class MyParser extends parser
 	STO DoDesignator3_ID(String strID)
 	{
 		STO sto;
-
         //change accesslocal to access might break things
-		if ((sto = m_symtab.access(strID)) == null )
-		{	
-           // if((sto = m_symtab.accessGlobal(strID)) == null){
-              
-                m_nNumErrors++;
-		        m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
-		        sto = new ErrorSTO(strID);
+        if (isInStruct) {
+        	if ((sto = m_symtab.accessLocal(strID)) == null ) {	
+        	    if((sto = m_symtab.accessGlobal(strID)) == null){    
+        	       m_nNumErrors++;
+        	       m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
+        	       sto = new ErrorSTO(strID);
+        	       return sto;
+        	            
+        	    }
+        	}
 
-                return sto;
-           // }
+        }
+        else {
+        	if ((sto = m_symtab.access(strID)) == null ) {	
+        	    m_nNumErrors++;
+        	    m_errors.print(Formatter.toString(ErrorMsg.undeclared_id, strID));
+        	    sto = new ErrorSTO(strID);
+        	    return sto;
+        	}
         }
         return sto;
               

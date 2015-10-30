@@ -3,6 +3,8 @@ Error, "project1/tests/p14p.rc":
 Error, "project1/tests/p14p.rc": 
   Value of type MYS not assignable to variable of type int.
 Error, "project1/tests/p14p.rc": 
+  undeclared identifier 'x'.
+Error, "project1/tests/p14p.rc": 
   Referenced field a not found in current struct.
 Error, "project1/tests/p14p.rc": 
   Referenced field t not found in current struct.

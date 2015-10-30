@@ -2,4 +2,16 @@ Error, "project1/tests/p09e.rc":
   redeclared identifier 'foo2'.
 Error, "project1/tests/p09e.rc": 
   Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/p09e.rc": 
+  Illegal call to overloaded function foo.
+Error, "project1/tests/p09e.rc": 
+  Illegal call to overloaded function foo.
+Error, "project1/tests/p09e.rc": 
+  Illegal call to overloaded function foo.
+Error, "project1/tests/p09e.rc": 
+  Incompatible type int to unary operator !, equivalent to bool expected.
+Error, "project1/tests/p09e.rc": 
+  Illegal call to overloaded function foo.
+Error, "project1/tests/p09e.rc": 
+  undeclared identifier 'boo'.
 Compile: failure.
