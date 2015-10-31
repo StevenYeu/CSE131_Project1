@@ -44,7 +44,7 @@ function : void main()
   delete ptr2;
 
   MYS_B b1;
-  new b1;
-  delete b1;
+  //new b1;
+  //delete b1;
 
 }

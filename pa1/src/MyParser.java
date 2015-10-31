@@ -1845,7 +1845,14 @@ class MyParser extends parser
                     m_errors.print(Formatter.toString(ErrorMsg.error17_Expr,o.getOp(),a.getType().getName(),b.getType().getName()));                 
                 }
                 else {
-                   m_errors.print(Formatter.toString(ErrorMsg.error1b_Expr,a.getType().getName(),o.getOp(),b.getType().getName())); 
+                	if(a.getType() instanceof PointerType && b.getType() instanceof PointerType) {
+                		if(!a.getType().isEquivalent(b.getType())) {
+                			m_errors.print(Formatter.toString(ErrorMsg.error17_Expr,o.getOp(),a.getType().getName(),b.getType().getName()));                 
+                		}
+                	}
+                	else {
+                		m_errors.print(Formatter.toString(ErrorMsg.error1b_Expr,a.getType().getName(),o.getOp(),b.getType().getName())); 
+                	}
                 }
 
             }
@@ -2017,7 +2024,11 @@ class MyParser extends parser
                              break;
                case "bool":  ptrType = new BoolType("bool");
                              break;
-               default:      ptrType = new StructType(type);
+               default:      ptrType = new StructType(ptrStr);
+            }
+            if(ptrType instanceof StructType) {
+            	STO struct = m_symtab.accessGlobal(ptrStr);
+            	((StructType)ptrType).setScope(((StructType)struct.getType()).getScope());
             }
             t = this.DoPointer(ptrType,ptrs);
         }
@@ -2283,12 +2294,8 @@ class MyParser extends parser
         }
         else {
         
-           STO struct = m_symtab.accessGlobal(((PointerType)sto.getType()).getBaseType().getName());
-            
-           Vector<STO> fun = ((StructdefSTO)struct).getFuncs();
-           Vector<STO> var = ((StructdefSTO)struct).getVars();
-
-           Scope s = ((StructType)struct.getType()).getScope();
+           
+           Scope s = ((StructType)((PointerType)sto.getType()).getBaseType()).getScope();
            Vector<STO> locals = s.getLocals();
            for (int i = 0;i < locals.size() ; i++) {
            	   if(locals.get(i).getName().equals(strID)) {
@@ -2317,7 +2324,7 @@ class MyParser extends parser
            // }
 
            m_nNumErrors++;
-           m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, struct.getName()));
+           m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, sto.getName()));
            return new ErrorSTO("error");
 
         }
@@ -2332,17 +2339,17 @@ class MyParser extends parser
         if(ptrlist.isEmpty()){
             return t;
         }
-        for (int i = ptrlist.size()-1; i >=0 ; i--){
-            if(i == 0){
+        int numPtr = ptrlist.size();
+        for (int i = 1; i <=numPtr ; i++){
+            if(i == numPtr){
                 TopType.addNext(t);
             }
             else{
-                PointerType typ = new PointerType(t.getName()+ this.PrintStar(i));
-                typ.setNumPointers(i);
+                PointerType typ = new PointerType(t.getName()+ this.PrintStar(numPtr-i));
+                typ.setNumPointers(numPtr-i);
                 TopType.addNext(typ);
             }
         }
-
         
         return TopType;
     }
@@ -2406,7 +2413,6 @@ class MyParser extends parser
     STO DoNew(STO sto, Vector<STO> params){
         if(sto instanceof ErrorSTO)
             return sto;
-
 
         if(!sto.isModLValue()){
            m_nNumErrors++;
@@ -2478,7 +2484,6 @@ class MyParser extends parser
            m_errors.print(Formatter.toString(ErrorMsg.error18_AddressOf, sto.getType().getName()));
            return new ErrorSTO("error"); 
         }
-
         PointerType ptr =  new PointerType(sto.getType().getName()+ this.PrintStar(1),1);
         ptr.addNext(sto.getType());
 
