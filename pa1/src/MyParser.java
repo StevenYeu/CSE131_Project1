@@ -560,10 +560,15 @@ class MyParser extends parser
                     m_errors.print(Formatter.toString(ErrorMsg.error8_Assign, expr.getType().getName(),t.getName()));
                     return;
                 }
- 
 
+            
+ 
+                
     
                 sto = new VarSTO(id,t);
+                STO result = DoAssignTypeCheck(sto, expr);
+                if(result instanceof ErrorSTO)
+                    return;
                 //lval for pointer
                 sto.setIsAddressable(true);
                 sto.setIsModifiable(true);
@@ -2490,6 +2495,7 @@ class MyParser extends parser
         }
         PointerType ptr =  new PointerType(sto.getType().getName()+ this.PrintStar(1),1);
         ptr.addNext(sto.getType());
+        System.out.println("ptr type: "+ ptr.getName());
 
         ExprSTO expr = new ExprSTO(sto.getName(),ptr);
         expr.setIsAddressable(false);
