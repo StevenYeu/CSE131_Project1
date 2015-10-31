@@ -1,1 +1,11 @@
+Error, "project1/tests/p14m.rc": 
+  Number of arguments (2) differs from number of parameters (0).
+Error, "project1/tests/p14m.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/p14m.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/p14m.rc": 
+  Argument of type bool not assignable to value parameter x, of type float.
+Error, "project1/tests/p14m.rc": 
+  redeclared identifier 'newc1'.
 Compile: failure.

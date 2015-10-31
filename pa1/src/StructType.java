@@ -54,11 +54,11 @@ class StructType extends CompositeType {
         return overloaded;
     }
 
-    public Vector<STO> OverloadCheckStructCall(String funcName) { // for do formal params
+    public Vector<STO> OverloadCheckStructCall(String funcName) { // calls
 
         Vector<STO> overloaded = new Vector<STO>();
         for (int i =0; i < functions.size(); i++) {
-            if(functions.get(i) instanceof FuncSTO){     
+            if(functions.get(i) instanceof FuncSTO){
                 if (funcName.equals(functions.elementAt(i).getName())) {
                     overloaded.add(functions.elementAt(i));
                 }

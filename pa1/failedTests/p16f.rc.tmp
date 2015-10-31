@@ -10,4 +10,18 @@ Error, "project1/tests/p16f.rc":
   Operand to "new" is not a modifiable L-value.
 Error, "project1/tests/p16f.rc": 
   Operand to "delete" is not a modifiable L-value.
+Error, "project1/tests/p16f.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/p16f.rc": 
+  redeclared identifier 'newptr1'.
+Error, "project1/tests/p16f.rc": 
+  redeclared identifier 'newptr1'.
+Error, "project1/tests/p16f.rc": 
+  redeclared identifier 'newptr2'.
+Error, "project1/tests/p16f.rc": 
+  Number of arguments (0) differs from number of parameters (1).
+Error, "project1/tests/p16f.rc": 
+  undeclared identifier 'b1'.
+Error, "project1/tests/p16f.rc": 
+  undeclared identifier 'b1'.
 Compile: failure.

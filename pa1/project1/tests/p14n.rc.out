@@ -1,12 +1,19 @@
-Error, "/tmp/cs131_testrunner_zATaux/file.rc", line 21: 
+Error, "/tmp/cs131_testrunner_AcoGJo/file.rc": 
   Number of arguments (2) differs from number of parameters (0).
-Error, "/tmp/cs131_testrunner_zATaux/file.rc", line 28: 
+Error, "/tmp/cs131_testrunner_AcoGJo/file.rc": 
   Number of arguments (0) differs from number of parameters (1).
-Error, "/tmp/cs131_testrunner_zATaux/file.rc", line 29: 
+Error, "/tmp/cs131_testrunner_AcoGJo/file.rc": 
   Number of arguments (0) differs from number of parameters (1).
-Error, "/tmp/cs131_testrunner_zATaux/file.rc", line 31: 
+Error, "/tmp/cs131_testrunner_AcoGJo/file.rc": 
   Argument of type bool not assignable to value parameter x, of type float.
-Error, "/tmp/cs131_testrunner_zATaux/file.rc", line 32: 
+Error, "/tmp/cs131_testrunner_AcoGJo/file.rc": 
   Number of arguments (0) differs from number of parameters (1).
-Error, "/tmp/cs131_testrunner_zATaux/file.rc", line 34: 
- 
+Error, "/tmp/cs131_testrunner_AcoGJo/file.rc": 
+  Index expression type (bool) in array declaration not equivalent to int.
+Error, "/tmp/cs131_testrunner_AcoGJo/file.rc": 
+  Illegal call to overloaded function MYS_C.
+Error, "/tmp/cs131_testrunner_AcoGJo/file.rc": 
+  Illegal call to overloaded function MYS_C.
+Error, "/tmp/cs131_testrunner_AcoGJo/file.rc": 
+  Illegal call to overloaded function MYS_C.
+Compile: failure.
