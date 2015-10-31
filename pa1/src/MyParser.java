@@ -28,6 +28,7 @@ class MyParser extends parser
     private boolean inThisFlag = false;
     private boolean structFuncCall = false; // if function called belongs to a struct
     private STO callingStruct; // used for funcall woth dot operator outisde of struct
+    private boolean newCall = false; // new statement
 
 
 	private SymbolTable m_symtab;
@@ -202,6 +203,26 @@ class MyParser extends parser
 
 
     //-------------------------------------------------------------------
+    // Get new Call Flag
+    //
+    //-------------------------------------------------------------------
+    public boolean getNewCall() {
+      return newCall;
+    }
+
+
+    //-------------------------------------------------------------------
+    // Set new Call Flag
+    //
+    //-------------------------------------------------------------------
+    public void setNewCall(boolean b) {
+      newCall = b;
+    }
+
+
+
+
+    //-------------------------------------------------------------------
     // Prints list of STOs
     //
     //-------------------------------------------------------------------
@@ -271,17 +292,24 @@ class MyParser extends parser
     // ----------------------------------------------------------------
 	void DoCtorStructs(String id, Type t,Vector<STO> arraylist ,Vector<STO> params)
 	{
+    
+    STO newCall = new VarSTO("new",t);// temp for new call 
     if(t instanceof ErrorType){
         return;
     }
 
   	if (m_symtab.accessLocal(id) != null)
     {
-       m_nNumErrors++;
-       m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
-
-       m_symtab.insert(new ErrorSTO(id));
-       return;
+       if(this.getNewCall()) { // check if new call
+           newCall = m_symtab.accessLocal(id);
+       }
+       else { // if not new call
+          m_nNumErrors++;
+          m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+          m_symtab.insert(new ErrorSTO(id)); // not sure if correct
+          return;
+       }
+      
     }
     Type arr = new ArrayType("temp",0,0);
 
@@ -289,6 +317,7 @@ class MyParser extends parser
     if(!arraylist.isEmpty()) {
       arr =this.CreateArrayType(t,arraylist);
       if (arr instanceof ErrorType) {
+        this.setNewCall(false);
         return;
       }
     }
@@ -322,10 +351,16 @@ class MyParser extends parser
           if(overParSize != parSize) { // if have different number of params print error
              m_nNumErrors++;
 	           m_errors.print(Formatter.toString(ErrorMsg.error5n_Call,parSize,overParSize));
+             this.setNewCall(false);
 	           return;
           }
           else {
               if(overParSize == 0 && parSize == 0) { // case if calling function has no params
+                    if(this.getNewCall() ) {
+                      result = newCall;
+                      this.setNewCall(false);
+
+                    }
                     if(!arraylist.isEmpty()) {
                        result = new VarSTO(id,arr);
                     }
@@ -341,7 +376,12 @@ class MyParser extends parser
               }
               else { // case if nonzero params 
                  result = this.DoFunctionCall(sto,params,overloaded);
-                 //if(result instanceof ErrorSTO) {return;}
+                  //if(result instanceof ErrorSTO) {return;}
+                 if(this.getNewCall() ) {
+                   result = newCall;
+                   this.setNewCall(false);
+
+                 }
                  if(!arraylist.isEmpty()) {
                     result = new VarSTO(id,arr);
                  }
@@ -358,6 +398,11 @@ class MyParser extends parser
        }
        else { // overloadcase
            result = this.DoOverloadCall(sto,params,overloaded);
+           if(this.getNewCall() ) {
+             result = newCall;
+             this.setNewCall(false);
+
+           }
            if(!arraylist.isEmpty()) {
               result = new VarSTO(id,arr);
            }
@@ -430,15 +475,16 @@ class MyParser extends parser
 	{
         int numDim = arraylist.size();
         VarSTO sto;
-        if( expr instanceof ErrorSTO)
-            return;
+        if( expr instanceof ErrorSTO) {
+          return;
 
-        if (m_symtab.accessLocal(id) != null)
-		{
-		    m_nNumErrors++;
-		    m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
+        }
+
+        if (m_symtab.accessLocal(id) != null){
+		        m_nNumErrors++;
+		        m_errors.print(Formatter.toString(ErrorMsg.redeclared_id, id));
             return;
-		}
+		    }
 
 
         if(numDim > 0)
@@ -2372,7 +2418,7 @@ class MyParser extends parser
            m_errors.print(Formatter.toString(ErrorMsg.error16_New, sto.getType().getName()));
            return new ErrorSTO("error");           
         }
-
+        this.setNewCall(true);
         if(sto.getType() instanceof PointerType) {
             if(params.size() == 0){
                 if(!(((PointerType)sto.getType()).getNext() instanceof StructType)) {
@@ -2538,6 +2584,13 @@ class MyParser extends parser
         }
 
 
+        if (sto.getType() instanceof NullPointerType) {
+             m_nNumErrors++;
+             m_errors.print(Formatter.toString(ErrorMsg.error20_Cast,sto.getType().getName(),t.getName()));
+             return new ErrorSTO("error"); 
+
+        }
+
         if(sto.getType() instanceof BasicType || sto.getType() instanceof PointerType){
 
             STO res = new ConstSTO("temp");
@@ -2574,8 +2627,7 @@ class MyParser extends parser
                }
                else if(t instanceof PointerType && typ instanceof BasicType){
                     res = new ExprSTO(sto.getName(), t);
-               }
-            
+               }            
             
             }
             else{

@@ -1,1 +1,13 @@
-Error, "/tmp/cs131
+Error, "/tmp/cs131_testrunner_Aoa4kN/file.rc": 
+  Illegal call to overloaded function foo.
+Error, "/tmp/cs131_testrunner_Aoa4kN/file.rc": 
+  Referenced field y not found in type MYS_A.
+Error, "/tmp/cs131_testrunner_Aoa4kN/file.rc": 
+  Referenced field i not found in type MYS_A.
+Error, "/tmp/cs131_testrunner_Aoa4kN/file.rc": 
+  Referenced field boo not found in type MYS_B.
+Error, "/tmp/cs131_testrunner_Aoa4kN/file.rc": 
+  Referenced field t not found in type MYS_B.
+Error, "/tmp/cs131_testrunner_Aoa4kN/file.rc": 
+  Referenced field f not found in type MYS_B.
+Compile: failure.

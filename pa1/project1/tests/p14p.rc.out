@@ -1,1 +1,15 @@
-Error, "/tmp/cs131
+Error, "/tmp/cs131_testrunner_Boa4kN/file.rc": 
+  Left-hand operand is not assignable (not a modifiable L-value).
+Error, "/tmp/cs131_testrunner_Boa4kN/file.rc": 
+  Value of type MYS not assignable to variable of type int.
+Error, "/tmp/cs131_testrunner_Boa4kN/file.rc": 
+  undeclared identifier 'x'.
+Error, "/tmp/cs131_testrunner_Boa4kN/file.rc": 
+  Referenced field a not found in current struct.
+Error, "/tmp/cs131_testrunner_Boa4kN/file.rc": 
+  Referenced field t not found in current struct.
+Error, "/tmp/cs131_testrunner_Boa4kN/file.rc": 
+  Referenced field boo not found in current struct.
+Error, "/tmp/cs131_testrunner_Boa4kN/file.rc": 
+  Referenced field foo2 not found in current struct.
+Compile: failure.

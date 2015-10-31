@@ -13,11 +13,9 @@ Error, "project1/tests/p16f.rc":
 Error, "project1/tests/p16f.rc": 
   Number of arguments (0) differs from number of parameters (1).
 Error, "project1/tests/p16f.rc": 
-  redeclared identifier 'newptr1'.
+  Number of arguments (1) differs from number of parameters (0).
 Error, "project1/tests/p16f.rc": 
-  redeclared identifier 'newptr1'.
-Error, "project1/tests/p16f.rc": 
-  redeclared identifier 'newptr2'.
+  Argument of type bool not assignable to value parameter x, of type float.
 Error, "project1/tests/p16f.rc": 
   Number of arguments (0) differs from number of parameters (1).
 Error, "project1/tests/p16f.rc": 
