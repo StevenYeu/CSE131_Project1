@@ -2026,8 +2026,15 @@ class MyParser extends parser
                              break;
                default:      ptrType = new StructType(ptrStr);
             }
-            if(ptrType instanceof StructType) {
-            	STO struct = m_symtab.accessGlobal(ptrStr);
+            if(ptrType instanceof StructType) { // add to fix Arrow check
+            	STO struct;
+            	if(isInStruct) {
+            		struct = m_symtab.getStruct();
+            	}
+            	else {
+                 	struct = m_symtab.accessGlobal(ptrStr);
+            	}
+
             	((StructType)ptrType).setScope(((StructType)struct.getType()).getScope());
             }
             t = this.DoPointer(ptrType,ptrs);
@@ -2044,8 +2051,14 @@ class MyParser extends parser
                default:      t = new StructType(type);
         
             }
-            if(t instanceof StructType) {
-            	STO struct = m_symtab.accessGlobal(type);
+            if(t instanceof StructType) { // added to fix arrow check
+        		STO struct;
+        		if(isInStruct) {
+        			struct = m_symtab.getStruct();
+        		}
+        		else {
+        	     	struct = m_symtab.accessGlobal(type);
+        		}
             	((StructType)t).setScope(((StructType)struct.getType()).getScope());
             }
         
@@ -2307,28 +2320,8 @@ class MyParser extends parser
            	   }
            	
            }
-           // for(int i = 0; i < fun.size(); i++){
-           //    if(fun.get(i).getName().equals(strID)){
-           //        fun.get(i).setIsModifiable(true);
-           //        fun.get(i).setIsAddressable(true);
-           //        ((FuncSTO)fun.get(i)).setIsStruct(true); // add
-           //        m_symtab.setStruct((StructdefSTO)struct); // add
-           //        m_symtab.insert(fun.get(i));
-           //        return fun.get(i);
-           //    }
-           // }
-           // for(int i = 0; i < var.size(); i++){
-           //    if(var.get(i).getName().equals(strID)){
-           //         var.get(i).setIsModifiable(true);
-           //         var.get(i).setIsAddressable(true);
-           //         m_symtab.insert(var.get(i));
-           //         return var.get(i);
-
-           //    }
-           // }
-
            m_nNumErrors++;
-           m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, sto.getName()));
+           m_errors.print(Formatter.toString(ErrorMsg.error14f_StructExp,strID, ((PointerType)sto.getType()).getBaseType().getName()));
            return new ErrorSTO("error");
 
         }
