@@ -2044,6 +2044,10 @@ class MyParser extends parser
                default:      t = new StructType(type);
         
             }
+            if(t instanceof StructType) {
+            	STO struct = m_symtab.accessGlobal(type);
+            	((StructType)t).setScope(((StructType)struct.getType()).getScope());
+            }
         
         }
 
