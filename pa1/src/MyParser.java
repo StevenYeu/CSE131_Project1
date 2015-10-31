@@ -2495,7 +2495,7 @@ class MyParser extends parser
         }
         PointerType ptr =  new PointerType(sto.getType().getName()+ this.PrintStar(1),1);
         ptr.addNext(sto.getType());
-        System.out.println("ptr type: "+ ptr.getName());
+
 
         ExprSTO expr = new ExprSTO(sto.getName(),ptr);
         expr.setIsAddressable(false);
